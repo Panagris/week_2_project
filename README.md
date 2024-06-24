@@ -9,6 +9,19 @@ Outputs: Text from the CHAT API
 Biggest Risk: it doesn't work, and CHAT supplies bad answers (how do we ensure responses are good quality?)
 Determine Success: user satisfaction. Ask the user if they received good responses.
 
+### Dependencies
+The openai module.
+Python and pip(3) may through errors. Use these [instructions](https://stackoverflow.com/questions/75602063/pip-install-r-requirements-txt-is-failing-this-environment-is-externally-mana/75696359#75696359:~:text=This%20is%20due%20to%20your%20distribution%20adopting%20PEP%20668%20%E2%80%93%20Marking%20Python%20base%20environments%20as%20%E2%80%9Cexternally%20managed%E2%80%9D.) 
+to create a virtual development environment for python.
+```
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install <MODULE_TO_INSTALL>
+```
+The first CLI is needed only the first time; from then on, run ``source .venv/bin/activate`` to enter the python 
+virtual environment. To leave the venv, run ``deactivate``.
+
+
 ## Brain Storm:
 * Study buddy / tutor
 * Anime recommender based on interests
