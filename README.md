@@ -1,13 +1,15 @@
 # README
 
-Name: LearnMate AI
-Problem to Solve: Students struggle with how to study effectively.
-Who: Interfaces with human users.
-Inputs: Text from the user.
-Outputs: Text from the CHAT API
-5 Steps: Get subject context from user, seed the CHAT, ask the user for questions, give to CHAT, parse CHAT response, return to user and ask if good response to prime CHAT
-Biggest Risk: it doesn't work, and CHAT supplies bad answers (how do we ensure responses are good quality?)
-Determine Success: user satisfaction. Ask the user if they received good responses.
+Name: LearnMate AI\
+Problem to Solve: Students struggle with how to study effectively.\
+Who: Interfaces with human users.\
+Inputs: Text from the user.\
+Outputs: Text from the CHAT API\
+5 Steps: Get subject context from user, seed the CHAT, ask the user for questions, give to CHAT, parse CHAT response, return to user and ask if good response to prime CHAT\
+Biggest Risk: it doesn't work, and CHAT supplies bad answers (how do we ensure responses are good quality?)\
+Determine Success: user satisfaction. Ask the user if they received good responses.\
+Database Usage: A database to track user info with proper information to prime CHAT upon login (providing user id).
+Store personal information and study plans.
 
 ### Dependencies
 The openai module.
