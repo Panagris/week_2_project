@@ -48,15 +48,14 @@ def get_study_session_info() -> None:
     return subject, subtopic, study_method
 
 
-if __name__ = "__main__":
-    user_id = get_user_ID();
+if __name__ == "__main__":
+    #user_id = get_user_ID();
 
-    subject, subtopic, study_method = get_study_session_info()
+    #subject, subtopic, study_method = get_study_session_info()
 
     # Create an OpenAPI client using the key from our environment variable
-    client = OpenAI(
-    api_key= os.getenv("OPENAI_API_KEY")
-    )
+    client = OpenAI(api_key=my_api_key,)
+    
 
     # Seed / prepare ChatGPT with data about the user. Specify the model to
     # use and the messages to send. Each run of the API is $0.01.
@@ -73,13 +72,16 @@ if __name__ = "__main__":
             ]
     )
     '''
+    
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a helpful study assistant for students"},
-            {"role": "user", "content": "Create a study method for Computer Science focusing on Djikstras"},
-            {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
-            {"role": "user", "content": "Where was it played?"}
+            {"role": "user", "content": "Give me an explanation for Computer Science focusing on Djikstras"},
+            #{"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
+            
         ]
     )
+    # How to index into the response from ChatGPT.
+    print(response.choices[0].message.content.strip())
 
