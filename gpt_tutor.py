@@ -1,6 +1,7 @@
 import os
 import openai
 from openai import OpenAI
+import user_info
 
 
 # Set environment variables for the API key.

@@ -1,56 +1,53 @@
-import sqlalchemy as sql
-
-# Code here ...
-engine = sql.create_engine('sqlite:///tutor.db')
-
-# This file handles the database, having functions that write and read to the database
-# that can be called by other files in the directory.
 '''
-metadata_obj = MetaData()
+This file handles the database, having functions that write and read to the database
+that can be called by other files in the directory.
+'''
+import sqlite3 as sql
+import sys
+import os
 
-user = Table(
-    "user",
-    metadata_obj,
-    Column("user_name", String(100), primary_key=True),
-    Column(
-        "bio",
-        String(255).with_variant(VARCHAR(255, charset="utf8"), "mysql", "mariadb"),
-    ),
-) '''
+DATABASE = "tutor.db"
+def open_connection():
+    try:
+        connection = sql.connect(DATABASE)
+        cursor = connection.cursor()
+        print(f"Successfully connected to {DATABASE}")
+
+    except sql.Error as e:
+        print(f"Error connecting to sqlite3 Platform: {e}")
+        sys.exit(1)
+    
+    return connection, cursor
+
+# Function to read and execute SQL commands from a file
+def execute_sql_file(file_path):
+    connection, cursor = open_connection()
+
+    with open(file_path, 'r') as sql_file:
+        sql_commands = sql_file.read()
+        cursor.executescript(sql_commands)
+        connection.commit()
 
 
-metadata_obj = sql.MetaData()
+def print_subject_list() -> None:
+    connection, cursor = open_connection()
 
-user = sql.Table(
-    "user",
-    metadata_obj,
-    sql.Column("id", int(100), primary_key=True),
-    sql.Column("user_name", String(100), primary_key=True),
-    sql.Column(
-        "bio",
-        String(255).with_variant(VARCHAR(255, charset="utf8"), "mysql", "mariadb"),
-    ),
-)
+    if connection:
+        for row in cursor.execute("SELECT * FROM subjects"):
+            print(row)
+        connection.close()
+
+def print_study_methods() -> None:
+    connection = open_connection()
+    if connection:
+        connection.close()
+
+def print_subtopics() -> None:
+    connection = open_connection()
+    if connection:
+        connection.close()
 
 
-def print_subject_list():
-    subjects [
-        {'id': 1, 'name': 'Math'},
-        {'id': 2, 'name': 'History'},
-        {'id': 3, 'name': 'Science'},
-    ]
-class User(Base):
-     __tablename__ = "users"
-
-     id: Mapped[int] = mapped_column(primary_key=True)
-     name: Mapped[str] = mapped_column(String(30))
-     previous_subjects: = Mapped[List[str]]
-     progress = Mapped[List[str]]
-     
-
-     addresses: Mapped[List["Address"]] = relationship(
-         back_populates="user", cascade="all, delete-orphan"
-     )
-
-     def __repr__(self) -> str:
-         return f"User(id={self.id!r}, name={self.name!r}, previous_subjects={self.previous_subjects!r}, progress = {self.})"
+# Populate table
+execute_sql_file('user_data.sql')
+print_subject_list()
