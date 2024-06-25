@@ -9,7 +9,8 @@ Outputs: Text from the CHAT API\
 Biggest Risk: it doesn't work, and CHAT supplies bad answers (how do we ensure responses are good quality?)\
 Determine Success: user satisfaction. Ask the user if they received good responses.\
 Database Usage: A database to track user info with proper information to prime CHAT upon login (providing user id).
-Store personal information and study plans.
+Store personal information and study plans. The database can also track that users progress.
+This could be tracked by ChatGPT, and this progress can be stored in the database.
 
 ### Dependencies
 The openai module.
