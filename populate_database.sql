@@ -1,7 +1,14 @@
 CREATE TABLE IF NOT EXISTS users ( 
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(255) default NULL,
-    previous_subjects VARCHAR(255) default NULL
+    name VARCHAR(255) default NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_subjects ( 
+    user_id INTEGER,
+    subject_name VARCHAR(255),
+    PRIMARY KEY (user_id, subject_name),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (subject_name) REFERENCES subjects(subject_name)
 );
 
 CREATE TABLE IF NOT EXISTS subjects ( 

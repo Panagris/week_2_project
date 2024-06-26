@@ -46,6 +46,14 @@ def print_study_methods() -> None:
             print(row[0])
         connection.close()
 
+def print_users() -> None:
+    connection, cursor = open_connection()
+
+    if connection:
+        for row in cursor.execute("SELECT * FROM users"):
+            print(f'ID: {row[0]}, Name: {row[1]}')
+        connection.close()
+
 
 def print_subtopics() -> None:
     connection, cursor = open_connection()
@@ -56,13 +64,9 @@ def print_subtopics() -> None:
         connection.close()
 
 
-def database_is_empty():
+def create_database_if_empty():
     conn, cur = open_connection()
     if conn:
-        #cur.execute(f"SELECT COUNT(DISTINCT `table_name`) \
-                    #AS TotalNumberOfTables \
-                    #FROM `information_schema`.`columns` \
-                    #WHERE `table_schema` = '{DATABASE}';")
         cur.execute("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'users'")
         count = cur.fetchone()[0]
 
@@ -71,12 +75,36 @@ def database_is_empty():
     
     conn.close()
 
+def add_user(user_name: str) -> None:
+    connection, cursor = open_connection()
+    input_string = f"INSERT OR IGNORE INTO users (name) \
+                    VALUES ('{user_name}');"
+    print(input_string)
+    if connection:
+        cursor.execute(input_string)
+        connection.close()
+
+def add_previous_subject(user_id: int, subject_name: str) -> None:
+    connection, cursor = open_connection()
+    input_string = f"INSERT INTO user_subjects (user_id, user_name) \
+                    VALUES ({user_id}, '{subject_name}');"
+    # print(input_string)
+
+    if connection:
+        cursor.execute(input_string)
+        connection.close()
+
 # Populate table
 if __name__ == "__main__":
     # Check that the database is not empty.
-    database_is_empty()
+    create_database_if_empty()
     
-
-    print_subject_list()
-    print_subtopics()
-    print_study_methods()
+    # print_subject_list()
+    # print_subtopics()
+    # print_study_methods()
+    add_user("Beatrice")
+    add_user("Mark")
+    add_user("Jake")
+    # add_previous_subject(2, "Math")
+    print_users()
+    # INSERT INTO user_subjects (user_id, subject_name) VALUES (1, "Math"), (1, "English");

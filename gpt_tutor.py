@@ -1,7 +1,7 @@
 import os
 import openai
 from openai import OpenAI
-import user_info
+import database_handler
 
 
 # Set environment variables for the API key.
@@ -30,12 +30,12 @@ def create_user_ID() -> int:
 # These should be options imported from a database so that the USER
 # selects instead of providing plain text.
 def get_study_session_info() -> None:
-    print_subject_list()  ### TODO
+    print_subject_list()
 
     subject = int(input("What subject would you like to study? \
                         Pass by ID #: \n"))
 
-    print_subtopics(subject)  ### TODO
+    print_subtopics(subject)
 
     subtopic = int(input("What subtopic would you like to focus on? \
                          Pass by ID #: \n"))
