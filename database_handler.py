@@ -19,7 +19,7 @@ def open_connection():
     
     return connection, cursor
 
-# Function to read and execute SQL commands from a file
+# Function to read and execute SQL commands from a file.
 def execute_sql_file(file_path):
     connection, cursor = open_connection()
 
@@ -28,7 +28,7 @@ def execute_sql_file(file_path):
         cursor.executescript(sql_commands)
         connection.commit()
 
-
+# Print all the subjects from the database.
 def print_subject_list() -> None:
     connection, cursor = open_connection()
 
@@ -37,6 +37,7 @@ def print_subject_list() -> None:
             print(row)
         connection.close()
 
+# Print all the study methods available.
 def print_study_methods() -> None:
     connection = open_connection()
     if connection:
@@ -49,5 +50,5 @@ def print_subtopics() -> None:
 
 
 # Populate table
-execute_sql_file('user_data.sql')
+execute_sql_file('populate_database.sql')
 print_subject_list()
