@@ -71,54 +71,52 @@ def print_previous_subjects(user_id) -> None:
 def print_subjects() -> None:
     connection, cursor = open_connection()
     print("--- Available Subjects ---\n")
+ #if onnection:
+        #forrow in cursor.execute("SELECT * FROM subjects"):
+            #prit(row[0])
+        #conection.close()
 
-    if connection:
-        for row in cursor.execute("SELECT * FROM subjects"):
-            print(row[0])
-        connection.close()
-
-
-# Print all the study methods available.
+# P
+rint all the study methods available.
 def print_study_methods() -> None:
     connection, cursor = open_connection()
-    print("--- Available Study Methods ---\n")
 
-    if connection:
+  
+    print("--- Available Study Methods ---\n")  if connection:
         for row in cursor.execute("SELECT * FROM study_methods"):
             print(row[0])
         connection.close()
 
-
-def print_subtopics() -> None:
+def
+eprint_subtopics() -> None:
     connection, cursor = open_connection()
-    print("--- Subject Subtopics ---\n")
 
-    if connection:
+  
+    print("--- Subject Subtopics ---\n")  if connection:
         for row in cursor.execute("SELECT * FROM subtopics"):
             print(f'{row[0]}, {row[1]}')
         connection.close()
 
 
-def add_user(user_name: str) -> None:
+df
+ add_user(user_name: str) -> None:
     connection, cursor = open_connection()
+     if connection:
+        cursor.execute(inpu"INSERT OR IGNORE INTO users (name) \
+                    VALUES (?);", (user_name,)      
+   connection.commit()
+        print(f"Added User: {user_name}")     connection.close()
 
-    if connection:
-        cursor.execute("INSERT OR IGNORE INTO users (name) \
-                    VALUES (?);", (user_name,))
-        connection.commit()
-        print(f"Added User: {user_name}")
-        connection.close()
-
-
-def add_previous_subject(user_id: int, subject_name: str) -> None:
+def
+ add_previous_subject(user_id: int, subject_name: str) -> None:
     connection, cursor = open_connection()
-
-    if connection:
-        cursor.execute("INSERT OR IGNORE INTO user_subjects \
+     if connection:
+        cursor.execute(inpu"INSERT OR IGNORE INTO user_subjects \
                         (user_id, subject_name) \
-                        VALUES (?, ?);", (user_id, subject_name))
-        connection.commit()
-        connection.close()
+                        VALUES (?, ?);", (user_id, subject_name) 
+        connection.commit()     connection.close()
+
+# 
 
 
 def clear_all_users() -> None:
@@ -135,26 +133,22 @@ def clear_all_users() -> None:
         """)
         connection.commit()
         print("All Users Cleared")
-        connection.close()
-
-
-# Populate table
+        connection.close()Po
+pulate table
 if __name__ == "__main__":
     # Check that the database is not empty.
     create_database_if_empty()
-
-    print_subjects()
-    print_subtopics()
-    print_study_methods()
+     # prt_subject_liss   # prt_subtopics()
+    # prt_study_methods()
     add_user("Beatrice")
     add_user("Mark")
     add_user("Jake")
-    print_users()
+    # adprint_users()
     add_previous_subject(1, "Math")
     add_previous_subject(1, "English")
-    add_previous_subject(1, "Computer Science")
+    previous_subject(2, "1, hComputer Science  
     print_previous_subjects(1)
 
     clear_all_users()
 
-    print_users()
+    print_users() 
