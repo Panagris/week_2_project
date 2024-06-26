@@ -1,23 +1,25 @@
 '''
-This file handles the database, having functions that write and read to the database
-that can be called by other files in the directory.
+This file handles the database, having functions that write and
+read to the database that can be called by other files in the directory.
 '''
 import sqlite3 as sql
 import sys
 import os
 
 DATABASE = "tutor.db"
+
+
 def open_connection():
     try:
         connection = sql.connect(DATABASE)
         cursor = connection.cursor()
-        # print(f"Successfully connected to {DATABASE}")
 
     except sql.Error as e:
         print(f"Error connecting to sqlite3 Platform: {e}")
         sys.exit(1)
-    
+
     return connection, cursor
+
 
 # Function to read and execute SQL commands from a file.
 def execute_sql_file(file_path):
@@ -28,6 +30,7 @@ def execute_sql_file(file_path):
         cursor.executescript(sql_commands)
         connection.commit()
 
+
 def create_database_if_empty():
     conn, cur = open_connection()
     if conn:
@@ -37,8 +40,8 @@ def create_database_if_empty():
 
         if count == 0:
             execute_sql_file('populate_database.sql')
-    
     conn.close()
+
 
 def print_users() -> None:
     connection, cursor = open_connection()
@@ -48,6 +51,7 @@ def print_users() -> None:
         for row in cursor.execute("SELECT * FROM users"):
             print(f'ID: {row[0]}, Name: {row[1]}')
         connection.close()
+
 
 def print_previous_subjects(user_id) -> None:
     connection, cursor = open_connection()
@@ -62,15 +66,17 @@ def print_previous_subjects(user_id) -> None:
             print(f'ID: {row[0]}, Subject: {row[1]}')
         connection.close()
 
+
 # Print all the subjects from the database.
 def print_subjects() -> None:
     connection, cursor = open_connection()
     print("--- Available Subjects ---\n")
-    
+
     if connection:
         for row in cursor.execute("SELECT * FROM subjects"):
             print(row[0])
         connection.close()
+
 
 # Print all the study methods available.
 def print_study_methods() -> None:
@@ -82,6 +88,7 @@ def print_study_methods() -> None:
             print(row[0])
         connection.close()
 
+
 def print_subtopics() -> None:
     connection, cursor = open_connection()
     print("--- Subject Subtopics ---\n")
@@ -91,6 +98,7 @@ def print_subtopics() -> None:
             print(f'{row[0]}, {row[1]}')
         connection.close()
 
+
 def add_user(user_name: str) -> None:
     connection, cursor = open_connection()
 
@@ -99,8 +107,8 @@ def add_user(user_name: str) -> None:
                     VALUES (?);", (user_name,))
         connection.commit()
         print(f"Added User: {user_name}")
-
         connection.close()
+
 
 def add_previous_subject(user_id: int, subject_name: str) -> None:
     connection, cursor = open_connection()
@@ -110,12 +118,11 @@ def add_previous_subject(user_id: int, subject_name: str) -> None:
                         (user_id, subject_name) \
                         VALUES (?, ?);", (user_id, subject_name))
         connection.commit()
-
         connection.close()
+
 
 def clear_all_users() -> None:
     connection, cursor = open_connection()
-    
     print("--- Clearing All Users ---\n")
 
     if connection:
@@ -128,14 +135,14 @@ def clear_all_users() -> None:
         """)
         connection.commit()
         print("All Users Cleared")
-
         connection.close()
+
 
 # Populate table
 if __name__ == "__main__":
     # Check that the database is not empty.
     create_database_if_empty()
-    
+
     print_subjects()
     print_subtopics()
     print_study_methods()
@@ -151,4 +158,3 @@ if __name__ == "__main__":
     clear_all_users()
 
     print_users()
-    
