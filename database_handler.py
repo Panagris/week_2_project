@@ -63,9 +63,9 @@ def database_is_empty():
                     #AS TotalNumberOfTables \
                     #FROM `information_schema`.`columns` \
                     #WHERE `table_schema` = '{DATABASE}';")
-        cur.execute("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' name = USER")
+        cur.execute("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'users'")
         count = cur.fetchone()[0]
-        print(f"The count is {count} \n")
+
         if count == 0:
             execute_sql_file('populate_database.sql')
     
