@@ -11,7 +11,7 @@ def open_connection():
     try:
         connection = sql.connect(DATABASE)
         cursor = connection.cursor()
-        print(f"Successfully connected to {DATABASE}")
+        # print(f"Successfully connected to {DATABASE}")
 
     except sql.Error as e:
         print(f"Error connecting to sqlite3 Platform: {e}")
@@ -34,21 +34,49 @@ def print_subject_list() -> None:
 
     if connection:
         for row in cursor.execute("SELECT * FROM subjects"):
-            print(row)
+            print(row[0])
         connection.close()
 
 # Print all the study methods available.
 def print_study_methods() -> None:
-    connection = open_connection()
+    connection, cursor = open_connection()
+
     if connection:
+        for row in cursor.execute("SELECT * FROM study_methods"):
+            print(row[0])
         connection.close()
+
 
 def print_subtopics() -> None:
-    connection = open_connection()
+    connection, cursor = open_connection()
+
     if connection:
+        for row in cursor.execute("SELECT * FROM subtopics"):
+            print(f'{row[0]}, {row[1]}')
         connection.close()
 
 
+def database_is_empty():
+    conn, cur = open_connection()
+    if conn:
+        #cur.execute(f"SELECT COUNT(DISTINCT `table_name`) \
+                    #AS TotalNumberOfTables \
+                    #FROM `information_schema`.`columns` \
+                    #WHERE `table_schema` = '{DATABASE}';")
+        cur.execute("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' name = USER")
+        count = cur.fetchone()[0]
+        print(f"The count is {count} \n")
+        if count == 0:
+            execute_sql_file('populate_database.sql')
+    
+    conn.close()
+
 # Populate table
-execute_sql_file('populate_database.sql')
-print_subject_list()
+if __name__ == "__main__":
+    # Check that the database is not empty.
+    database_is_empty()
+    
+
+    print_subject_list()
+    print_subtopics()
+    print_study_methods()
