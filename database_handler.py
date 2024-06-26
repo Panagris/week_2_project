@@ -28,10 +28,45 @@ def execute_sql_file(file_path):
         cursor.executescript(sql_commands)
         connection.commit()
 
-# Print all the subjects from the database.
-def print_subject_list() -> None:
+def create_database_if_empty():
+    conn, cur = open_connection()
+    if conn:
+        cur.execute("SELECT COUNT(*) FROM sqlite_master \
+                    WHERE type = 'table' AND name = 'users'")
+        count = cur.fetchone()[0]
+
+        if count == 0:
+            execute_sql_file('populate_database.sql')
+    
+    conn.close()
+
+def print_users() -> None:
+    connection, cursor = open_connection()
+    print("--- Registered Users ---\n")
+
+    if connection:
+        for row in cursor.execute("SELECT * FROM users"):
+            print(f'ID: {row[0]}, Name: {row[1]}')
+        connection.close()
+
+def print_previous_subjects(user_id) -> None:
     connection, cursor = open_connection()
 
+    if connection:
+        cursor.execute('SELECT name FROM users WHERE id = ?', (user_id,))
+        name = cursor.fetchone()[0]
+        print(f"Previous classes for User: {name}")
+
+        for row in cursor.execute("SELECT * FROM user_subjects \
+                                    WHERE user_id = ?;", (user_id,)):
+            print(f'ID: {row[0]}, Subject: {row[1]}')
+        connection.close()
+
+# Print all the subjects from the database.
+def print_subjects() -> None:
+    connection, cursor = open_connection()
+    print("--- Available Subjects ---\n")
+    
     if connection:
         for row in cursor.execute("SELECT * FROM subjects"):
             print(row[0])
@@ -40,58 +75,60 @@ def print_subject_list() -> None:
 # Print all the study methods available.
 def print_study_methods() -> None:
     connection, cursor = open_connection()
+    print("--- Available Study Methods ---\n")
 
     if connection:
         for row in cursor.execute("SELECT * FROM study_methods"):
             print(row[0])
         connection.close()
 
-def print_users() -> None:
-    connection, cursor = open_connection()
-
-    if connection:
-        for row in cursor.execute("SELECT * FROM users"):
-            print(f'ID: {row[0]}, Name: {row[1]}')
-        connection.close()
-
-
 def print_subtopics() -> None:
     connection, cursor = open_connection()
+    print("--- Subject Subtopics ---\n")
 
     if connection:
         for row in cursor.execute("SELECT * FROM subtopics"):
             print(f'{row[0]}, {row[1]}')
         connection.close()
 
-
-def create_database_if_empty():
-    conn, cur = open_connection()
-    if conn:
-        cur.execute("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'users'")
-        count = cur.fetchone()[0]
-
-        if count == 0:
-            execute_sql_file('populate_database.sql')
-    
-    conn.close()
-
 def add_user(user_name: str) -> None:
     connection, cursor = open_connection()
-    input_string = f"INSERT OR IGNORE INTO users (name) \
-                    VALUES ('{user_name}');"
-    print(input_string)
+
     if connection:
-        cursor.execute(input_string)
+        cursor.execute("INSERT OR IGNORE INTO users (name) \
+                    VALUES (?);", (user_name,))
+        connection.commit()
+        print(f"Added User: {user_name}")
+
         connection.close()
 
 def add_previous_subject(user_id: int, subject_name: str) -> None:
     connection, cursor = open_connection()
-    input_string = f"INSERT INTO user_subjects (user_id, user_name) \
-                    VALUES ({user_id}, '{subject_name}');"
-    # print(input_string)
 
     if connection:
-        cursor.execute(input_string)
+        cursor.execute("INSERT OR IGNORE INTO user_subjects \
+                        (user_id, subject_name) \
+                        VALUES (?, ?);", (user_id, subject_name))
+        connection.commit()
+
+        connection.close()
+
+def clear_all_users() -> None:
+    connection, cursor = open_connection()
+    
+    print("--- Clearing All Users ---\n")
+
+    if connection:
+        cursor.execute("DROP TABLE IF EXISTS users;")
+        cursor.execute("""
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name VARCHAR(255) DEFAULT NULL
+            );
+        """)
+        connection.commit()
+        print("All Users Cleared")
+
         connection.close()
 
 # Populate table
@@ -99,12 +136,19 @@ if __name__ == "__main__":
     # Check that the database is not empty.
     create_database_if_empty()
     
-    # print_subject_list()
-    # print_subtopics()
-    # print_study_methods()
+    print_subjects()
+    print_subtopics()
+    print_study_methods()
     add_user("Beatrice")
     add_user("Mark")
     add_user("Jake")
-    # add_previous_subject(2, "Math")
     print_users()
-    # INSERT INTO user_subjects (user_id, subject_name) VALUES (1, "Math"), (1, "English");
+    add_previous_subject(1, "Math")
+    add_previous_subject(1, "English")
+    add_previous_subject(1, "Computer Science")
+    print_previous_subjects(1)
+
+    clear_all_users()
+
+    print_users()
+    
