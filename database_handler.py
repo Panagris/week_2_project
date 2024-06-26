@@ -53,6 +53,16 @@ def print_users() -> None:
         connection.close()
 
 
+def get_user_by_id(user_id) -> None:
+    connection, cursor = open_connection()
+
+    if connection:
+        cursor.execute('SELECT name FROM users WHERE id = ?', (user_id,))
+        name = cursor.fetchone()[0]
+        connection.close()
+        return name
+
+
 def print_previous_subjects(user_id) -> None:
     connection, cursor = open_connection()
 
@@ -89,25 +99,30 @@ def print_study_methods() -> None:
         connection.close()
 
 
-def print_subtopics() -> None:
+def print_subtopics(subject: str) -> None:
     connection, cursor = open_connection()
-    print("--- Subject Subtopics ---\n")
+    print(f"--- {subject} Subtopics ---\n")
 
     if connection:
-        for row in cursor.execute("SELECT * FROM subtopics"):
+        for row in cursor.execute("SELECT * FROM subtopics WHERE subject_name = ?", (subject,)):
             print(f'{row[0]}, {row[1]}')
         connection.close()
 
 
-def add_user(user_name: str) -> None:
+def add_user(user_name: str) -> int:
     connection, cursor = open_connection()
 
     if connection:
         cursor.execute("INSERT OR IGNORE INTO users (name) \
                     VALUES (?);", (user_name,))
         connection.commit()
+        cursor.execute('SELECT id FROM users WHERE name = ?;', (user_name,))
+        id = cursor.fetchone()[0]
         print(f"Added User: {user_name}")
         connection.close()
+        return id
+
+    return -1
 
 
 def add_previous_subject(user_id: int, subject_name: str) -> None:
