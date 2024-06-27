@@ -5,14 +5,13 @@ read to the database that can be called by other files in the directory.
 import sqlite3 as sql
 import sys
 import os
-import pprint
 
 DATABASE = "tutor.db"
 
 
-def open_connection():
+def open_connection(db=DATABASE):
     try:
-        connection = sql.connect(DATABASE)
+        connection = sql.connect(db)
         cursor = connection.cursor()
 
     except sql.Error as e:
@@ -46,7 +45,7 @@ def create_database_if_empty():
 
 def print_users() -> None:
     connection, cursor = open_connection()
-    print("--- Registered Users ---\n")
+    print("\n--- Registered Users ---\n")
 
     if connection:
         for row in cursor.execute("SELECT * FROM users"):
@@ -69,15 +68,15 @@ def get_user_by_id(user_id) -> None:
         return name
 
 
-def get_number_users() -> int:
+def get_number_users(table="users") -> int:
     connection, cursor = open_connection()
     if connection:
-        cursor.execute(""" SELECT COUNT(*)
-                        FROM users; """)
+        cursor.execute(f""" SELECT COUNT(*)
+                        FROM {table}; """)
         if response := cursor.fetchone():
             return response[0]
     
-    return 0
+    return -1
 
 
 def print_previous_subjects(user_id) -> None:
@@ -94,59 +93,80 @@ def print_previous_subjects(user_id) -> None:
         connection.close()
 
 
+def get_subjects() -> list:
+    connection, cursor = open_connection()
+    subject_set = []
+    if connection:    
+        for row in cursor.execute("SELECT * FROM subjects"):
+            subject_set.append(row[0])
+        connection.close()
+    return subject_set
+
+
 # Print all the subjects from the database.
 def print_subjects() -> None:
+    print("\n--- Available Subjects ---\n")
+    
+    for subject in get_subjects():
+        print(subject)
+
+
+def get_study_methods() -> list:
     connection, cursor = open_connection()
-    print("--- Available Subjects ---\n")
-
+    study_methods = []
     if connection:
-
-        def get_subjects() -> set:
-            return_set = set()
-            for row in cursor.execute("SELECT * FROM subjects"):
-                return_set.add(row[0])
-            return return_set
-
-        # print(row[0])
-        print(subject for subject in get_subjects())
+        for row in cursor.execute("SELECT * FROM study_methods"):
+            study_methods.append(row[0])
         connection.close()
+    return study_methods
 
 
 # Print all the study methods available.
 def print_study_methods() -> None:
-    connection, cursor = open_connection()
-    print("--- Available Study Methods ---\n")
+    print("\n--- Available Study Methods ---\n")
 
+    for study_method in get_study_methods():
+        print(study_method)
+
+
+def get_subtopics(subject: str) -> list:
+    connection, cursor = open_connection()
+    subtopics = []
     if connection:
-        for row in cursor.execute("SELECT * FROM study_methods"):
-            print(row[0])
+        for row in cursor.execute("""SELECT * FROM subtopics 
+                                    WHERE subject_name = ?""", (subject,)):
+            subtopics.append(row[1])
         connection.close()
+    return subtopics
 
 
 def print_subtopics(subject: str) -> None:
-    connection, cursor = open_connection()
-    print(f"--- {subject} Subtopics ---\n")
+    print(f"\n--- {subject} Subtopics ---\n")
 
-    if connection:
-        for row in cursor.execute("SELECT * FROM subtopics WHERE subject_name = ?", (subject,)):
-            print(f'{row[0]}, {row[1]}')
-        connection.close()
+    for subtopic in get_subtopics(subject):
+        print(f'\t{subtopic}')
+    
 
-
-def add_user(user_name: str) -> int:
+def add_user(user_name: str, user_table="users") -> int:
     connection, cursor = open_connection()
 
     if connection:
-        cursor.execute("INSERT OR IGNORE INTO users (name) \
+        cursor.execute(f"INSERT OR IGNORE INTO {user_table} (name) \
                     VALUES (?);", (user_name,))
         connection.commit()
-        cursor.execute('SELECT id FROM users WHERE name = ?;', (user_name,))
-        id = cursor.fetchone()[0]
-        print(f"Added User: {user_name}")
+        cursor.execute(f'SELECT id FROM {user_table} \
+                        WHERE name = ?;', (user_name,))
+
+        id = -1 # Error Return Value
+        if response := cursor.fetchone():
+            id = response[0]
+            print(f"Added User: {user_name}. Your ID is: {id}")
+        else:
+            print(f"""Apologies. An error occurred adding User {user_name}.
+                    Try again later.""")
+
         connection.close()
         return id
-
-    return -1
 
 
 def add_previous_subject(user_id: int, subject_name: str) -> None:
@@ -160,9 +180,23 @@ def add_previous_subject(user_id: int, subject_name: str) -> None:
         connection.close()
 
 
+def add_subtopic(subject: str, subtopic: str) -> None:
+    connection, cursor = open_connection()
+
+    if connection:
+        cursor.execute("""INSERT OR IGNORE INTO subtopics
+                        (subject_name, subtopic)
+                        VALUES (?, ?);""", (subject, subtopic))
+        connection.commit()
+        
+        # print(f"Added Subtopic: {subtopic}. View changes below. \n")
+        # print_subtopics(subject)
+        connection.close()
+
+
 def clear_all_users() -> None:
     connection, cursor = open_connection()
-    print("--- Clearing All Users ---\n")
+    print("\n--- Clearing All Users ---\n")
 
     if connection:
         cursor.execute("DROP TABLE IF EXISTS users;")
@@ -183,7 +217,7 @@ if __name__ == "__main__":
     # create_database_if_empty()
 
     # print_subjects()
-    # print_subtopics()
+    # print_subtopics("Math")
     # print_study_methods()
     # add_user("Beatrice")
     # add_user("Mark")
@@ -196,5 +230,5 @@ if __name__ == "__main__":
 
     # clear_all_users()
     # print(f"The number of users: {get_number_users()}")
-    print_subjects()
-    # print_users()
+
+    add_subtopic("Math", "Calculus")
