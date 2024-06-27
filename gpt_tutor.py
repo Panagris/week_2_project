@@ -4,7 +4,8 @@ from openai import OpenAI
 import database_handler as dbh
 
 VALID_SUBJECTS = dbh.get_subjects()
-VALID_SUBTOPICS = {subject: dbh.get_subtopics(subject) for subject in VALID_SUBJECTS}
+VALID_SUBTOPICS = {subject: dbh.get_subtopics(subject)
+                   for subject in VALID_SUBJECTS}
 VALID_STUDY_METHODS = dbh.get_study_methods()
 
 # Set environment variables for the API key.
@@ -15,7 +16,8 @@ CLIENT = OpenAI(api_key=MY_API_KEY,)
 
 
 def get_user_id() -> int:
-    id = int(input("Please provide a USERID, or '-1' if you do not have one: "))
+    id = int(input("Please provide a USERID, "
+                   "or '-1' if you do not have one: "))
 
     if id == -1:
         # If they aren't a previous USER, ask for information.
@@ -25,7 +27,8 @@ def get_user_id() -> int:
         print("That is currently not a valid ID.")
 
         while id > id_count and id != -1:
-            id = int(input("Please provide a USERID, or '-1' if you do not have one: "))
+            id = int(input("Please provide a USERID, "
+                           "or '-1' if you do not have one: "))
 
             if int(id) == -1:
                 return create_user_ID()
@@ -38,17 +41,15 @@ def get_user_id() -> int:
 # Ask the user for an existing USER ID, if available; -1 if N/A.
 def create_user_ID() -> int:
     user_id = -1
-    
     user_name = input("Please enter your name: ").strip()
-    
+
     if not user_name:
         print("Error: User name cannot be empty.")
         return -1
-    
-    user_id = dbh.add_user(user_name)
 
+    user_id = dbh.add_user(user_name)
     return user_id
-    
+
 
 # Ask the USER questions about themselves to prepare a USER for them in
 # the database.
@@ -61,7 +62,8 @@ def get_study_session_info() -> tuple:
         subject_id = input("\nChoose a subject: ").strip()
 
         if subject_id not in VALID_SUBJECTS:
-            print("Error: Invalid subject. Please choose from the available subjects.")
+            print("Error: Invalid subject. Please choose from the "
+                  "available subjects.")
             continue
 
         while True:
@@ -71,7 +73,8 @@ def get_study_session_info() -> tuple:
             if subtopic_id in VALID_SUBTOPICS.get(subject_id, []):
                 break  # Break the subtopic selection loop if valid
             else:
-                print("Error: Invalid subtopic. Please choose from the available subtopics.")
+                print("Error: Invalid subtopic. "
+                      "Please choose from the available subtopics.")
 
         while True:
             dbh.print_study_methods()
@@ -80,11 +83,14 @@ def get_study_session_info() -> tuple:
             if study_method_id in VALID_STUDY_METHODS:
                 break  # Break the study method selection loop if valid
             else:
-                print("Error: Invalid study method. Please choose from the available study methods.")
+                print("Error: Invalid study method. "
+                      "Please choose from the available study methods.")
 
         return subject_id, subtopic_id, study_method_id
 
 
+# Seed / prepare ChatGPT with data about the user. Specify the model to
+# use and the messages to send. Each run of the API is $0.01.
 def get_Chat_response(subject, subtopic, study_method):
     response = CLIENT.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -102,13 +108,8 @@ def get_Chat_response(subject, subtopic, study_method):
 if __name__ == "__main__":
     user_id = get_user_id()
     subject_id, subtopic_id, study_method_id = get_study_session_info()
-    
-    # Seed / prepare ChatGPT with data about the user. Specify the model to
-    # use and the messages to send. Each run of the API is $0.01.
-    
-
     # # Flesh things out, add the different options (Quiz, Explanation, etc.)
-    # # Unit Tests - how do we do that?
     response = get_Chat_response(subject_id, subtopic_id, study_method_id)
-    # # How to index into the response from ChatGPT.
+
+    # Index into the response from ChatGPT.
     print(response.choices[0].message.content.strip())

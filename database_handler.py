@@ -75,7 +75,6 @@ def get_number_users(table="users") -> int:
                         FROM {table}; """)
         if response := cursor.fetchone():
             return response[0]
-    
     return -1
 
 
@@ -96,7 +95,7 @@ def print_previous_subjects(user_id) -> None:
 def get_subjects() -> list:
     connection, cursor = open_connection()
     subject_set = []
-    if connection:    
+    if connection:
         for row in cursor.execute("SELECT * FROM subjects"):
             subject_set.append(row[0])
         connection.close()
@@ -106,7 +105,6 @@ def get_subjects() -> list:
 # Print all the subjects from the database.
 def print_subjects() -> None:
     print("\n--- Available Subjects ---\n")
-    
     for subject in get_subjects():
         print(subject)
 
@@ -133,7 +131,7 @@ def get_subtopics(subject: str) -> list:
     connection, cursor = open_connection()
     subtopics = []
     if connection:
-        for row in cursor.execute("""SELECT * FROM subtopics 
+        for row in cursor.execute("""SELECT * FROM subtopics
                                     WHERE subject_name = ?""", (subject,)):
             subtopics.append(row[1])
         connection.close()
@@ -145,7 +143,7 @@ def print_subtopics(subject: str) -> None:
 
     for subtopic in get_subtopics(subject):
         print(f'\t{subtopic}')
-    
+
 
 def add_user(user_name: str, user_table="users") -> int:
     connection, cursor = open_connection()
@@ -157,7 +155,7 @@ def add_user(user_name: str, user_table="users") -> int:
         cursor.execute(f'SELECT id FROM {user_table} \
                         WHERE name = ?;', (user_name,))
 
-        id = -1 # Error Return Value
+        id = -1  # Error Return Value.
         if response := cursor.fetchone():
             id = response[0]
             print(f"Added User: {user_name}. Your ID is: {id}")
@@ -188,7 +186,7 @@ def add_subtopic(subject: str, subtopic: str) -> None:
                         (subject_name, subtopic)
                         VALUES (?, ?);""", (subject, subtopic))
         connection.commit()
-        
+
         # print(f"Added Subtopic: {subtopic}. View changes below. \n")
         # print_subtopics(subject)
         connection.close()
