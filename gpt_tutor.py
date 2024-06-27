@@ -92,7 +92,7 @@ def get_study_session_info() -> tuple:
 
 # Seed / prepare ChatGPT with data about the user. Specify the model to
 # use and the messages to send. Each run of the API is $0.01.
-def run_explanation(subject, subtopic, study_method):
+def run_explanation(subject, subtopic):
     response = CLIENT.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -210,7 +210,7 @@ if __name__ == "__main__":
             run_explanation(subject_id, subtopic_id)
 
         while True:
-            response = input("Would you like to do this again? (Y/N) ")
+            response = input("\nWould you like to do this again? (Y/N) ")
             if response in ['N', 'n']:
                 do_again = False
                 break
