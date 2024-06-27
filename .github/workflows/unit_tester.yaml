@@ -10,7 +10,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.6
+          python-version: 3.11.3
 
       - name: Install tools
         run: |
@@ -26,8 +26,8 @@ jobs:
           python3 -m coverage report
           python3 -m coverage html
           
-      - name: Archive code coverage HTML report
-        uses: actions/upload-artifact@v2
-        with:
-           name: code-coverage-report
-           path: htmlcov
+    #   - name: Archive code coverage HTML report
+    #     uses: actions/upload-artifact@v2
+    #     with:
+    #        name: code-coverage-report
+    #        path: htmlcov
