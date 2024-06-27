@@ -197,8 +197,9 @@ def run_flashcards(subject, subtopic):
 
 if __name__ == "__main__":
     user_id = get_user_id()
+    do_again = True
 
-    while True:
+    while do_again:
         subject_id, subtopic_id, study_method_id = get_study_session_info()
 
         if study_method_id == 'Quiz':
@@ -207,11 +208,11 @@ if __name__ == "__main__":
             run_flashcards(subject_id, subtopic_id)
         elif study_method_id == 'Explanation':
             run_explanation(subject_id, subtopic_id)
-        
+
         while True:
-            do_again = input()
-            if do_again == 'N':
+            response = input("Would you like to do this again? (Y/N) ")
+            if response is in set('N', 'n'):
+                do_again = False
                 break
-
-    
-
+            elif response is in set('Y', 'y'):
+                break
