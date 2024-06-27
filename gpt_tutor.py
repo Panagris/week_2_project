@@ -3,14 +3,26 @@ import openai
 from openai import OpenAI
 import database_handler as dbh
 
+VALID_SUBJECTS = {dbh.get_subjects()}
+VALID_SUBTOPICS = {"subject" : {}}
+VALID_STUDY_METHODS = {}
 
 
 def get_user_id() -> int:
-    id = input("Please provide a USERID, or '-1' if you do not have one: ")
+    id = int(input("Please provide a USERID, or '-1' if you do not have one: "))
 
-    if int(id) == -1:
+    if id == -1:
         # If they aren't a previous USER, ask for information.
         return create_user_ID()
+
+    if id > (id_count := dbh.get_number_users()):
+        print("That is currently not a valid ID.")
+
+        while id > id_count and id != -1:
+            id = int(input("Please provide a USERID, or '-1' if you do not have one: "))
+
+            if int(id) == -1:
+                return create_user_ID()
 
     name = dbh.get_user_by_id(id)
     print(f"Welcome back, {name}!")
@@ -56,21 +68,21 @@ if __name__ == "__main__":
 
     # Create an OpenAPI client using the key from our environment variable
     
-    client = OpenAI(api_key=my_api_key,)
+    # client = OpenAI(api_key=my_api_key,)
     
-    # Seed / prepare ChatGPT with data about the user. Specify the model to
-    # use and the messages to send. Each run of the API is $0.01.
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are a helpful study assistant for students."},
-            {"role": "user", "content": f"Give me an explanation for the subject {subject_id}, focusing on the subtopic {subtopic_id}."}
-        ]
-    )
+    # # Seed / prepare ChatGPT with data about the user. Specify the model to
+    # # use and the messages to send. Each run of the API is $0.01.
+    # response = client.chat.completions.create(
+    #     model="gpt-3.5-turbo",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful study assistant for students."},
+    #         {"role": "user", "content": f"Give me an explanation for the subject {subject_id}, focusing on the subtopic {subtopic_id}."}
+    #     ]
+    # )
 
-    # Flesh things out, add the different options (Quiz, Explanation, etc.)
-    # Unit Tests - how do we do that?
+    # # Flesh things out, add the different options (Quiz, Explanation, etc.)
+    # # Unit Tests - how do we do that?
     
-    # How to index into the response from ChatGPT.
-    print(response.choices[0].message.content.strip())
+    # # How to index into the response from ChatGPT.
+    # print(response.choices[0].message.content.strip())
 

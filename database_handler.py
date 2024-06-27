@@ -5,6 +5,7 @@ read to the database that can be called by other files in the directory.
 import sqlite3 as sql
 import sys
 import os
+import pprint
 
 DATABASE = "tutor.db"
 
@@ -58,9 +59,25 @@ def get_user_by_id(user_id) -> None:
 
     if connection:
         cursor.execute('SELECT name FROM users WHERE id = ?', (user_id,))
-        name = cursor.fetchone()[0]
+        response = cursor.fetchone()
+
+        if response:
+            name = response[0]
+        else:
+            print("That was not a valid User ID.")
         connection.close()
         return name
+
+
+def get_number_users() -> int:
+    connection, cursor = open_connection()
+    if connection:
+        cursor.execute(""" SELECT COUNT(*)
+                        FROM users; """)
+        if response := cursor.fetchone():
+            return response[0]
+    
+    return 0
 
 
 def print_previous_subjects(user_id) -> None:
@@ -83,8 +100,15 @@ def print_subjects() -> None:
     print("--- Available Subjects ---\n")
 
     if connection:
-        for row in cursor.execute("SELECT * FROM subjects"):
-            print(row[0])
+
+        def get_subjects() -> set:
+            return_set = set()
+            for row in cursor.execute("SELECT * FROM subjects"):
+                return_set.add(row[0])
+            return return_set
+
+        # print(row[0])
+        print(subject for subject in get_subjects())
         connection.close()
 
 
@@ -156,20 +180,21 @@ def clear_all_users() -> None:
 # Populate table
 if __name__ == "__main__":
     # Check that the database is not empty.
-    create_database_if_empty()
+    # create_database_if_empty()
 
+    # print_subjects()
+    # print_subtopics()
+    # print_study_methods()
+    # add_user("Beatrice")
+    # add_user("Mark")
+    # add_user("Jake")
+    # print_users()
+    # add_previous_subject(1, "Math")
+    # add_previous_subject(1, "English")
+    # add_previous_subject(1, "Computer Science")
+    # print_previous_subjects(1)
+
+    # clear_all_users()
+    # print(f"The number of users: {get_number_users()}")
     print_subjects()
-    print_subtopics()
-    print_study_methods()
-    add_user("Beatrice")
-    add_user("Mark")
-    add_user("Jake")
-    print_users()
-    add_previous_subject(1, "Math")
-    add_previous_subject(1, "English")
-    add_previous_subject(1, "Computer Science")
-    print_previous_subjects(1)
-
-    clear_all_users()
-
-    print_users()
+    # print_users()
