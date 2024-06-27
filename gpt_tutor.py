@@ -211,8 +211,8 @@ if __name__ == "__main__":
 
         while True:
             response = input("Would you like to do this again? (Y/N) ")
-            if response is in set('N', 'n'):
+            if response in ['N', 'n']:
                 do_again = False
                 break
-            elif response is in set('Y', 'y'):
+            elif response in ['Y', 'y']:
                 break
