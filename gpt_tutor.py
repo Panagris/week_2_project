@@ -105,6 +105,7 @@ def run_explanation(subject, subtopic):
     )
     return response
 
+
 def run_quiz():
     print("Starting Quiz...\n")
 
@@ -113,8 +114,10 @@ def run_quiz():
         response = CLIENT.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a helpful study assistant for students."},
-                {"role": "user", "content": "Generate a {subject} multiple-choice quiz question with four options. \
+                {"role": "system", "content": "You are a helpful study\
+                 assistant for students."},
+                {"role": "user", "content": "Generate a {subject} \
+                multiple-choice quiz question with four options. \
                 focused on {subtopic}"}
             ]
         )
@@ -124,9 +127,12 @@ def run_quiz():
         answer_response = CLIENT.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a helpful study assistant for students."},
-                {"role": "user", "content": f"What is the correct answer to the following question \
-                 (Only output Choice A, Choice B, Choice C, or Choice D): {question}"}
+                {"role": "system", "content": "You are a helpful study \
+                assistant for students."},
+                {"role": "user", "content": f"What is the correct answer \
+                to the following question \
+                 (Only output Choice A, Choice B, Choice C, or Choice D): \
+                 {question}"}
             ]
         )
         correct_answer = answer_response.choices[0].message.content.strip()
@@ -141,14 +147,15 @@ def run_quiz():
 
         print(f"Question {question_num}: {question}")
         print("Choices: Choice A, Choice B, Choice C, or Choice D")
-        
+
         input("Enter your response to see the correct answer: ")
 
         print(f"Correct Answer: {correct_answer}\n")
-        
+
         question_num += 1
 
     print("Quiz completed!\n")
+
 
 def run_flashcards(subject, subtopic):
     format_string = """
@@ -183,7 +190,8 @@ def run_flashcards(subject, subtopic):
         ]
     )
 
-    list_flashcards = json.loads(response.choices[0].message.content)["flashcards"]
+    dictionary_flashcards = json.loads(response.choices[0].message.content)
+    list_flashcards = dictionary_flashcards["flashcards"]
 
     for flashcard in list_flashcards:
         print(flashcard["Definition"])

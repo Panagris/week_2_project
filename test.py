@@ -33,7 +33,7 @@ class TestDBH(unittest.TestCase):
             cur.execute("DROP TABLE users_COPY;")
             conn.commit()
             conn.close()
-     
+
     def test_get_number_users(self):
         self.assertEqual(type(get_number_users()), int)
 
