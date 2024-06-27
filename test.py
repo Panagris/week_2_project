@@ -6,8 +6,7 @@ from database_handler import open_connection, add_user, get_number_users
 
 class TestGPTTutor(unittest.TestCase):
     def test_GPT_API_response(self):
-        response = get_Chat_response("English", "Literature",
-                                     "Explanation").object
+        response = run_explanation("English", "Literature").object
         self.assertEqual(response, "chat.completion")
 
     def test_get_number_users(self):

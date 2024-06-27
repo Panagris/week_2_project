@@ -209,7 +209,6 @@ def clear_all_users() -> None:
         connection.close()
 
 
-# Populate table
 if __name__ == "__main__":
     # Check that the database is not empty.
     # create_database_if_empty()
@@ -229,4 +228,6 @@ if __name__ == "__main__":
     # clear_all_users()
     # print(f"The number of users: {get_number_users()}")
 
-    add_subtopic("Math", "Calculus")
+    # add_subtopic("Math", "Calculus")
+    connection, cursor = open_connection()
+    connection.close()

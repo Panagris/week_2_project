@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS study_methods (
 );
 
 INSERT OR IGNORE INTO study_methods (method_name)
-VALUES ("Question and Answer"), ("Explanation"), ("Quiz"), ("Flashcards");
+VALUES ("Explanation"), ("Quiz"), ("Flashcards");
 
 CREATE TABLE IF NOT EXISTS subtopics ( 
     subject_name TEXT(255) default NULL,
