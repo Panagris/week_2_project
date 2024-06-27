@@ -103,7 +103,6 @@ def run_explanation(subject, subtopic):
             {subtopic}."}
         ]
     )
-    print(response.choices[0].message.content.strip())
     return response
 
 def run_quiz():
@@ -207,7 +206,8 @@ if __name__ == "__main__":
         elif study_method_id == 'Flashcards':
             run_flashcards(subject_id, subtopic_id)
         elif study_method_id == 'Explanation':
-            run_explanation(subject_id, subtopic_id)
+            response = run_explanation(subject_id, subtopic_id)
+            print(response.choices[0].message.content.strip())
 
         while True:
             response = input("\nWould you like to do this again? (Y/N) ")
