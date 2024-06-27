@@ -6,10 +6,10 @@ from database_handler import open_connection, add_user, get_number_users
 
 class TestGPTTutor(unittest.TestCase):
     def test_GPT_API_response(self):
-        self.assertEqual(get_Chat_response("English", "Literature", 
-                        "Explanation").object, "chat.completion")
-    
-    
+        response = get_Chat_response("English", "Literature",
+                                     "Explanation").object
+        self.assertEqual(response, "chat.completion")
+
     def test_get_number_users(self):
         self.assertEqual(type(get_number_users()), int)
 
@@ -36,14 +36,13 @@ class TestGPTTutor(unittest.TestCase):
             conn.close()
 
 
-
 class TestDBH(unittest.TestCase):
-    
+
     def test_open_connection(self):
         connection, cursor = open_connection()
         self.assertIsInstance(connection, sql.Connection)
         self.assertIsInstance(cursor, sql.Cursor)
-    
+
     def test_add_user(self):
         conn, cur = open_connection()
         if conn:
