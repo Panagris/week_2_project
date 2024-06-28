@@ -32,10 +32,10 @@ def get_user_id() -> int:
         # If they aren't a previous USER, ask for information.
         return create_user_ID()
 
-    if id > (id_count := dbh.get_number_users()):
+    if id not in range(1, id_count := dbh.get_number_users()):
         print("That is currently not a valid ID.")
 
-        while id > id_count and id != -1:
+        while id not in range(1, id_count) and id != -1:
             id = int(input("Please provide a USERID, "
                            "or '-1' if you do not have one: "))
 
@@ -49,12 +49,11 @@ def get_user_id() -> int:
 
 # Ask the user for an existing USER ID, if available; -1 if N/A.
 def create_user_ID() -> int:
-    user_id = -1
     user_name = input("Please enter your name: ").strip()
 
-    if not user_name:
-        print("Error: User name cannot be empty.")
-        return -1
+    while not user_name:
+        print("\nError: User name cannot be empty.\n")
+        user_name = input("Please enter your name: ").strip()
 
     user_id = dbh.add_user(user_name)
     return user_id
@@ -71,7 +70,7 @@ def get_study_session_info() -> tuple:
         subject_id = input("\nChoose a subject: ").strip()
 
         if subject_id not in VALID_SUBJECTS:
-            print("Error: Invalid subject. Please choose from the "
+            print("\nError: Invalid subject. Please choose from the "
                   "available subjects.")
             continue
 
@@ -82,7 +81,7 @@ def get_study_session_info() -> tuple:
             if subtopic_id in VALID_SUBTOPICS.get(subject_id, []):
                 break  # Break the subtopic selection loop if valid
             else:
-                print("Error: Invalid subtopic. "
+                print("\nError: Invalid subtopic. "
                       "Please choose from the available subtopics.")
 
         while True:
@@ -92,7 +91,7 @@ def get_study_session_info() -> tuple:
             if study_method_id in VALID_STUDY_METHODS:
                 break  # Break the study method selection loop if valid
             else:
-                print("Error: Invalid study method. "
+                print("\nError: Invalid study method. "
                       "Please choose from the available study methods.")
 
         return subject_id, subtopic_id, study_method_id
@@ -101,14 +100,24 @@ def get_study_session_info() -> tuple:
 # Seed / prepare ChatGPT with data about the user. Specify the model to
 # use and the messages to send. Each run of the API is $0.01.
 def run_explanation(subject, subtopic):
+    print('\nGenerating Explanation Summary...\n')
+
+    system_string = (f"You are a helpful study assistant for students "
+                     f"that provides summaries given a subject and a "
+                     f"subtopic about that subject.")
+
+    user_string = (f"Generate a brief summary of {subject}, and then "
+                   f"provide a thorough, detailed explanation of the "
+                   f"following subtopic: {subtopic}. The response should"
+                   f"be cover key points that may be included in a college"
+                   f"-level lecture. It should also give ideas on how"
+                   f" to more in-depthly explore the subtopic {subtopic}.")
+
     response = CLIENT.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a helpful study \
-            assistant for students."},
-            {"role": "user", "content": f"Give me an explanation \
-            for the subject {subject}, focusing on the subtopic \
-            {subtopic}."}
+            {"role": "system", "content": system_string},
+            {"role": "user", "content": user_string}
         ]
     )
     return response
@@ -182,7 +191,7 @@ def run_quiz(subject, subtopic):
 
         print(f"Question {question_num}: {quiz_question[question_key]}")
         user_answer = input("\nEnter your response to see the"
-                            " correct answer: ")
+                            " correct answer, or 'STOP' to quit: ")
 
         if user_answer == 'STOP':
             return
@@ -214,7 +223,7 @@ def run_flashcards(subject, subtopic):
                   f"field. Given a definition, I will be able to supply the "
                   f"vocabulary word.")
 
-    print("\nStarting Flashcards...\n")
+    print("\nStarting 15 Flashcards...\n")
 
     response = CLIENT.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -230,11 +239,11 @@ def run_flashcards(subject, subtopic):
     flashcard_key = list(dictionary_flashcards.keys())[0]
     list_flashcards = dictionary_flashcards[flashcard_key]
 
-    for flashcard in list_flashcards:
+    for card_num, flashcard in enumerate(list_flashcards, start=1):
         definition_key, term_key = list(flashcard.keys())
 
-        print(flashcard[definition_key])
-        user_answer = input("\tWhat is the term? Or, enter 'STOP' to quit: ")
+        print(f'Definition {card_num}: {flashcard[definition_key]}')
+        user_answer = input("\nWhat is the term? Or, enter 'STOP' to quit: ")
 
         if user_answer == 'STOP':
             return

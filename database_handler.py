@@ -158,7 +158,7 @@ def add_user(user_name: str, user_table="users") -> int:
         id = -1  # Error Return Value.
         if response := cursor.fetchone():
             id = response[0]
-            print(f"Added User: {user_name}. Your ID is: {id}")
+            print(f"\nAdded User: {user_name}. Your ID is: {id}")
         else:
             print(f"""Apologies. An error occurred adding User {user_name}.
                     Try again later.""")
