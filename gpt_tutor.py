@@ -1,6 +1,7 @@
 import os
 import json
 import openai
+import sys
 from openai import OpenAI
 import database_handler as dbh
 
@@ -17,8 +18,15 @@ CLIENT = OpenAI(api_key=MY_API_KEY,)
 
 
 def get_user_id() -> int:
-    id = int(input("Please provide a User ID Number, "
-                   "or '-1' if you do not have one: "))
+    id = input("Please provide a User ID Number, "
+               "or '-1' if you do not have one: ")
+    try:
+        id = int(id)
+    except ValueError:
+        print("\nAn invalid value for a user ID was provided. Please run "
+              "the program again with an integer value for a user ID.")
+        print("\nTerminating Program...\n")
+        sys.exit(0)
 
     if id == -1:
         # If they aren't a previous USER, ask for information.
@@ -107,15 +115,29 @@ def run_explanation(subject, subtopic):
 
 
 def run_quiz(subject, subtopic):
+    if subject == 'Math':
+        print('Unfortunately, current generative models are unable to '
+              'accurately supply correct, mathematical answers. Please '
+              'try again later!')
+        return
+
     response_format_string = """
         {
             "Quiz": [
                 {
-                    "Question": "",
+                    "Question": "Which of the following...
+                    A. Option...
+                    B. Option...
+                    C. Option...
+                    D. Option...",
                     "Answer": "The Correct Answer is: "
                 },
                 {
-                    "Question": "",
+                    "Question": "What is...
+                    A. Option...
+                    B. Option...
+                    C. Option...
+                    D. Option...",
                     "Answer": "The Correct Answer is: "
                 }
                 ]
@@ -125,19 +147,27 @@ def run_quiz(subject, subtopic):
                    f"with four options (A,B,C,D) focused on {subtopic}."
                    f"The response should be packaged in a JSON file that "
                    f"follows this format {response_format_string}. Supply "
-                   f"the answer to each multiple choice question as "
+                   f"option choices (A, B, C, D) in the 'Question' field"
+                   f"of the JSON, as dictated by the provided format. Always "
+                   f"supply the options to the question in the 'Question' "
+                   f"field. Ensure all questions are truly multiple choice. "
+                   f"Supply the answer to each multiple choice question as "
                    f"demonstrated in the provided format sample. Strictly"
                    f" adhere to the Key names provided in the format "
                    f"for the returned JSON dictionary.")
 
-    print("Starting Quiz...\n")
+    system_string = (f"You are a helpful study assistant for students that"
+                     f"provides quiz questions and answers for a given subject"
+                     f" and topic, responding with a JSON file adhering to "
+                     f"this format {response_format_string}.")
+
+    print("\nStarting Quiz...\n")
 
     response = CLIENT.chat.completions.create(
         model="gpt-3.5-turbo",
         response_format={"type": "json_object"},
         messages=[
-            {"role": "system", "content": "You are a helpful study\
-             assistant for students."},
+            {"role": "system", "content": system_string},
             {"role": "user", "content": user_string},
         ]
     )
@@ -150,7 +180,6 @@ def run_quiz(subject, subtopic):
         question_key = list(quiz_question.keys())[0]
         answer_key = list(quiz_question.keys())[1]
 
-        # print(f"Question {question_num}: {quiz_question[question_key]}")
         print(f"Question {question_num}: {quiz_question[question_key]}")
         user_answer = input("\nEnter your response to see the"
                             " correct answer: ")
@@ -185,6 +214,8 @@ def run_flashcards(subject, subtopic):
                   f"field. Given a definition, I will be able to supply the "
                   f"vocabulary word.")
 
+    print("\nStarting Flashcards...\n")
+
     response = CLIENT.chat.completions.create(
         model="gpt-3.5-turbo",
         response_format={"type": "json_object"},
@@ -200,7 +231,7 @@ def run_flashcards(subject, subtopic):
     list_flashcards = dictionary_flashcards[flashcard_key]
 
     for flashcard in list_flashcards:
-        definition_key, term_key = list(quiz_question.keys())
+        definition_key, term_key = list(flashcard.keys())
 
         print(flashcard[definition_key])
         user_answer = input("\tWhat is the term? Or, enter 'STOP' to quit: ")
@@ -226,7 +257,7 @@ if __name__ == "__main__":
             print(response.choices[0].message.content.strip())
 
         while True:
-            response = input("\nWould you like to do this again? (Y/N) ")
+            response = input("\nWould you like to continue studying? (Y/N) ")
             if response in ['N', 'n']:
                 do_again = False
                 break
