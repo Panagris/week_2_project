@@ -250,7 +250,7 @@ def run_flashcards(subject, subtopic):
         print("The correct term was: ", flashcard[term_key], "\n")
 
 
-if __name__ == "__main__":
+def main():
     user_id = get_user_id()
     do_again = True
 
@@ -272,3 +272,11 @@ if __name__ == "__main__":
                 break
             elif response in ['Y', 'y']:
                 break
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('Interrupted')
+        sys.exit()
