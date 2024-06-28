@@ -17,7 +17,7 @@ CLIENT = OpenAI(api_key=MY_API_KEY,)
 
 
 def get_user_id() -> int:
-    id = int(input("Please provide a USERID, "
+    id = int(input("Please provide a User ID Number, "
                    "or '-1' if you do not have one: "))
 
     if id == -1:
@@ -35,7 +35,7 @@ def get_user_id() -> int:
                 return create_user_ID()
 
     name = dbh.get_user_by_id(id)
-    print(f"Welcome back, {name}!")
+    print(f"\nWelcome back, {name}!")
     return id
 
 
@@ -106,53 +106,58 @@ def run_explanation(subject, subtopic):
     return response
 
 
-def run_quiz():
+def run_quiz(subject, subtopic):
+    response_format_string = """
+        {
+            "Quiz": [
+                {
+                    "Question": "",
+                    "Answer": "The Correct Answer is: "
+                },
+                {
+                    "Question": "",
+                    "Answer": "The Correct Answer is: "
+                }
+                ]
+        }
+        """
+    user_string = (f"Generate a {subject} five-question multiple-choice quiz "
+                   f"with four options (A,B,C,D) focused on {subtopic}."
+                   f"The response should be packaged in a JSON file that "
+                   f"follows this format {response_format_string}. Supply "
+                   f"the answer to each multiple choice question as "
+                   f"demonstrated in the provided format sample. Strictly"
+                   f" adhere to the Key names provided in the format "
+                   f"for the returned JSON dictionary.")
+
     print("Starting Quiz...\n")
 
-    questions = []
-    for question_num in range(1, 6):
-        response = CLIENT.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful study\
-                 assistant for students."},
-                {"role": "user", "content": "Generate a {subject} \
-                multiple-choice quiz question with four options. \
-                focused on {subtopic}"}
-            ]
-        )
-        question = response.choices[0].message.content.strip()
-        choices = ["Choice A", "Choice B", "Choice C", "Choice D"]
+    response = CLIENT.chat.completions.create(
+        model="gpt-3.5-turbo",
+        response_format={"type": "json_object"},
+        messages=[
+            {"role": "system", "content": "You are a helpful study\
+             assistant for students."},
+            {"role": "user", "content": user_string},
+        ]
+    )
 
-        answer_response = CLIENT.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful study \
-                assistant for students."},
-                {"role": "user", "content": f"What is the correct answer \
-                to the following question \
-                 (Only output Choice A, Choice B, Choice C, or Choice D): \
-                 {question}"}
-            ]
-        )
-        correct_answer = answer_response.choices[0].message.content.strip()
+    dictionary_quiz = json.loads(response.choices[0].message.content)
+    quiz_key = list(dictionary_quiz.keys())[0]
+    list_quiz = dictionary_quiz[quiz_key]
 
-        questions.append((question, choices, correct_answer))
+    for question_num, quiz_question in enumerate(list_quiz, start=1):
+        question_key = list(quiz_question.keys())[0]
+        answer_key = list(quiz_question.keys())[1]
 
-    question_num = 1
+        # print(f"Question {question_num}: {quiz_question[question_key]}")
+        print(f"Question {question_num}: {quiz_question[question_key]}")
+        user_answer = input("\nEnter your response to see the"
+                            " correct answer: ")
 
-    for question_info in questions:
-        question = question_info[0]
-        correct_answer = question_info[2]
-
-        print(f"Question {question_num}: {question}")
-        print("Choices: Choice A, Choice B, Choice C, or Choice D")
-
-        input("Enter your response to see the correct answer: ")
-
-        print(f"Correct Answer: {correct_answer}\n")
-
-        question_num += 1
+        if user_answer == 'STOP':
+            return
+        print(quiz_question[answer_key], "\n")
 
     print("Quiz completed!\n")
 
@@ -191,15 +196,18 @@ def run_flashcards(subject, subtopic):
     )
 
     dictionary_flashcards = json.loads(response.choices[0].message.content)
-    list_flashcards = dictionary_flashcards["flashcards"]
+    flashcard_key = list(dictionary_flashcards.keys())[0]
+    list_flashcards = dictionary_flashcards[flashcard_key]
 
     for flashcard in list_flashcards:
-        print(flashcard["Definition"])
+        definition_key, term_key = list(quiz_question.keys())
+
+        print(flashcard[definition_key])
         user_answer = input("\tWhat is the term? Or, enter 'STOP' to quit: ")
 
         if user_answer == 'STOP':
             return
-        print("The correct term was: ", flashcard["Term"], "\n")
+        print("The correct term was: ", flashcard[term_key], "\n")
 
 
 if __name__ == "__main__":
@@ -210,7 +218,7 @@ if __name__ == "__main__":
         subject_id, subtopic_id, study_method_id = get_study_session_info()
 
         if study_method_id == 'Quiz':
-            run_quiz()
+            run_quiz(subject_id, subtopic_id)
         elif study_method_id == 'Flashcards':
             run_flashcards(subject_id, subtopic_id)
         elif study_method_id == 'Explanation':
