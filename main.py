@@ -12,15 +12,16 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 # EXAMPLE FORMATS
 @app.route("/")
 def home():
-    return render_template('home.html', subtitle='Home Page', text='This is the home page')
+    return render_template('home.html', subtitle='Home Page',
+                           text='This is the home page')
 
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
-    if form.validate_on_submit(): # checks if entries are valid
+    if form.validate_on_submit():  # checks if entries are valid
         flash(f'Account created for {form.username.data}!', 'success')
-        return redirect(url_for('home')) # if so - send to home page
+        return redirect(url_for('home'))  # if so - send to home page
     return render_template('register.html', title='Register', form=form)
 
 
