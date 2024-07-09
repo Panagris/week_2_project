@@ -4,7 +4,10 @@ import os
 import json
 
 
-def run_flashcards(subject: str, subtopic: str) -> dict:
+# This function creates 15 flashcards based on the subject and subtopic
+# provided by the user. The flashcards are created using the OpenAI API.
+# The flashcards are returned as a list of dictionaries.
+def run_flashcards(subject: str, subtopic: str) -> list:
     # Create an OpenAPI client using the key.
     MY_API_KEY = os.environ.get('OPENAI_KEY')
     openai.api_key = MY_API_KEY
@@ -47,5 +50,5 @@ def run_flashcards(subject: str, subtopic: str) -> dict:
 
     dictionary_flashcards = json.loads(response.choices[0].message.content)
     flashcard_key = list(dictionary_flashcards.keys())[0]
-    flashcards = dictionary_flashcards[flashcard_key]
-    return flashcards
+    list_flashcards = dictionary_flashcards[flashcard_key]
+    return list_flashcards
