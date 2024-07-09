@@ -1,6 +1,28 @@
-<!DOCTYPE html>
-<html>
-    <body>
-        Hello
-    </body>
+{% extends "index.html" %}
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='quiz.css') }}"></head>
+<body>
+    <div class="quiz-container">
+        <div class="question-container">
+            <h1 class="question-title">Sample Question?</h1>
+            <div class="btn-container">
+                <div class="btn-row">
+                    <button type="button" class="btn-option-a">Option A</button>
+                    <button type="button" class="btn-option-b">Option B</button>
+                </div>
+                <div class="btn-row">
+                    <button type="button" class="btn-option-c">Option C</button>
+                    <button type="button" class="btn btn-option-d">Option D</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>
+{% endblock %}
+
