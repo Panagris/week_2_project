@@ -1,0 +1,118 @@
+
+
+.quiz-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    background-color: #f8f9fa;
+}
+
+.question-container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%; /* Adjust width as needed */
+    max-width: 800px;
+    text-align: center;
+}
+
+.question-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.btn-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between rows */
+    height: 60vh; /* Height of the container */
+}
+
+.btn-row {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    flex: 1; /* Make each row take up the remaining space */
+}
+
+.btn-option-a {
+    background-color: #acb3bb; 
+    flex: 1; /* Make buttons fill the available space */
+    font-size: 1.5rem;
+    padding: 20px;
+    border-radius: 10px;
+    transition: background-color 0.3s, transform 0.3s;
+    height: 100%; /* Make buttons take up the full height of their container */
+}
+
+.btn-option-a:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.btn-option-a:active {
+    background-color: #004080;
+}
+
+
+.btn-option-b {
+    background-color: #acb3bb; 
+    flex: 1; /* Make buttons fill the available space */
+    font-size: 1.5rem;
+    padding: 20px;
+    border-radius: 10px;
+    transition: background-color 0.3s, transform 0.3s;
+    height: 100%; /* Make buttons take up the full height of their container */
+}
+
+.btn-option-b:hover {
+    background-color: #09b300;
+    transform: scale(1.05);
+}
+
+.btn-option-b:active {
+    background-color: #008009;
+}
+
+
+.btn-option-c {
+    background-color: #acb3bb; 
+    flex: 1; /* Make buttons fill the available space */
+    font-size: 1.5rem;
+    padding: 20px;
+    border-radius: 10px;
+    transition: background-color 0.3s, transform 0.3s;
+    height: 100%; /* Make buttons take up the full height of their container */
+}
+
+.btn-option-c:hover {
+    background-color: #b0b300;
+    transform: scale(1.05);
+}
+
+.btn-option-c:active {
+    background-color: #807a00;
+}
+
+
+.btn-option-d {
+    background-color: #acb3bb; 
+    flex: 1; /* Make buttons fill the available space */
+    font-size: 1.5rem;
+    padding: 20px;
+    border-radius: 10px;
+    transition: background-color 0.3s, transform 0.3s;
+    height: 100%; /* Make buttons take up the full height of their container */
+}
+
+.btn-option-d:hover {
+    background-color: #b30000;
+    transform: scale(1.05);
+}
+
+.btn-option-d:active {
+    background-color: #800000;
+}
+
