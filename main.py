@@ -22,6 +22,7 @@ db.init_app(app)
 # app.register_blueprint(auth)
 # app.register_blueprint(main)
 
+
 # EXAMPLE FORMATS
 @app.route("/")
 @app.route("/home")
@@ -42,6 +43,7 @@ def quiz():
 @app.route("/signin")
 def signin():
     return render_template('signin.html', title='Sign In', signin=True)
+
 
 @app.route("/signup")
 def signup():
