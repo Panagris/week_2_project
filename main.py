@@ -42,12 +42,12 @@ def quiz():
 
 @app.route("/signin")
 def signin():
-    return render_template('signin.html', title='Sign In', signin=True)
+    return render_template('signin.html', title='Sign In')
 
 
 @app.route("/signup")
 def signup():
-    return render_template('signin.html', title='Sign Up', signin=False)
+    return render_template('signin.html', title='Sign Up')
 
 
 @app.route("/register", methods=['GET', 'POST'])
