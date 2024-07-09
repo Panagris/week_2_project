@@ -3,8 +3,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; 
+    height: 90vh; 
     background-color: #f8f9fa;
+    border-radius: 10px;
 }
 
 .question-container {
@@ -125,7 +126,7 @@
 
 .feedback-text {
     font-size: 18px;
-    
+    color: black;
     margin-bottom: 10px;
 }
 

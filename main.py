@@ -1,12 +1,10 @@
 from flask import Flask, render_template, url_for, flash, redirect, \
-    Blueprint, request, jsonify, session
+    request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from forms import RegistrationForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_behind_proxy import FlaskBehindProxy
 from flask_login import UserMixin, LoginManager, login_user, \
     login_required, logout_user
-from flask_session import Session
 import openai
 from openai import OpenAI
 import os
@@ -15,42 +13,92 @@ from flashcards import run_flashcards
 from quiz import run_quiz
 
 
+# The SQLAlchemy object is created and used to interact with the database.
 db = SQLAlchemy()
-MY_API_KEY = os.environ.get('OPENAI_KEY')
-openai.api_key = MY_API_KEY
-CLIENT = OpenAI(api_key=MY_API_KEY,)
-# SUBJECTS = ["Math", "Physics", "English", "History", "Computer Science"]
-SUBTOPICS = {
-    "Physics": ["Kinematics", "Electromagnetism", "Biology", "Astronomy"],
-    "English": ["Literature", "Grammar", "Writing", "Vocabulary"],
-    "History": ["American Revolution", "Civil War", "World War I",
-                "World War II"],
-    "Computer-Science": ["Cybersecurity", "Data Analytics", 
-                         "Time Complexity", "JavaScript"]
+
+# SUBJECT_SUBTOPIC_DICT is a dictionary that contains the subjects as keys
+# and the subtopics as values.
+SUBJECT_SUBTOPIC_DICT = {
+    "Physics": [
+        "Mechanics",
+        "Electromagnetism",
+        "Thermodynamics",
+        "Optics",
+        "Modern Physics",
+        "Astrophysics"
+    ],
+    "Chemistry": [
+        "Organic Chemistry",
+        "Inorganic Chemistry",
+        "Physical Chemistry",
+        "Analytical Chemistry",
+        "Biochemistry",
+        "Environmental Chemistry"
+    ],
+    "Biology": [
+        "Cell Biology",
+        "Genetics",
+        "Ecology",
+        "Evolution",
+        "Human Anatomy and Physiology",
+        "Microbiology"
+    ],
+    "Computer-Science": [
+        "Data Structures and Sorting Algorithms",
+        "Software Engineering",
+        "Artificial Intelligence",
+        "Databases",
+        "Computer Networks",
+        "Cybersecurity"
+    ],
+    "History": [
+        "Ancient Civilizations",
+        "Medieval History",
+        "Modern History",
+        "American History",
+        "World History",
+        "Cultural History"
+    ],
+    "Economics": [
+        "Microeconomics",
+        "Macroeconomics",
+        "International Economics",
+        "Development Economics",
+        "Behavioral Economics",
+        "Environmental Economics"
+    ]
 }
 
 
+# Used when Signing in and Signing up
 class User(UserMixin, db.Model):
     # primary keys are required by SQLAlchemy
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
+    password = db.Column(db.String(100))  # Stores only hashed passwords
     name = db.Column(db.String(1000))
 
 
+# The OpenAI API key is stored in an environment variable and used to
+# authenticate the OpenAI API, stored in the CLIENT constant.
+MY_API_KEY = os.environ.get('OPENAI_KEY')
+openai.api_key = MY_API_KEY
+CLIENT = OpenAI(api_key=MY_API_KEY,)
+
+# Basic App Configuration
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 proxied = FlaskBehindProxy(app)
 
-#  TODO: Add a secret key to the app.config dictionary.
-app.config['SECRET_KEY'] = '70dd3b360c7b766a43f2db955ad41043'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tutor.db'
 
+# Initialize the database if it doesn't already exist
 db.init_app(app)
-
 with app.app_context():
     db.create_all()
 
+# Initialize the Login Manager
 login_manager = LoginManager()
 login_manager.login_view = "signin"
 login_manager.init_app(app)
@@ -63,44 +111,40 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-Session(app)
-# main = Blueprint('main', __name__)
-# auth = Blueprint('auth', __name__)
-
-# app.register_blueprint(auth)
-# app.register_blueprint(main)
-
-
 @app.route("/")
 @app.route("/home")
 def home():
     return render_template('home.html', title='Home')
 
 
+# This route prompts the user for a subject and subtopic before actually
+# displaying the flashcards.
 @app.route("/flashcards")
 @login_required
 def flashcards():
- return render_template('topics.html', subjects=SUBTOPICS,
-                        subject_dictionary=SUBTOPICS)
+    return render_template('topics.html', subjects=SUBJECT_SUBTOPIC_DICT,
+                           subject_dictionary=SUBJECT_SUBTOPIC_DICT)
 
 
+# This route is used to display the flashcards page with the subject and
+# subtopic selected by the user. The subject and subtopic are passed as
+# parameters in the URL from the previous form submission.
 @app.route("/flashcards", methods=['POST'])
 @login_required
 def flashcards_post():
     subject = request.form.get('subject_selection')
     subtopic = request.form.get('subtopic_selection')
 
-    
-    return render_template('flashcards.html', title='Flashcards', subject=subject,
-                           subtopic=subtopic)
+    return render_template('flashcards.html', title='Flashcards',
+                           subject=subject, subtopic=subtopic)
 
 
+# This route is used to generate the flashcards based on the subject and
+# subtopic selected by the user. The subject and subtopic are passed as
+# parameters to the URL from a AJAX request from the JS script
+# embedded in /templates/flashcards.html.
 @app.route("/get-cards", methods=['POST'])
 def get_cards():
-    # List of strings you want to send back to the client
-    # Clear the session data related to flashcards
-    # session.pop('session_flashcards', None)
-    # session['session_flashcards'] = flashcards
     data = request.json
     subject = data.get("subject")
     subtopic = data.get("subtopic")
@@ -108,13 +152,17 @@ def get_cards():
     return jsonify(flashcards)
 
 
+# This route prompts the user for a subject and subtopic before actually
+# displaying the quiz.
 @app.route("/quiz")
 @login_required
 def quiz():
-    return render_template('topics.html', subjects=SUBTOPICS,
-                        subject_dictionary=SUBTOPICS)
+    return render_template('topics.html', subjects=SUBJECT_SUBTOPIC_DICT,
+                           subject_dictionary=SUBJECT_SUBTOPIC_DICT)
 
 
+# This route displays the quiz based on the subject and subtopic selected
+# by the user on the previous form.
 @app.route("/quiz", methods=['POST'])
 @login_required
 def quiz_post():
@@ -124,6 +172,9 @@ def quiz_post():
                            subtopic=subtopic)
 
 
+# Creates quiz questions based on the subject and subtopic provided in
+# the url. The questions are returned in a JSON format to be used by
+# the JS Script in templates/quiz.html.
 @app.route("/generate_quiz", methods=['POST'])
 def generate_quiz():
     data = request.json
@@ -140,7 +191,6 @@ def signin():
 
 @app.route('/signin', methods=['POST'])
 def signin_post():
-    # login code goes here
     email = request.form.get('email')
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
@@ -167,7 +217,6 @@ def signup():
 
 @app.route('/signup', methods=['POST'])
 def signup_post():
-    # code to validate and add user to database goes here
     email = request.form.get('email')
     name = request.form.get('name')
     password = request.form.get('password')
@@ -202,25 +251,14 @@ def logout():
     return redirect(url_for('home'))
 
 
-@app.route("/topics")
-def register():
-    return render_template('topics.html', subjects=SUBTOPICS,
-                           subject_dictionary=SUBTOPICS)
-
-
-@app.route("/submit-selection", methods=['POST'])
-def submit_selection():
-    subject = request.form.get('subject_selection')
-    subtopic = request.form.get('subtopic_selection')
-
-
+# This route is used by pythonanywhere to update the server automatically
+#  when a push is made to the GitHub repository.
 @app.route("/update_server", methods=['POST'])
 def webhook():
     if request.method == 'POST':
         repo = git.Repo('/home/LearnMateAI/LearnMate')
-        repo.heads.main.checkout()
         origin = repo.remotes.origin
-        origin.pull('main')
+        origin.pull()
         return 'Updated PythonAnywhere successfully', 200
     else:
         return 'Wrong event type', 400
