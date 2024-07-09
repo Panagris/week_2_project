@@ -1,7 +1,83 @@
 {% extends "index.html" %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
-    <p>Flashcards are a great way to learn and memorize information. You can create your own flashcards or use the ones created by others.</p>
-    <p>Sign In / Up to access more features and content.</p>
+
+<h1>{{ title }}</h1>
+<h2>Here</h2>
+<p>Flashcards are a great way to learn and memorize information. You can create your own flashcards or use the ones
+    created by others.</p>
+<p>Sign In / Up to access more features and content.</p>
+
+<div class="d-grid gap-2 col-6 mx-auto">
+    <button class="btn btn-primary" type="button" id="def-term" data-bs-toggle="button">{{ definition }}</button>
+</div>
+
+<div class="d-grid gap-2 d-md-block">
+    <button class="btn btn-primary" type="button" id="prev-btn"> Previous </button>
+</div>
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <button class="btn btn-primary" type="button" id="next-btn"> Next </button>
+  </div>
+
+
+  <script>
+    $(document).ready(function() {
+        let currentIndex = 0;
+        let flashcards = [];
+
+        // Fetch the list once when the page loads
+        $.ajax({
+            url: '/get-cards',
+            type: 'GET',
+            success: function(response) {
+                flashcards = response;
+                $('#def-term').text(flashcards[currentIndex]['Definition']);
+                updateButtons();
+            }
+        });
+
+        function updateButtons() {
+            $('#prev-btn').prop('disabled', currentIndex === 0);
+            $('#next-btn').prop('disabled', currentIndex === flashcards.length - 1);
+            // if (currentIndex == 0) {
+            //     $('#prev-btn').disable();
+            // } else {
+            //     $('#prev-btn').enable();
+            // }
+
+            // if (currentIndex == (flashcards.length - 1)) {
+            //     $('#next-btn').disable();
+            // } else {
+            //     $('#next-btn').enable();
+            // }
+        }
+
+        $('#next-btn').click(function() {
+            if (flashcards.length > 0 && currentIndex < flashcards.length - 1) {
+                currentIndex++;
+                $('#def-term').text(flashcards[currentIndex]['Definition']);
+                updateButtons();
+            }
+        });
+
+        $('#prev-btn').click(function() {
+            if (flashcards.length > 0 && currentIndex > 0) {
+                currentIndex--;
+                $('#def-term').text(flashcards[currentIndex]['Definition']);
+                updateButtons();
+            }
+        });
+
+        $('#def-term').click(function() {
+            let currentText = $(this).text();
+
+            if (currentText === flashcards[currentIndex]['Definition']) {
+                $(this).text(flashcards[currentIndex]['Term']);
+            } else {
+                $(this).text(flashcards[currentIndex]['Definition']);
+            }
+        });
+    });
+</script>
 {% endblock %}
