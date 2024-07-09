@@ -1,10 +1,10 @@
-import os
-import json
-import openai
-import sys
+import os, openai, sys, database_handler as dbh
 from openai import OpenAI
-import database_handler as dbh
+from quiz import run_quiz
+from flashcards import run_flashcards
 
+
+# Get the valid subjects, subtopics, and study methods from the database.
 VALID_SUBJECTS = dbh.get_subjects()
 VALID_SUBTOPICS = {subject: dbh.get_subtopics(subject)
                    for subject in VALID_SUBJECTS}
@@ -132,11 +132,11 @@ if __name__ == "__main__":
         subject_id, subtopic_id, study_method_id = get_study_session_info()
 
         if study_method_id == 'Quiz':
-            run_quiz(subject_id, subtopic_id)
+            run_quiz(CLIENT, subject_id, subtopic_id)
         elif study_method_id == 'Flashcards':
-            run_flashcards(subject_id, subtopic_id)
+            run_flashcards(CLIENT, subject_id, subtopic_id)
         elif study_method_id == 'Explanation':
-            response = run_explanation(subject_id, subtopic_id)
+            response = run_explanation(CLIENT, subject_id, subtopic_id)
             print(response.choices[0].message.content.strip())
 
         while True:

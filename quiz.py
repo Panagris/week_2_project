@@ -1,7 +1,8 @@
-# TODO: IMPORT NECESSARY FUNCTIONS FROM GPT_TUTOR
+from openai import OpenAI
+import json
 
 
-def run_quiz(subject, subtopic):
+def run_quiz(CLIENT: OpenAI, subject: str, subtopic: str) -> None:
     if subject == 'Math':
         print('Unfortunately, current generative models are unable to '
               'accurately supply correct, mathematical answers. Please '

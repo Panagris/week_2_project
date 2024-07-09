@@ -1,7 +1,8 @@
-# TODO: IMPORT NECESSARY FUNCTIONS FROM GPT_TUTOR
+from openai import OpenAI
+import json
 
 
-def run_flashcards(subject, subtopic):
+def run_flashcards(CLIENT: OpenAI, subject: str, subtopic: str):
     format_string = """
     {
         "flashcards": [
