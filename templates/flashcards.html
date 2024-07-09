@@ -12,17 +12,17 @@
     <button class="btn btn-primary" type="button" id="def-term" data-bs-toggle="button">{{ definition }}</button>
 </div>
 
-<div class="d-grid gap-2 d-md-block">
-    <button class="btn btn-primary" type="button" id="prev-btn"> Previous </button>
+<div class="d-flex justify-content-center my-3">
+
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <button class="btn btn-primary" type="button" id="prev-btn"> Previous </button>
+        <button class="btn btn-primary" type="button" id="next-btn"> Next </button>
+    </div>
 </div>
 
-<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-    <button class="btn btn-primary" type="button" id="next-btn"> Next </button>
-  </div>
 
-
-  <script>
-    $(document).ready(function() {
+<script>
+    $(document).ready(function () {
         let currentIndex = 0;
         let flashcards = [];
 
@@ -30,7 +30,7 @@
         $.ajax({
             url: '/get-cards',
             type: 'GET',
-            success: function(response) {
+            success: function (response) {
                 flashcards = response;
                 $('#def-term').text(flashcards[currentIndex]['Definition']);
                 updateButtons();
@@ -40,20 +40,9 @@
         function updateButtons() {
             $('#prev-btn').prop('disabled', currentIndex === 0);
             $('#next-btn').prop('disabled', currentIndex === flashcards.length - 1);
-            // if (currentIndex == 0) {
-            //     $('#prev-btn').disable();
-            // } else {
-            //     $('#prev-btn').enable();
-            // }
-
-            // if (currentIndex == (flashcards.length - 1)) {
-            //     $('#next-btn').disable();
-            // } else {
-            //     $('#next-btn').enable();
-            // }
         }
 
-        $('#next-btn').click(function() {
+        $('#next-btn').click(function () {
             if (flashcards.length > 0 && currentIndex < flashcards.length - 1) {
                 currentIndex++;
                 $('#def-term').text(flashcards[currentIndex]['Definition']);
@@ -61,7 +50,7 @@
             }
         });
 
-        $('#prev-btn').click(function() {
+        $('#prev-btn').click(function () {
             if (flashcards.length > 0 && currentIndex > 0) {
                 currentIndex--;
                 $('#def-term').text(flashcards[currentIndex]['Definition']);
@@ -69,7 +58,7 @@
             }
         });
 
-        $('#def-term').click(function() {
+        $('#def-term').click(function () {
             let currentText = $(this).text();
 
             if (currentText === flashcards[currentIndex]['Definition']) {
