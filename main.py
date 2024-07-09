@@ -6,14 +6,29 @@ import os
 app = Flask(__name__)
 proxied = FlaskBehindProxy(app)
 #  TODO: Add a secret key to the app.config dictionary.
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+# app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 
 # EXAMPLE FORMATS
 @app.route("/")
+@app.route("/home")
 def home():
-    return render_template('home.html', subtitle='Home Page',
-                           text='This is the home page')
+    return render_template('home.html', title='Home')
+
+
+@app.route("/flashcards")
+def flashcards():
+    return render_template('flashcards.html', title='Flashcards')
+
+
+@app.route("/quiz")
+def quiz():
+    return render_template('quiz.html', title='Quiz')
+
+
+@app.route("/signin")
+def signin():
+    return render_template('signin.html', title='Sign In')
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -26,4 +41,4 @@ def register():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0", port=8080)
