@@ -1,4 +1,7 @@
-import os, openai, sys, database_handler as dbh
+import os
+import openai
+import sys
+import database_handler as dbh
 from openai import OpenAI
 from quiz import run_quiz
 from flashcards import run_flashcards
