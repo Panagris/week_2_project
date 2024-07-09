@@ -29,16 +29,12 @@ def quiz():
 
 @app.route("/signin")
 def signin():
-<<<<<<< HEAD
-    return render_template('signin.html', title='Sign In')
-=======
     return render_template('signin.html', title='Sign In', signin=True)
 
 
 @app.route("/signup")
 def signup():
     return render_template('signin.html', title='Sign Up', signin=False)
->>>>>>> 870b9d0422aefb2e4f19ac99791cf4c8bc030461
 
 
 @app.route("/register", methods=['GET', 'POST'])
