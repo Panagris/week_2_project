@@ -9,7 +9,7 @@ def run_flashcards(subject: str, subtopic: str) -> dict:
     MY_API_KEY = os.environ.get('OPENAI_KEY')
     openai.api_key = MY_API_KEY
     CLIENT = OpenAI(api_key=MY_API_KEY,)
-    
+
     # The format string is used to create the JSON object.
     format_string = """
     {

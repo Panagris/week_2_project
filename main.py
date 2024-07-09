@@ -14,7 +14,7 @@ app.config['SECRET_KEY'] = 'b1efe14252f08b51ef30a28b66860180'
 # os.environ.get('SECRET_KEY')
 Session(app)
 
-# EXAMPLE FORMATS
+
 @app.route("/")
 @app.route("/home")
 def home():
@@ -26,15 +26,6 @@ def flashcards():
 
     if 'session_flashcards' not in session:
         session['session_flashcards'] = run_flashcards("Math", "Algebra")
-        # for card_num, flashcard in enumerate(flashcards, start=1):
-        #     definition_key, term_key = list(flashcard.keys())
-
-        #     # print(f'Definition {card_num}: {flashcard[definition_key]}')
-        #     user_answer = input("\nWhat is the term? Or, enter 'STOP' to quit: ")
-
-        #     # if user_answer == 'STOP':
-        #         # return
-        #     # print("The correct term was: ", flashcard[term_key], "\n")
 
     return render_template('flashcards.html', title='Flashcards',
                            definition='Flashcards')
