@@ -1,15 +1,15 @@
 {% extends "index.html" %}
 {% block content %}
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='quiz.css') }}"></head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='quiz.css') }}">
+</head>
 <body>
     <div class="quiz-container">
         <div class="question-container">
-            <h1 class="question-title">Sample Question?</h1>
+            <h1 class="question-title">Loading...</h1>
             <div class="btn-container">
                 <div class="btn-row">
                     <button type="button" class="btn-option-a">Option A</button>
@@ -20,9 +20,73 @@
                     <button type="button" class="btn-option-d">Option D</button>
                 </div>
             </div>
+            <button class="next-question-btn" type="button">Next Question</button>
+        </div>
+        <div class="feedback-container" style="display: none;">
+            <p class="feedback-text"></p>
         </div>
     </div>
-</body>
-</html>
-{% endblock %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/generate_quiz', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    subject: 'History', // Replace later!
+                    subtopic: 'American Revolution' 
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                let questions = data.Quiz;
+                let currentQuestionIndex = 0;
 
+                function displayQuestion(questionIndex) {
+                    let questionData = questions[questionIndex];
+                    let questionText = questionData.Question;
+                    let answerOptions = questionText.split('\n').slice(1, 5); 
+
+                    document.querySelector('.question-title').innerText = questionText.split('\n')[0]; 
+                    document.querySelector('.btn-option-a').innerText = answerOptions[0].trim();
+                    document.querySelector('.btn-option-b').innerText = answerOptions[1].trim();
+                    document.querySelector('.btn-option-c').innerText = answerOptions[2].trim();
+                    document.querySelector('.btn-option-d').innerText = answerOptions[3].trim();
+                }
+
+                function showFeedback(correctAnswer) {
+                    document.querySelector('.feedback-text').innerText = 'Correct answer: ' + correctAnswer;
+                    document.querySelector('.feedback-container').style.display = 'block';
+                }
+
+                function hideFeedback() {
+                    document.querySelector('.feedback-container').style.display = 'none';
+                }
+
+                displayQuestion(currentQuestionIndex);
+
+                document.querySelectorAll('.btn-container button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        let userAnswer = e.target.innerText[0]; // 'A', 'B', 'C', or 'D'
+                        let correctAnswer = questions[currentQuestionIndex].Answer.split(': ')[1].trim(); 
+                        showFeedback(correctAnswer);
+                    });
+                });
+
+                document.querySelector('.next-question-btn').addEventListener('click', () => {
+                    hideFeedback();
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex < questions.length) {
+                        displayQuestion(currentQuestionIndex);
+                    } else {
+                        document.querySelector('.question-title').innerText = 'Quiz Completed!';
+                        document.querySelector('.btn-container').style.display = 'none';
+                        document.querySelector('.feedback-container').style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+{% endblock %}
