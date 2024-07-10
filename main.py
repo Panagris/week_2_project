@@ -28,7 +28,7 @@ def flashcards():
         session['session_flashcards'] = run_flashcards("Math", "Algebra")
 
     return render_template('flashcards.html', title='Flashcards',
-                           definition='Flashcards')
+                           definition='Flashcards', signin=True)
 
 
 @app.route("/get-cards")

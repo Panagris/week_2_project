@@ -1,72 +1,89 @@
+
 {% extends "index.html" %}
 
 {% block content %}
+<div class="container">
 
-<h1>{{ title }}</h1>
-<h2>Here</h2>
-<p>Flashcards are a great way to learn and memorize information. You can create your own flashcards or use the ones
-    created by others.</p>
-<p>Sign In / Up to access more features and content.</p>
+    <h1>{{ title }}</h1>
+    <p class="fs-5">Flashcards are a great way to learn and memorize
+    information. Use the flashcards below to test your knowledge on the chosen
+    topic. </p>
 
-<div class="d-grid gap-2 col-6 mx-auto">
-    <button class="btn btn-primary" type="button" id="def-term" data-bs-toggle="button">{{ definition }}</button>
-</div>
+    {% if signin %}
 
-<div class="d-flex justify-content-center my-3">
-
-    <div class="btn-group" role="group" aria-label="Basic example">
-        <button class="btn btn-primary" type="button" id="prev-btn"> Previous </button>
-        <button class="btn btn-primary" type="button" id="next-btn"> Next </button>
+    <div class="d-grid gap-2 col-6 mx-auto" id="flashcard-container">
+        <!-- Placeholder for loading effect -->
+        <button class="btn btn-primary btn-lg placeholder-glow" type="button" id="def-term" data-bs-toggle="button"
+            style="height: 300px">
+            <span class="placeholder col-12"></span>
+        </button>
     </div>
+
+    <div class="d-flex justify-content-center my-3">
+        <div class="btn-group" role="group" aria-label="Basic example">
+            <button class="btn btn-primary" type="button" id="prev-btn" disabled> Previous </button>
+            <button class="btn btn-primary" type="button" id="next-btn" disabled> Next </button>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            let currentIndex = 0;
+            let flashcards = [];
+
+            // Fetch the flashcards once when the page loads
+            function getFlashcards() {
+                $.ajax({
+                    url: '/get-cards',
+                    type: 'GET',
+                    // Disable caching of the response to prevent stale data.
+                    // New data is fetched each time from the Open API.
+                    cache: false,
+                    success: function (response) {
+                        flashcards = response;
+                        $('#def-term').text(flashcards[currentIndex]['Definition']);
+                        updateButtons();
+                    }
+                });
+            }
+
+            getFlashcards();
+
+            function updateButtons() {
+                $('#prev-btn').prop('disabled', currentIndex === 0);
+                $('#next-btn').prop('disabled', currentIndex === flashcards.length - 1);
+            }
+
+            $('#next-btn').click(function () {
+                if (flashcards.length > 0 && currentIndex < flashcards.length - 1) {
+                    currentIndex++;
+                    $('#def-term').text(flashcards[currentIndex]['Definition']);
+                    updateButtons();
+                }
+            });
+
+            $('#prev-btn').click(function () {
+                if (flashcards.length > 0 && currentIndex > 0) {
+                    currentIndex--;
+                    $('#def-term').text(flashcards[currentIndex]['Definition']);
+                    updateButtons();
+                }
+            });
+
+            $('#def-term').click(function () {
+                let currentText = $(this).text();
+
+                if (currentText === flashcards[currentIndex]['Definition']) {
+                    $(this).text(flashcards[currentIndex]['Term']);
+                } else {
+                    $(this).text(flashcards[currentIndex]['Definition']);
+                }
+            });
+        });
+    </script>
+    {% else %}
+    <p> <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+            href="/signin">Sign In / Up </a> to access more features and content.</p>
+    {% endif %}
 </div>
-
-
-<script>
-    $(document).ready(function () {
-        let currentIndex = 0;
-        let flashcards = [];
-
-        // Fetch the list once when the page loads
-        $.ajax({
-            url: '/get-cards',
-            type: 'GET',
-            success: function (response) {
-                flashcards = response;
-                $('#def-term').text(flashcards[currentIndex]['Definition']);
-                updateButtons();
-            }
-        });
-
-        function updateButtons() {
-            $('#prev-btn').prop('disabled', currentIndex === 0);
-            $('#next-btn').prop('disabled', currentIndex === flashcards.length - 1);
-        }
-
-        $('#next-btn').click(function () {
-            if (flashcards.length > 0 && currentIndex < flashcards.length - 1) {
-                currentIndex++;
-                $('#def-term').text(flashcards[currentIndex]['Definition']);
-                updateButtons();
-            }
-        });
-
-        $('#prev-btn').click(function () {
-            if (flashcards.length > 0 && currentIndex > 0) {
-                currentIndex--;
-                $('#def-term').text(flashcards[currentIndex]['Definition']);
-                updateButtons();
-            }
-        });
-
-        $('#def-term').click(function () {
-            let currentText = $(this).text();
-
-            if (currentText === flashcards[currentIndex]['Definition']) {
-                $(this).text(flashcards[currentIndex]['Term']);
-            } else {
-                $(this).text(flashcards[currentIndex]['Definition']);
-            }
-        });
-    });
-</script>
 {% endblock %}
