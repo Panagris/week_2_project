@@ -1,8 +1,13 @@
-from flask import Flask, render_template, url_for, flash, redirect, Blueprint
+from flask import Flask, render_template, url_for, flash, redirect, Blueprint,request, jsonify
 from forms import RegistrationForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_behind_proxy import FlaskBehindProxy
+import openai
+from gpt_tutor import CLIENT, run_quiz 
 import os
+
+
+
 
 
 db = SQLAlchemy()
@@ -38,6 +43,14 @@ def flashcards():
 @app.route("/quiz")
 def quiz():
     return render_template('quiz.html', title='Quiz')
+
+@app.route("/generate_quiz", methods=['POST'])
+def generate_quiz():
+    data = request.json
+    subject = data.get("subject", "History")
+    subtopic = data.get("subtopic", "American Revolution")
+    quiz_data = run_quiz(CLIENT, subject, subtopic)
+    return jsonify(quiz_data)
 
 
 @app.route("/signin")
