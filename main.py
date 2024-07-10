@@ -1,13 +1,26 @@
-from flask import Flask, render_template, url_for, flash, redirect
+from flask import Flask, render_template, url_for, flash, redirect, Blueprint
 from forms import RegistrationForm
+from flask_sqlalchemy import SQLAlchemy
 from flask_behind_proxy import FlaskBehindProxy
 import os
 
+
+db = SQLAlchemy()
+
 app = Flask(__name__)
 proxied = FlaskBehindProxy(app)
-#  TODO: Add a secret key to the app.config dictionary.
-# app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
+#  TODO: Add a secret key to the app.config dictionary.
+app.config['SECRET_KEY'] = '70dd3b360c7b766a43f2db955ad41043'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+
+db.init_app(app)
+
+# main = Blueprint('main', __name__)
+# auth = Blueprint('auth', __name__)
+
+# app.register_blueprint(auth)
+# app.register_blueprint(main)
 
 
 # EXAMPLE FORMATS

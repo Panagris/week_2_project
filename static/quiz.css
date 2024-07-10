@@ -87,12 +87,12 @@
 }
 
 .btn-option-c:hover {
-    background-color: #b0b300;
+    background-color: #fcff2d;
     transform: scale(1.05);
 }
 
 .btn-option-c:active {
-    background-color: #807a00;
+    background-color: #e9dd00;
 }
 
 
