@@ -64,7 +64,7 @@ def register():
 @app.route("/update_server", methods=['POST'])
 def webhook():
     if request.method == 'POST':
-        repo = git.Repo('/home/LearnMateAI/LearnMateAI')
+        repo = git.Repo('/home/LearnMateAI/LearnMate')
         repo.heads.deployment_testing.checkout()
         origin = repo.remotes.origin
         origin.pull('deployment_testing')
