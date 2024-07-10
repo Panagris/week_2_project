@@ -1,4 +1,3 @@
-
 {% extends "index.html" %}
 
 {% block content %}
@@ -6,17 +5,28 @@
 
     <h1>{{ title }}</h1>
     <p class="fs-5">Flashcards are a great way to learn and memorize
-    information. Use the flashcards below to test your knowledge on the chosen
-    topic. </p>
+        information. Use the flashcards below to test your knowledge on the chosen
+        topic. </p>
 
     {% if signin %}
+    <div class="d-flex justify-content-center my-3">
+        <button type="button" class="btn btn-primary" id="loadFlashCards-btn">Load Flashcards</button>
+    </div>
 
     <div class="d-grid gap-2 col-6 mx-auto" id="flashcard-container">
         <!-- Placeholder for loading effect -->
+        
         <button class="btn btn-primary btn-lg placeholder-glow" type="button" id="def-term" data-bs-toggle="button"
             style="height: 300px">
+        <div id="placeholders-div">
+            <span class="placeholder col-8"></span>
+            <span class="placeholder col-10"></span>
+            <span class="placeholder col-6"></span>
+            <span class="placeholder col-10"></span>
             <span class="placeholder col-12"></span>
+            <span class="placeholder col-8"></span>
         </button>
+        </div>
     </div>
 
     <div class="d-flex justify-content-center my-3">
@@ -30,8 +40,9 @@
         $(document).ready(function () {
             let currentIndex = 0;
             let flashcards = [];
+            $('#placeholders-div').hide();
 
-            // Fetch the flashcards once when the page loads
+            // Function to fetch the flashcards
             function getFlashcards() {
                 $.ajax({
                     url: '/get-cards',
@@ -39,16 +50,34 @@
                     // Disable caching of the response to prevent stale data.
                     // New data is fetched each time from the Open API.
                     cache: false,
+                    beforeSend: function () {
+                        // Disable the load button and enable the placeholder
+                        // only after button press
+                        $('#placeholders-div').show();
+                        $('#loadFlashCards-btn').prop('disabled', true);
+                    },
                     success: function (response) {
                         flashcards = response;
                         $('#def-term').text(flashcards[currentIndex]['Definition']);
-                        $('#def-term').removeClass('placeholder-glow').text(flashcards[currentIndex]['Definition']);
+                        $('#def-term').removeClass('placeholder-glow');//.removeClass('invisible');
                         updateButtons();
+                    },
+                    complete: function () {
+                        // $('#loadFlashCards-btn').prop('disabled', false);
+                        // $('#placeholders-div').hide();
+                    },
+                    error: function () {
+                        // Handle error, e.g., display a message or retry logic
+                        console.error('Failed to fetch flashcards.');
                     }
                 });
             }
 
-            getFlashcards();
+            // Event listener for the Load Flashcards button
+            $('#loadFlashCards-btn').click(function () {
+                // $('#def-term').addClass('placeholder-glow');//('invisible'); // Hide placeholder until API fetch
+                getFlashcards();
+            });
 
             function updateButtons() {
                 $('#prev-btn').prop('disabled', currentIndex === 0);
@@ -81,6 +110,7 @@
                 }
             });
         });
+
     </script>
     {% else %}
     <p> <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
