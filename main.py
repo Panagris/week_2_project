@@ -23,10 +23,6 @@ def home():
 
 @app.route("/flashcards")
 def flashcards():
-
-    if 'session_flashcards' not in session:
-        session['session_flashcards'] = run_flashcards("Math", "Algebra")
-
     return render_template('flashcards.html', title='Flashcards',
                            definition='Flashcards', signin=True)
 
@@ -34,7 +30,11 @@ def flashcards():
 @app.route("/get-cards")
 def get_cards():
     # List of strings you want to send back to the client
-    flashcards = session.get('session_flashcards', {})
+        # Clear the session data related to flashcards
+    session.pop('session_flashcards', None)    
+    flashcards= run_flashcards("Math", "Algebra")
+    session['session_flashcards'] = flashcards
+
     return jsonify(flashcards)
 
 

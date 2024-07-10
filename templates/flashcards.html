@@ -42,6 +42,7 @@
                     success: function (response) {
                         flashcards = response;
                         $('#def-term').text(flashcards[currentIndex]['Definition']);
+                        $('#def-term').removeClass('placeholder-glow').text(flashcards[currentIndex]['Definition']);
                         updateButtons();
                     }
                 });
