@@ -1,8 +1,11 @@
-from flask import Flask, render_template, url_for, flash, redirect, \
+from flask import Flask, render_template, url_for, flash, redirect, jsonify, \
+    session
+from flask_session import Session, \
 Blueprint, request
 from forms import RegistrationForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_behind_proxy import FlaskBehindProxy
+from flashcards import run_flashcards
 import os
 import git
 
@@ -10,6 +13,7 @@ import git
 db = SQLAlchemy()
 
 app = Flask(__name__)
+app.config['SESSION_TYPE'] = 'filesystem'
 proxied = FlaskBehindProxy(app)
 
 #  TODO: Add a secret key to the app.config dictionary.
@@ -17,7 +21,7 @@ app.config['SECRET_KEY'] = '70dd3b360c7b766a43f2db955ad41043'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 
 db.init_app(app)
-
+Session(app)
 # main = Blueprint('main', __name__)
 # auth = Blueprint('auth', __name__)
 
@@ -25,7 +29,6 @@ db.init_app(app)
 # app.register_blueprint(main)
 
 
-# EXAMPLE FORMATS
 @app.route("/")
 @app.route("/home")
 def home():
@@ -34,7 +37,19 @@ def home():
 
 @app.route("/flashcards")
 def flashcards():
-    return render_template('flashcards.html', title='Flashcards')
+    return render_template('flashcards.html', title='Flashcards',
+                           definition='Flashcards', signin=True)
+
+
+@app.route("/get-cards")
+def get_cards():
+    # List of strings you want to send back to the client
+        # Clear the session data related to flashcards
+    session.pop('session_flashcards', None)    
+    flashcards= run_flashcards("Math", "Algebra")
+    session['session_flashcards'] = flashcards
+
+    return jsonify(flashcards)
 
 
 @app.route("/quiz")
