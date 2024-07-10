@@ -1,7 +1,6 @@
 from flask import Flask, render_template, url_for, flash, redirect, jsonify, \
-    session
-from flask_session import Session, \
-Blueprint, request
+    session, Blueprint, request
+from flask_session import Session
 from forms import RegistrationForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_behind_proxy import FlaskBehindProxy
