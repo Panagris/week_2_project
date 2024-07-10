@@ -43,9 +43,9 @@ def flashcards():
 @app.route("/get-cards")
 def get_cards():
     # List of strings you want to send back to the client
-        # Clear the session data related to flashcards
-    session.pop('session_flashcards', None)    
-    flashcards= run_flashcards("Math", "Algebra")
+    # Clear the session data related to flashcards
+    session.pop('session_flashcards', None)
+    flashcards = run_flashcards("Math", "Algebra")
     session['session_flashcards'] = flashcards
 
     return jsonify(flashcards)
