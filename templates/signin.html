@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1 class="title">{{ "Sign In" if signin else "Sign Up" }}</h1>
+<h1 class="title">{{ title }}</h1>
 
 <div class="content-section">
     <form method="POST" action="">
@@ -11,11 +11,17 @@
                 <input class="form-control form-control-lg" type="email" name="email" placeholder="Your Email" autofocus="">
             </div>
 
+            {% if title == "Sign Up" %}
+                <div class="form-group">
+                    <input class="form-control form-control-lg" type="text" name="name" placeholder="Name" autofocus="">
+                </div>
+            {% endif %}
+
             <div class="form-group">
                 <input class="form-control form-control-lg" type="password" name="password" placeholder="Your Password">
             </div>
 
-            {% if signin %}
+            {% if title == "Sign In" %}
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" name="remember">
                     <label class="form-check-label" for="flexCheckDefault">
@@ -28,14 +34,14 @@
                 </div>
             {% endif %}
             <div class="form-group">
-                <button class="btn btn-outline-info">{{ "Sign In" if signin else "Sign Up" }}</button>
+                <button class="btn btn-outline-info">{{ title }}</button>
             </div>
         </fieldset>
     </form>
-    {% if signin %}
-    <p>New User? <a href="{{ url_for('signup') }}">Sign Up</a>!</p>
+    {% if title == "Sign In" %}
+        <p>New User? <a href="{{ url_for('signup') }}">Sign Up</a>!</p>
     {% else %}
-    <p>Returning User? <a href="{{ url_for('signin') }}">Sign In</a>!</p>
+        <p>Returning User? <a href="{{ url_for('signin') }}">Sign In</a>!</p>
     {% endif %}
 </div>
 {% endblock %}
