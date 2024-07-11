@@ -11,6 +11,12 @@
                 <input class="form-control form-control-lg" type="email" name="email" placeholder="Your Email" autofocus="">
             </div>
 
+            {% if title == "Sign Up" %}
+                <div class="form-group">
+                    <input class="form-control form-control-lg" type="text" name="name" placeholder="Name" autofocus="">
+                </div>
+            {% endif %}
+
             <div class="form-group">
                 <input class="form-control form-control-lg" type="password" name="password" placeholder="Your Password">
             </div>
