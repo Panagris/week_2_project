@@ -7,15 +7,18 @@ from flask_behind_proxy import FlaskBehindProxy
 from flask_login import UserMixin, LoginManager, login_user, \
     login_required, logout_user
 from flask_session import Session
-from flashcards import run_flashcards, CLIENT
+import openai
+from openai import OpenAI
 import os
 import git
-import openai
-# from flashcards import CLIENT
+from flashcards import run_flashcards
 from quiz import run_quiz
 
 
 db = SQLAlchemy()
+MY_API_KEY = os.environ.get('OPENAI_KEY')
+openai.api_key = MY_API_KEY
+CLIENT = OpenAI(api_key=MY_API_KEY,)
 
 
 class User(UserMixin, db.Model):
@@ -77,7 +80,7 @@ def get_cards():
     # List of strings you want to send back to the client
     # Clear the session data related to flashcards
     session.pop('session_flashcards', None)
-    flashcards = run_flashcards("Math", "Algebra")
+    flashcards = run_flashcards(CLIENT, "Math", "Algebra")
     session['session_flashcards'] = flashcards
 
     return jsonify(flashcards)

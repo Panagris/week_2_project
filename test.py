@@ -1,5 +1,6 @@
 import unittest
 import sqlite3 as sql
+from main import CLIENT
 from gpt_tutor import run_explanation
 from flashcards import run_flashcards
 from database_handler import open_connection, add_user, get_number_users
@@ -13,7 +14,7 @@ class TestGPTTutor(unittest.TestCase):
 
 class TestFlashcards(unittest.TestCase):
     def test_run_flashcards(self):
-        list_flashcards = run_flashcards("English", "Literature")
+        list_flashcards = run_flashcards(CLIENT, "English", "Literature")
         self.assertIsInstance(list_flashcards, list)
 
         # Edge case type testing.
