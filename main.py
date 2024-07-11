@@ -134,7 +134,7 @@ def signup_post():
     new_user = User(
         email=email,
         name=name,
-        password=generate_password_hash(password, method='sha256')
+        password=generate_password_hash(password, method='pbkdf2:sha256')
     )
 
     # add the new user to the database
