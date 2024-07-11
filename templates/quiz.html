@@ -34,8 +34,8 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    subject: 'History', // Replace later!
-                    subtopic: 'American Revolution' 
+                    subject: "{{ subject }}", // Replace later!
+                    subtopic: "{{ subtopic }}"
                 }),
             })
             .then(response => response.json())

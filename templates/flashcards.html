@@ -46,10 +46,17 @@
         function getFlashcards() {
             $.ajax({
                 url: '/get-cards',
-                type: 'GET',
-                // Disable caching of the response to prevent stale data.
-                // New data is fetched each time from the Open API.
-                cache: false,
+                type: 'POST',
+                // dataType: 'json',
+                // data: {
+                //     topic: '{{ subject }}',
+                //     subtopic: '{{ subtopic }}'
+                // },
+                data: JSON.stringify({
+                    subject: "{{ subject }}",
+                    subtopic: "{{ subtopic }}"
+                }),
+                contentType: "application/json; charset=utf-8",
                 beforeSend: function () {
                     // Disable the load button and enable the placeholder
                     // only after button press
