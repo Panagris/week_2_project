@@ -19,6 +19,15 @@ db = SQLAlchemy()
 MY_API_KEY = os.environ.get('OPENAI_KEY')
 openai.api_key = MY_API_KEY
 CLIENT = OpenAI(api_key=MY_API_KEY,)
+# SUBJECTS = ["Math", "Physics", "English", "History", "Computer Science"]
+SUBTOPICS = {
+    "Physics": ["Kinematics", "Electromagnetism", "Biology", "Astronomy"],
+    "English": ["Literature", "Grammar", "Writing", "Vocabulary"],
+    "History": ["American Revolution", "Civil War", "World War I",
+                "World War II"],
+    "Computer-Science": ["Cybersecurity", "Data Analytics", 
+                         "Time Complexity", "JavaScript"]
+}
 
 
 class User(UserMixin, db.Model):
@@ -71,32 +80,55 @@ def home():
 @app.route("/flashcards")
 @login_required
 def flashcards():
-    return render_template('flashcards.html', title='Flashcards',
-                           definition='Flashcards')
+ return render_template('topics.html', subjects=SUBTOPICS,
+                        subject_dictionary=SUBTOPICS)
 
 
-@app.route("/get-cards")
+@app.route("/flashcards", methods=['POST'])
+@login_required
+def flashcards_post():
+    subject = request.form.get('subject_selection')
+    subtopic = request.form.get('subtopic_selection')
+
+    
+    return render_template('flashcards.html', title='Flashcards', subject=subject,
+                           subtopic=subtopic)
+
+
+@app.route("/get-cards", methods=['POST'])
 def get_cards():
     # List of strings you want to send back to the client
     # Clear the session data related to flashcards
-    session.pop('session_flashcards', None)
-    flashcards = run_flashcards(CLIENT, "Math", "Algebra")
-    session['session_flashcards'] = flashcards
-
+    # session.pop('session_flashcards', None)
+    # session['session_flashcards'] = flashcards
+    data = request.json
+    subject = data.get("subject")
+    subtopic = data.get("subtopic")
+    flashcards = run_flashcards(CLIENT, subject, subtopic)
     return jsonify(flashcards)
 
 
 @app.route("/quiz")
 @login_required
 def quiz():
-    return render_template('quiz.html', title='Quiz')
+    return render_template('topics.html', subjects=SUBTOPICS,
+                        subject_dictionary=SUBTOPICS)
+
+
+@app.route("/quiz", methods=['POST'])
+@login_required
+def quiz_post():
+    subject = request.form.get('subject_selection')
+    subtopic = request.form.get('subtopic_selection')
+    return render_template('quiz.html', title='Quiz', subject=subject,
+                           subtopic=subtopic)
 
 
 @app.route("/generate_quiz", methods=['POST'])
 def generate_quiz():
     data = request.json
-    subject = data.get("subject", "History")
-    subtopic = data.get("subtopic", "American Revolution")
+    subject = data.get("subject")
+    subtopic = data.get("subtopic")
     quiz_data = run_quiz(CLIENT, subject, subtopic)
     return jsonify(quiz_data)
 
@@ -172,7 +204,14 @@ def logout():
 
 @app.route("/topics")
 def register():
-    return render_template('topics.html')
+    return render_template('topics.html', subjects=SUBTOPICS,
+                           subject_dictionary=SUBTOPICS)
+
+
+@app.route("/submit-selection", methods=['POST'])
+def submit_selection():
+    subject = request.form.get('subject_selection')
+    subtopic = request.form.get('subtopic_selection')
 
 
 @app.route("/update_server", methods=['POST'])
