@@ -1,9 +1,28 @@
 {% extends "index.html" %}
 
 {% block content %}
+{% if current_user.is_authenticated %}
+    <h1>Welcome, {{ current_user.username }}!</h1>
+    
+    <!-- Buttons to navigate to Quiz and Flashcards pages -->
+    <div class="row mt-4">
+        <p>Choose a study tool below:</p>
+        <div class="col-md-6">
+            <a href="topics.html">
+                <button>Quiz</button>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="topics.html">
+                <button>Flashcards</button>
+            </a>
+        </div>
+    </div>
+{% else %}
     <h1>{{ title }}</h1>
     <p>LearnMateAI is a platform that helps students to learn and practice their skills in a fun and interactive way.</p>
     <p>Flashcards are a great way to learn and memorize information. You can create your own flashcards or use the ones created by others.</p>
     <p>Quiz is a great way to test your knowledge and improve your skills. You can take quizzes on various topics and see how well you perform.</p>
     <p>Sign In / Up to access more features and content.</p>
+{% endif %}
 {% endblock content %}
