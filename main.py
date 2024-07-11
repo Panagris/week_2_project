@@ -1,13 +1,20 @@
 from flask import Flask, render_template, url_for, flash, redirect, Blueprint
-from flask import request, jsonify
+from flask import request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import RegistrationForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_behind_proxy import FlaskBehindProxy
 from flask_login import UserMixin, LoginManager
 from flask_login import login_user, login_required, logout_user
+from flask_session import Session
+from forms import RegistrationForm
+from flask_sqlalchemy import SQLAlchemy
+from flask_behind_proxy import FlaskBehindProxy 
+from flask_login import login_user, login_required, logout_user
 
+from flashcards import run_flashcards
 import os
+import git
 
 import openai
 from gpt_tutor import CLIENT, run_quiz
@@ -25,6 +32,7 @@ class User(UserMixin, db.Model):
 
 
 app = Flask(__name__)
+app.config['SESSION_TYPE'] = 'filesystem'
 proxied = FlaskBehindProxy(app)
 
 #  TODO: Add a secret key to the app.config dictionary.
@@ -47,6 +55,7 @@ def load_user(user_id):
     # use it in the query for the user
     return User.query.get(int(user_id))
 
+Session(app)
 # main = Blueprint('main', __name__)
 # auth = Blueprint('auth', __name__)
 
@@ -54,7 +63,6 @@ def load_user(user_id):
 # app.register_blueprint(main)
 
 
-# EXAMPLE FORMATS
 @app.route("/")
 @app.route("/home")
 def home():
@@ -64,7 +72,19 @@ def home():
 @app.route("/flashcards")
 @login_required
 def flashcards():
-    return render_template('flashcards.html', title='Flashcards')
+    return render_template('flashcards.html', title='Flashcards',
+                           definition='Flashcards', signin=True)
+
+
+@app.route("/get-cards")
+def get_cards():
+    # List of strings you want to send back to the client
+    # Clear the session data related to flashcards
+    session.pop('session_flashcards', None)
+    flashcards = run_flashcards("Math", "Algebra")
+    session['session_flashcards'] = flashcards
+
+    return jsonify(flashcards)
 
 
 @app.route("/quiz")
@@ -158,6 +178,18 @@ def register():
         flash(f'Account created for {form.username.data}!', 'success')
         return redirect(url_for('home'))  # if so - send to home page
     return render_template('register.html', title='Register', form=form)
+
+
+@app.route("/update_server", methods=['POST'])
+def webhook():
+    if request.method == 'POST':
+        repo = git.Repo('/home/LearnMateAI/LearnMate')
+        repo.heads.deployment_testing.checkout()
+        origin = repo.remotes.origin
+        origin.pull('deployment_testing')
+        return 'Updated PythonAnywhere successfully', 200
+    else:
+        return 'Wrong event type', 400
 
 
 if __name__ == '__main__':

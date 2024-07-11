@@ -1,6 +1,7 @@
 import unittest
 import sqlite3 as sql
 from gpt_tutor import run_explanation
+from flashcards import run_flashcards
 from database_handler import open_connection, add_user, get_number_users
 
 
@@ -8,6 +9,23 @@ class TestGPTTutor(unittest.TestCase):
     def test_GPT_API_response(self):
         response = run_explanation("English", "Literature").object
         self.assertEqual(response, "chat.completion")
+
+
+class TestFlashcards(unittest.TestCase):
+    def test_run_flashcards(self):
+        list_flashcards = run_flashcards("English", "Literature")
+        self.assertIsInstance(list_flashcards, list)
+
+        # Edge case type testing.
+        self.assertIsInstance(list_flashcards[0], dict)
+        self.assertIsInstance(list_flashcards[0]["Definition"], str)
+        self.assertIsInstance(list_flashcards[0]["Term"], str)
+
+        length = len(list_flashcards)
+
+        self.assertIsInstance(list_flashcards[length-1], dict)
+        self.assertIsInstance(list_flashcards[length-1]["Definition"], str)
+        self.assertIsInstance(list_flashcards[length-1]["Term"], str)
 
 
 class TestDBH(unittest.TestCase):
