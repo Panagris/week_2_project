@@ -10,7 +10,7 @@ from flask_login import login_user, login_required, logout_user
 import os
 
 import openai
-from gpt_tutor import CLIENT, run_quiz 
+from gpt_tutor import CLIENT, run_quiz
 
 
 db = SQLAlchemy()
@@ -71,6 +71,7 @@ def flashcards():
 @login_required
 def quiz():
     return render_template('quiz.html', title='Quiz')
+
 
 @app.route("/generate_quiz", methods=['POST'])
 def generate_quiz():
