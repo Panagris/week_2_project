@@ -2,6 +2,7 @@
 
 {% block content %}
 {% if current_user.is_authenticated %}
+    <head><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
     <h1>Welcome, {{ current_user.name }}!</h1>
     
     <!-- Buttons to navigate to Quiz and Flashcards pages -->
