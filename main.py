@@ -7,14 +7,18 @@ from flask_behind_proxy import FlaskBehindProxy
 from flask_login import UserMixin, LoginManager, login_user, \
     login_required, logout_user
 from flask_session import Session
-from flashcards import run_flashcards
+import openai
+from openai import OpenAI
 import os
 import git
-import openai
-from gpt_tutor import CLIENT, run_quiz
+from flashcards import run_flashcards
+from quiz import run_quiz
 
 
 db = SQLAlchemy()
+MY_API_KEY = os.environ.get('OPENAI_KEY')
+openai.api_key = MY_API_KEY
+CLIENT = OpenAI(api_key=MY_API_KEY,)
 
 
 class User(UserMixin, db.Model):
@@ -68,7 +72,7 @@ def home():
 @login_required
 def flashcards():
     return render_template('flashcards.html', title='Flashcards',
-                           definition='Flashcards', signin=True)
+                           definition='Flashcards')
 
 
 @app.route("/get-cards")
@@ -76,7 +80,7 @@ def get_cards():
     # List of strings you want to send back to the client
     # Clear the session data related to flashcards
     session.pop('session_flashcards', None)
-    flashcards = run_flashcards("Math", "Algebra")
+    flashcards = run_flashcards(CLIENT, "Math", "Algebra")
     session['session_flashcards'] = flashcards
 
     return jsonify(flashcards)
@@ -166,13 +170,9 @@ def logout():
     return redirect(url_for('home'))
 
 
-@app.route("/register", methods=['GET', 'POST'])
+@app.route("/topics")
 def register():
-    form = RegistrationForm()
-    if form.validate_on_submit():  # checks if entries are valid
-        flash(f'Account created for {form.username.data}!', 'success')
-        return redirect(url_for('home'))  # if so - send to home page
-    return render_template('register.html', title='Register', form=form)
+    return render_template('topics.html')
 
 
 @app.route("/update_server", methods=['POST'])

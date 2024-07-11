@@ -1,18 +1,16 @@
-import openai
-from openai import OpenAI
-import os
 import json
+
+
+# # Create an OpenAPI client using the key.
+# MY_API_KEY = os.environ.get('OPENAI_KEY')
+# openai.api_key = MY_API_KEY
+# CLIENT = OpenAI(api_key=MY_API_KEY,)
 
 
 # This function creates 15 flashcards based on the subject and subtopic
 # provided by the user. The flashcards are created using the OpenAI API.
 # The flashcards are returned as a list of dictionaries.
-def run_flashcards(subject: str, subtopic: str) -> list:
-    # Create an OpenAPI client using the key.
-    MY_API_KEY = os.environ.get('OPENAI_KEY')
-    openai.api_key = MY_API_KEY
-    CLIENT = OpenAI(api_key=MY_API_KEY,)
-
+def run_flashcards(CLIENT, subject: str, subtopic: str) -> list:
     # The format string is used to create the JSON object.
     format_string = """
     {
