@@ -2,7 +2,7 @@
 
 {% block content %}
 {% if current_user.is_authenticated %}
-    <h1>Welcome, {{ current_user.username }}!</h1>
+    <h1>Welcome, {{ current_user.name }}!</h1>
     
     <!-- Buttons to navigate to Quiz and Flashcards pages -->
     <div class="row mt-4">
