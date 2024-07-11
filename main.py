@@ -7,11 +7,12 @@ from flask_behind_proxy import FlaskBehindProxy
 from flask_login import UserMixin, LoginManager, login_user, \
     login_required, logout_user
 from flask_session import Session
-from flashcards import run_flashcards
+from flashcards import run_flashcards, CLIENT
 import os
 import git
 import openai
-from gpt_tutor import CLIENT, run_quiz
+# from flashcards import CLIENT
+from quiz import run_quiz
 
 
 db = SQLAlchemy()
