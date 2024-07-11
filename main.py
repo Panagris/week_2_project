@@ -72,7 +72,7 @@ def home():
 @login_required
 def flashcards():
     return render_template('flashcards.html', title='Flashcards',
-                           definition='Flashcards', signin=True)
+                           definition='Flashcards')
 
 
 @app.route("/get-cards")
