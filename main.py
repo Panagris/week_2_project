@@ -179,9 +179,9 @@ def register():
 def webhook():
     if request.method == 'POST':
         repo = git.Repo('/home/LearnMateAI/LearnMate')
-        repo.heads.deployment_testing.checkout()
+        repo.heads.main.checkout()
         origin = repo.remotes.origin
-        origin.pull('deployment_testing')
+        origin.pull('main')
         return 'Updated PythonAnywhere successfully', 200
     else:
         return 'Wrong event type', 400
