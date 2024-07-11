@@ -1,6 +1,7 @@
 import openai
 import json
 
+
 def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
     if subject == 'Math':
         return {"error": "Math quizzes are currently unsupported."}
@@ -45,7 +46,7 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
                      f"provides quiz questions and answers for a given subject"
                      f" and topic, responding with a JSON file adhering to "
                      f"this format {response_format_string}.")
-    
+
     response = CLIENT.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -54,8 +55,8 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
         ]
     )
 
-    
-
-    content = response.choices[0].message['content'] if isinstance(response.choices[0].message, dict) else response.choices[0].message.content
+    content = response.choices[0].message['content'] \
+        if isinstance(response.choices[0].message, dict) \
+        else response.choices[0].message.content
     dictionary_quiz = json.loads(content)
     return dictionary_quiz

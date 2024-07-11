@@ -1,11 +1,11 @@
-from flask import Flask, render_template, url_for, flash, redirect, Blueprint,\
-    request, jsonify, session
+from flask import Flask, render_template, url_for, flash, redirect, \
+    Blueprint, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import RegistrationForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_behind_proxy import FlaskBehindProxy
-from flask_login import UserMixin, LoginManager, login_user, login_required,\
-    logout_user
+from flask_login import UserMixin, LoginManager, login_user, \
+    login_required, logout_user
 from flask_session import Session
 from flashcards import run_flashcards
 import os
@@ -48,6 +48,7 @@ def load_user(user_id):
     # since the user_id is just the primary key of our user table,
     # use it in the query for the user
     return User.query.get(int(user_id))
+
 
 Session(app)
 # main = Blueprint('main', __name__)
