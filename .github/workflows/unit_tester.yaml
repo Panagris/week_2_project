@@ -26,6 +26,7 @@ jobs:
           pip install email-validator
           pip install flask_behind_proxy
           pip install flask_login
+          pip install GitPython
           pip install openai
 
       - name: Test with unittest

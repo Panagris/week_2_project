@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Page</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='quiz.css') }}">
+    <style>
+        body {
+            color: #343a40;
+        }
+    </style>
 </head>
 <body>
     <div class="quiz-container">
@@ -83,7 +88,10 @@
                         document.querySelector('.question-title').innerText = 'Quiz Completed!';
                         document.querySelector('.btn-container').style.display = 'none';
                         document.querySelector('.feedback-container').style.display = 'none';
-                        document.querySelector('.next-question-btn').style.display = 'none';
+                        document.querySelector('.next-question-btn').textContent = 'Return to Home';
+                        document.querySelector('.next-question-btn').addEventListener('click', () => {
+                            window.location.href = '/';
+                        });
                     }
                 });
             });

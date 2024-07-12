@@ -47,11 +47,6 @@
             $.ajax({
                 url: '/get-cards',
                 type: 'POST',
-                // dataType: 'json',
-                // data: {
-                //     topic: '{{ subject }}',
-                //     subtopic: '{{ subtopic }}'
-                // },
                 data: JSON.stringify({
                     subject: "{{ subject }}",
                     subtopic: "{{ subtopic }}"
@@ -66,11 +61,10 @@
                 success: function (response) {
                     flashcards = response;
                     $('#def-term').text(flashcards[currentIndex]['Definition']);
-                    $('#def-term').removeClass('placeholder-glow');//.removeClass('invisible');
+                    $('#def-term').removeClass('placeholder-glow');
                     updateButtons();
                 },
                 complete: function () {
-                    // $('#loadFlashCards-btn').prop('disabled', false);
                     $('#placeholders-div').hide();
                 },
                 error: function () {
@@ -102,7 +96,7 @@
         $('#prev-btn').click(function () {
             if (flashcards.length > 0 && currentIndex > 0) {
                 currentIndex--;
-                $('#def-term').text(flashcards[currentIndex]['Definition']);
+                $('#def-term').text([currentIndex]['Definition']);
                 updateButtons();
             }
         });
