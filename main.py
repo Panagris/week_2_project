@@ -1,12 +1,10 @@
 from flask import Flask, render_template, url_for, flash, redirect, \
-    Blueprint, request, jsonify, session
+    request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from forms import RegistrationForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_behind_proxy import FlaskBehindProxy
 from flask_login import UserMixin, LoginManager, login_user, \
     login_required, logout_user
-from flask_session import Session
 import openai
 from openai import OpenAI
 import os
@@ -19,14 +17,55 @@ db = SQLAlchemy()
 MY_API_KEY = os.environ.get('OPENAI_KEY')
 openai.api_key = MY_API_KEY
 CLIENT = OpenAI(api_key=MY_API_KEY,)
-# SUBJECTS = ["Math", "Physics", "English", "History", "Computer Science"]
-SUBTOPICS = {
-    "Physics": ["Kinematics", "Electromagnetism", "Biology", "Astronomy"],
-    "English": ["Literature", "Grammar", "Writing", "Vocabulary"],
-    "History": ["American Revolution", "Civil War", "World War I",
-                "World War II"],
-    "Computer-Science": ["Cybersecurity", "Data Analytics", 
-                         "Time Complexity", "JavaScript"]
+SUBJECT_SUBTOPIC_DICT = {
+    "Physics": [
+        "Mechanics",
+        "Electromagnetism",
+        "Thermodynamics",
+        "Optics",
+        "Modern Physics",
+        "Astrophysics"
+    ],
+    "Chemistry": [
+        "Organic Chemistry",
+        "Inorganic Chemistry",
+        "Physical Chemistry",
+        "Analytical Chemistry",
+        "Biochemistry",
+        "Environmental Chemistry"
+    ],
+    "Biology": [
+        "Cell Biology",
+        "Genetics",
+        "Ecology",
+        "Evolution",
+        "Human Anatomy and Physiology",
+        "Microbiology"
+    ],
+    "Computer-Science": [
+        "Data Structures and Sorting Algorithms",
+        "Software Engineering",
+        "Artificial Intelligence",
+        "Databases",
+        "Computer Networks",
+        "Cybersecurity"
+    ],
+    "History": [
+        "Ancient Civilizations",
+        "Medieval History",
+        "Modern History",
+        "American History",
+        "World History",
+        "Cultural History"
+    ],
+    "Economics": [
+        "Microeconomics",
+        "Macroeconomics",
+        "International Economics",
+        "Development Economics",
+        "Behavioral Economics",
+        "Environmental Economics"
+    ]
 }
 
 
@@ -63,14 +102,6 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-Session(app)
-# main = Blueprint('main', __name__)
-# auth = Blueprint('auth', __name__)
-
-# app.register_blueprint(auth)
-# app.register_blueprint(main)
-
-
 @app.route("/")
 @app.route("/home")
 def home():
@@ -80,8 +111,8 @@ def home():
 @app.route("/flashcards")
 @login_required
 def flashcards():
- return render_template('topics.html', subjects=SUBTOPICS,
-                        subject_dictionary=SUBTOPICS)
+    return render_template('topics.html', subjects=SUBJECT_SUBTOPIC_DICT,
+                           subject_dictionary=SUBJECT_SUBTOPIC_DICT)
 
 
 @app.route("/flashcards", methods=['POST'])
@@ -90,17 +121,12 @@ def flashcards_post():
     subject = request.form.get('subject_selection')
     subtopic = request.form.get('subtopic_selection')
 
-    
-    return render_template('flashcards.html', title='Flashcards', subject=subject,
-                           subtopic=subtopic)
+    return render_template('flashcards.html', title='Flashcards',
+                           subject=subject, subtopic=subtopic)
 
 
 @app.route("/get-cards", methods=['POST'])
 def get_cards():
-    # List of strings you want to send back to the client
-    # Clear the session data related to flashcards
-    # session.pop('session_flashcards', None)
-    # session['session_flashcards'] = flashcards
     data = request.json
     subject = data.get("subject")
     subtopic = data.get("subtopic")
@@ -111,8 +137,8 @@ def get_cards():
 @app.route("/quiz")
 @login_required
 def quiz():
-    return render_template('topics.html', subjects=SUBTOPICS,
-                        subject_dictionary=SUBTOPICS)
+    return render_template('topics.html', subjects=SUBJECT_SUBTOPIC_DICT,
+                           subject_dictionary=SUBJECT_SUBTOPIC_DICT)
 
 
 @app.route("/quiz", methods=['POST'])
@@ -204,8 +230,8 @@ def logout():
 
 @app.route("/topics")
 def register():
-    return render_template('topics.html', subjects=SUBTOPICS,
-                           subject_dictionary=SUBTOPICS)
+    return render_template('topics.html', subjects=SUBJECT_SUBTOPIC_DICT,
+                           subject_dictionary=SUBJECT_SUBTOPIC_DICT)
 
 
 @app.route("/submit-selection", methods=['POST'])
@@ -218,9 +244,8 @@ def submit_selection():
 def webhook():
     if request.method == 'POST':
         repo = git.Repo('/home/LearnMateAI/LearnMate')
-        repo.heads.main.checkout()
         origin = repo.remotes.origin
-        origin.pull('main')
+        origin.pull()
         return 'Updated PythonAnywhere successfully', 200
     else:
         return 'Wrong event type', 400

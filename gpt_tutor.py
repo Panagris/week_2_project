@@ -140,7 +140,7 @@
 #     #         print(response.choices[0].message.content.strip())
 
 #     #     while True:
-#     #         response = input("\nWould you like to continue studying? 
+#     #         response = input("\nWould you like to continue studying?
 # (Y/N) ")
 #     #         if response in ['N', 'n']:
 #     #             do_again = False

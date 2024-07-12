@@ -20,6 +20,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip pytest
           pip install coverage
+          pip install flask
+          pip install flask-wtf
+          pip install flask-sqlalchemy
+          pip install email-validator
+          pip install flask_behind_proxy
+          pip install flask_login
           pip install openai
 
       - name: Test with unittest
