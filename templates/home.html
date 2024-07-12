@@ -3,7 +3,15 @@
 {% block content %}
 {% if current_user.is_authenticated %}
 <h1>Welcome, {{ current_user.name }}!</h1>
-
+<p>LearnMateAI is a platform that helps students to learn and practice their
+    skills in a fun and interactive way. LearnMateAI grants students the ability to
+    study about various academic subjects in an interactive way. </p>
+<p>Flashcards are a great way to learn and memorize information. 15 flashcards are
+    generated based on a selected subject and topic. Cement that information and
+    try them now!</p>
+<p>Quizzes are a great way to test your knowledge and improve your skills. You can take quizzes on various topics and
+    see
+    how well you perform.</p>
 <!-- Buttons to navigate to Quiz and Flashcards pages -->
 <div class="row mt-4">
     <p>Choose a study tool below:</p>
@@ -23,7 +31,7 @@
 <p>Quizzes are a great way to test your knowledge and improve your skills. You can take quizzes on various topics and
     see
     how well you perform.</p>
-    
+
 <p class="center"><a class="link-primary link-offset-2 link-underline-opacity-25
 link-underline-opacity-100-hover fw-bold" href="/signin">Sign In / Up</a> to access
     these features!</p>

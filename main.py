@@ -81,7 +81,6 @@ app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 proxied = FlaskBehindProxy(app)
 
-#  TODO: Add a secret key to the app.config dictionary.
 app.config['SECRET_KEY'] = '70dd3b360c7b766a43f2db955ad41043'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tutor.db'
 
