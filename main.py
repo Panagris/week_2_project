@@ -15,11 +15,7 @@ from quiz import run_quiz
 
 # The SQLAlchemy object is created and used to interact with the database.
 db = SQLAlchemy()
-# The OpenAI API key is stored in an environment variable and used to
-# authenticate the OpenAI API, stored in the CLIENT constant.
-MY_API_KEY = os.environ.get('OPENAI_KEY')
-openai.api_key = MY_API_KEY
-CLIENT = OpenAI(api_key=MY_API_KEY,)
+
 # SUBJECT_SUBTOPIC_DICT is a dictionary that contains the subjects as keys
 # and the subtopics as values.
 SUBJECT_SUBTOPIC_DICT = {
@@ -74,14 +70,22 @@ SUBJECT_SUBTOPIC_DICT = {
 }
 
 
+# Used when Signing in and Signing up
 class User(UserMixin, db.Model):
     # primary keys are required by SQLAlchemy
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
+    password = db.Column(db.String(100))  # Stores only hashed passwords
     name = db.Column(db.String(1000))
 
 
+# The OpenAI API key is stored in an environment variable and used to
+# authenticate the OpenAI API, stored in the CLIENT constant.
+MY_API_KEY = os.environ.get('OPENAI_KEY')
+openai.api_key = MY_API_KEY
+CLIENT = OpenAI(api_key=MY_API_KEY,)
+
+# Basic App Configuration
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 proxied = FlaskBehindProxy(app)
@@ -89,11 +93,12 @@ proxied = FlaskBehindProxy(app)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tutor.db'
 
+# Initialize the database if it doesn't already exist
 db.init_app(app)
-
 with app.app_context():
     db.create_all()
 
+# Initialize the Login Manager
 login_manager = LoginManager()
 login_manager.login_view = "signin"
 login_manager.init_app(app)
@@ -112,7 +117,8 @@ def home():
     return render_template('home.html', title='Home')
 
 
-# This route is used to display the flashcards page.
+# This route prompts the user for a subject and subtopic before actually
+# displaying the flashcards.
 @app.route("/flashcards")
 @login_required
 def flashcards():
@@ -122,7 +128,7 @@ def flashcards():
 
 # This route is used to display the flashcards page with the subject and
 # subtopic selected by the user. The subject and subtopic are passed as
-# parameters in the URL from a form submission from the /topics page.
+# parameters in the URL from the previous form submission.
 @app.route("/flashcards", methods=['POST'])
 @login_required
 def flashcards_post():
@@ -146,6 +152,8 @@ def get_cards():
     return jsonify(flashcards)
 
 
+# This route prompts the user for a subject and subtopic before actually
+# displaying the quiz.
 @app.route("/quiz")
 @login_required
 def quiz():
@@ -153,6 +161,8 @@ def quiz():
                            subject_dictionary=SUBJECT_SUBTOPIC_DICT)
 
 
+# This route displays the quiz based on the subject and subtopic selected
+# by the user on the previous form.
 @app.route("/quiz", methods=['POST'])
 @login_required
 def quiz_post():
@@ -162,6 +172,9 @@ def quiz_post():
                            subtopic=subtopic)
 
 
+# Creates quiz questions based on the subject and subtopic provided in
+# the url. The questions are returned in a JSON format to be used by
+# the JS Script in templates/quiz.html.
 @app.route("/generate_quiz", methods=['POST'])
 def generate_quiz():
     data = request.json
@@ -178,7 +191,6 @@ def signin():
 
 @app.route('/signin', methods=['POST'])
 def signin_post():
-    # login code goes here
     email = request.form.get('email')
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
@@ -205,7 +217,6 @@ def signup():
 
 @app.route('/signup', methods=['POST'])
 def signup_post():
-    # code to validate and add user to database goes here
     email = request.form.get('email')
     name = request.form.get('name')
     password = request.form.get('password')
