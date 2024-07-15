@@ -4,3 +4,5 @@ __pycache__
 flask_session*
 instance/*
 deprecated/
+.DS_Store
+static/.DS_Store
