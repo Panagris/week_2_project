@@ -33,6 +33,7 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            //grab quiz questions from API
             fetch('/generate_quiz', {
                 method: 'POST',
                 headers: {

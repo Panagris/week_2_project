@@ -2,25 +2,24 @@
 
 {% block content %}
 {% if current_user.is_authenticated %}
-<h1>Welcome, {{ current_user.name }}!</h1>
-<p>LearnMateAI is a platform that helps students to learn and practice their
-    skills in a fun and interactive way. LearnMateAI grants students the ability to
-    study about various academic subjects in an interactive way. </p>
-<p>Flashcards are a great way to learn and memorize information. 15 flashcards are
-    generated based on a selected subject and topic. Cement that information and
-    try them now!</p>
-<p>Quizzes are a great way to test your knowledge and improve your skills. You can take quizzes on various topics and
-    see
-    how well you perform.</p>
-<!-- Buttons to navigate to Quiz and Flashcards pages -->
-<div class="row mt-4">
-    <p>Choose a study tool below:</p>
-    <div class="d-grid gap-2">
-        <a class="btn btn-primary btn-lg" role="button" href="/quiz">Quiz</a>
-        <a class="btn btn-primary btn-lg" role="button" href="/flashcards">Flashcards</a>
+    <h1>Welcome, {{ current_user.name }}!</h1>
+    
+    <!-- Buttons to navigate to Quiz and Flashcards pages -->
+    <div class="row mt-4">
+        <p>Choose a study tool below:</p>
+        <div class="col-md-6">
+            <a href="/topics">
+                <button>Quiz</button>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="/topics">
+                <button>Flashcards</button>
+            </a>
+        </div>
     </div>
-</div>
 {% else %}
+<!-- Intro message for not signed in users -->
 <h1>{{ title }}</h1>
 <p>LearnMateAI is a platform that helps students to learn and practice their
     skills in a fun and interactive way. LearnMateAI grants students the ability to
