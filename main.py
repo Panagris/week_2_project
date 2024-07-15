@@ -15,11 +15,7 @@ from quiz import run_quiz
 
 # The SQLAlchemy object is created and used to interact with the database.
 db = SQLAlchemy()
-# The OpenAI API key is stored in an environment variable and used to
-# authenticate the OpenAI API, stored in the CLIENT constant.
-MY_API_KEY = os.environ.get('OPENAI_KEY')
-openai.api_key = MY_API_KEY
-CLIENT = OpenAI(api_key=MY_API_KEY,)
+
 # SUBJECT_SUBTOPIC_DICT is a dictionary that contains the subjects as keys
 # and the subtopics as values.
 SUBJECT_SUBTOPIC_DICT = {
@@ -81,6 +77,12 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
 
+
+# The OpenAI API key is stored in an environment variable and used to
+# authenticate the OpenAI API, stored in the CLIENT constant.
+MY_API_KEY = os.environ.get('OPENAI_KEY')
+openai.api_key = MY_API_KEY
+CLIENT = OpenAI(api_key=MY_API_KEY,)
 
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
