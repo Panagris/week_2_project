@@ -32,14 +32,14 @@ jobs:
           pip install openai
 
       - name: Test with unittest
-        run: python3 -m unittest test.py
+        run: python3 -m unittest tests/test.py
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           
       - name: Check code coverage
         run: |
-          python3 -m coverage run -m unittest test.py
+          python3 -m coverage run -m unittest tests/test.py
           python3 -m coverage report
           python3 -m coverage html
         env:
