@@ -1,9 +1,9 @@
 # Seed / prepare ChatGPT with data about the user. Specify the model to
 # use and the messages to send. Each run of the API is $0.01.
 def run_explanation(CLIENT, subject: str, subtopic: str):
-    system_string = (f"You are a helpful study assistant for students "
-                     f"that provides summaries given a subject and a "
-                     f"subtopic about that subject.")
+    system_string = ("You are a helpful study assistant for students "
+                     "that provides summaries given a subject and a "
+                     "subtopic about that subject.")
 
     user_string = (f"Generate a brief summary of {subject}, and then "
                    f"provide a thorough, detailed explanation of the "
