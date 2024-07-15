@@ -14,7 +14,7 @@
     </div>
 
     <div class="d-grid gap-2 col-6 mx-auto" id="flashcard-container">
-        <!-- Placeholder for loading effect -->
+        <!-- Placeholders for loading effect -->
 
         <button class="btn btn-primary btn-lg placeholder-glow" type="button" id="def-term" data-bs-toggle="button"
             style="height: 300px">
@@ -42,11 +42,15 @@
         let flashcards = [];
         $('#placeholders-div').hide();
 
-        // Function to fetch the flashcards
+        // Use the /get-cards url defined in main.py to get the flashcards from
+        // the OpenAPI database.
         function getFlashcards() {
             $.ajax({
                 url: '/get-cards',
                 type: 'POST',
+                // Send the subject and subtopic to the server as JSON. The
+                // variable values are set using Jinja templating from the
+                // main.py file.
                 data: JSON.stringify({
                     subject: "{{ subject }}",
                     subtopic: "{{ subtopic }}"
@@ -58,6 +62,9 @@
                     $('#placeholders-div').show();
                     $('#loadFlashCards-btn').prop('disabled', true);
                 },
+                // Upon sucess, update the flashcards variable with the
+                // response and display the first flashcard. Also, remove the
+                // placeholder glow effect.
                 success: function (response) {
                     flashcards = response;
                     $('#def-term').text(flashcards[currentIndex]['Definition']);
@@ -76,7 +83,6 @@
 
         // Event listener for the Load Flashcards button
         $('#loadFlashCards-btn').click(function () {
-            // $('#def-term').addClass('placeholder-glow');//('invisible'); // Hide placeholder until API fetch
             getFlashcards();
         });
 

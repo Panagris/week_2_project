@@ -13,10 +13,15 @@ from flashcards import run_flashcards
 from quiz import run_quiz
 
 
+# The SQLAlchemy object is created and used to interact with the database.
 db = SQLAlchemy()
+# The OpenAI API key is stored in an environment variable and used to
+# authenticate the OpenAI API, stored in the CLIENT constant.
 MY_API_KEY = os.environ.get('OPENAI_KEY')
 openai.api_key = MY_API_KEY
 CLIENT = OpenAI(api_key=MY_API_KEY,)
+# SUBJECT_SUBTOPIC_DICT is a dictionary that contains the subjects as keys
+# and the subtopics as values.
 SUBJECT_SUBTOPIC_DICT = {
     "Physics": [
         "Mechanics",
@@ -107,6 +112,7 @@ def home():
     return render_template('home.html', title='Home')
 
 
+# This route is used to display the flashcards page.
 @app.route("/flashcards")
 @login_required
 def flashcards():
@@ -114,6 +120,9 @@ def flashcards():
                            subject_dictionary=SUBJECT_SUBTOPIC_DICT)
 
 
+# This route is used to display the flashcards page with the subject and
+# subtopic selected by the user. The subject and subtopic are passed as
+# parameters in the URL from a form submission from the /topics page.
 @app.route("/flashcards", methods=['POST'])
 @login_required
 def flashcards_post():
@@ -124,6 +133,10 @@ def flashcards_post():
                            subject=subject, subtopic=subtopic)
 
 
+# This route is used to generate the flashcards based on the subject and
+# subtopic selected by the user. The subject and subtopic are passed as
+# parameters to the URL from a AJAX request from the JS script
+# embedded in /templates/flashcards.html.
 @app.route("/get-cards", methods=['POST'])
 def get_cards():
     data = request.json
@@ -227,12 +240,17 @@ def logout():
     return redirect(url_for('home'))
 
 
+# This route is used to display the /topics page. The page displays
+# the subjects and subtopics that the user can choose from to generate
+# flashcards or quizzes.
 @app.route("/topics")
 def register():
     return render_template('topics.html', subjects=SUBJECT_SUBTOPIC_DICT,
                            subject_dictionary=SUBJECT_SUBTOPIC_DICT)
 
 
+# This route is used by pythonanywhere to update the server automatically
+#  when a push is made to the GitHub repository.
 @app.route("/update_server", methods=['POST'])
 def webhook():
     if request.method == 'POST':
