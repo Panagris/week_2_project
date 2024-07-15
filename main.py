@@ -240,15 +240,6 @@ def logout():
     return redirect(url_for('home'))
 
 
-# This route is used to display the /topics page. The page displays
-# the subjects and subtopics that the user can choose from to generate
-# flashcards or quizzes.
-@app.route("/topics")
-def register():
-    return render_template('topics.html', subjects=SUBJECT_SUBTOPIC_DICT,
-                           subject_dictionary=SUBJECT_SUBTOPIC_DICT)
-
-
 # This route is used by pythonanywhere to update the server automatically
 #  when a push is made to the GitHub repository.
 @app.route("/update_server", methods=['POST'])
