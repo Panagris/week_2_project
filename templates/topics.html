@@ -1,26 +1,6 @@
 {% extends "index.html" %}
 
 {% block content %}
-<!-- <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dropdown Menu with Submit</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Topic Selector</title>
-    <!-- <style>
-        .subtopics {
-            display: none;
-            margin-top: 10px;
-        }
-    </style> -->
-<!-- <script>
-        function toggleSubtopics(topicId) {
-            const subtopics = document.getElementById(topicId);
-            subtopics.style.display = subtopics.style.display === 'none' ? 'block' : 'none';
-        }
-    </script>
-</head>
-<body> -->
 <h1>Choose your topic:</h1>
 
 <div class="container mt-5">
@@ -40,7 +20,8 @@
                 <option selected disabled>Choose...</option>
                 {% for subject in subject_dictionary %}
                 {% for topic in subject_dictionary[subject] %}
-                <option style='display: none;' class="subtopics-dropdown option-{{ subject }}" value="{{ topic }}">{{ topic }}</option>
+                <option style='display: none;' class="subtopics-dropdown option-{{ subject }}" value="{{ topic }}">{{
+                    topic }}</option>
                 {% endfor %}
                 {% endfor %}
         </div>
@@ -56,13 +37,12 @@
         const subtopicDropdown = document.getElementById('subtopicDropdown');
 
         subjectDropdown.addEventListener('change', function () {
-            // console.log('HELLO WORLD');
-            
+
             let selectedSubject = subjectDropdown.value;
             const options = document.getElementsByClassName('subtopics-dropdown');
 
-            for(let i = 0; i < options.length; i++) {
-                
+            for (let i = 0; i < options.length; i++) {
+
                 console.log('option-' + selectedSubject);
                 if (options[i].classList.contains('option-' + selectedSubject)) {
                     options[i].style.display = 'block';
@@ -73,62 +53,4 @@
         });
     });
 </script>
-<!-- <div class="row mt-4">
-        <div class="col-md-6">
-            <button onclick="toggleSubtopics('math')">Math</button>
-            <div id="math" class="subtopics">
-                <button>Algebra</button>
-                <button>Calculus</button>
-                <button>Geometry</button>
-                <button>Statistics</button>
-                <button>Number Theory</button>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <button onclick="toggleSubtopics('physics')">Physics</button>
-            <div id="physics" class="subtopics">
-                <button>Kinematics</button>
-                <button>Mechanics</button>
-                <button>Therodynamics</button>
-                <button>Electromagnetism</button>
-                <button>Quantum Physics</button>
-                <button>Relativity</button>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <button onclick="toggleSubtopics('english')">English</button>
-            <div id="english" class="subtopics">
-                <button>Literature</button>
-                <button>Grammar</button>
-                <button>Composition</button>
-                <button>Poetry</button>
-                <button>Linguistics</button>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <button onclick="toggleSubtopics('history')">History</button>
-            <div id="history" class="subtopics">
-                <button>American Revolution</button>
-                <button>Medieval History</button>
-                <button>Modern History</button>
-                <button>World Wars</button>
-                <button>History of Science and Technology</button>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <button onclick="toggleSubtopics('cs')">Computer Science</button>
-            <div id="cs" class="subtopics">
-                <button>Algorithms and Data Structures</button>
-                <button>Operating Systems</button>
-                <button>Databases</button>
-                <button>Artificial Intelligence</button>
-                <button>Cybersecurity</button>
-            </div>
-        </div> -->
-<!-- </div> -->
-<!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-<!-- </body> 
-</html> -->
-
 {% endblock content %}
