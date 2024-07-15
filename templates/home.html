@@ -2,6 +2,7 @@
 
 {% block content %}
 {% if current_user.is_authenticated %}
+<!-- Intro message for logged in user -->
 <h1>Welcome, {{ current_user.name }}!</h1>
 <p>LearnMateAI is a platform that helps students to learn and practice their
     skills in a fun and interactive way. LearnMateAI grants students the ability to
@@ -21,6 +22,7 @@
     </div>
 </div>
 {% else %}
+<!-- Intro message for not signed in users -->
 <h1>{{ title }}</h1>
 <p>LearnMateAI is a platform that helps students to learn and practice their
     skills in a fun and interactive way. LearnMateAI grants students the ability to
