@@ -14,7 +14,7 @@
     </div>
 
     <div class="d-grid gap-2 col-6 mx-auto" id="flashcard-container">
-        <!-- Placeholder for loading effect -->
+        <!-- Placeholders for loading effect -->
 
         <button class="btn btn-primary btn-lg placeholder-glow" type="button" id="def-term" data-bs-toggle="button"
             style="height: 300px">
@@ -42,7 +42,8 @@
         let flashcards = [];
         $('#placeholders-div').hide();
 
-        // Function to fetch the flashcards
+        // Use the /get-cards url defined in main.py to get the flashcards from
+        // the OpenAPI database.
         function getFlashcards() {
             $.ajax({
                 url: '/get-cards',
