@@ -233,12 +233,6 @@ def register():
                            subject_dictionary=SUBJECT_SUBTOPIC_DICT)
 
 
-@app.route("/submit-selection", methods=['POST'])
-def submit_selection():
-    subject = request.form.get('subject_selection')
-    subtopic = request.form.get('subtopic_selection')
-
-
 @app.route("/update_server", methods=['POST'])
 def webhook():
     if request.method == 'POST':
