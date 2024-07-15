@@ -102,7 +102,7 @@
         $('#prev-btn').click(function () {
             if (flashcards.length > 0 && currentIndex > 0) {
                 currentIndex--;
-                $('#def-term').text([currentIndex]['Definition']);
+                $('#def-term').text(flashcards[currentIndex]['Definition']);
                 updateButtons();
             }
         });
