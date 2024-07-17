@@ -99,7 +99,7 @@ class QuizResult(db.Model):
 
     # String representation of a quiz result for debugging purposes
     def __repr__(self):
-        return f"<{self.user.name}'s Quiz Result ::\n" \
+        return f"<{self.user.name}'s Quiz Result :: " \
                f"{self.subtopic} ({self.subject}) : {self.num_correct} / 5>"
 
 
