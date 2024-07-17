@@ -1,22 +1,6 @@
 {% extends "index.html" %}
 
 {% block content %}
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Home</title>
-        <style>
-            .display-logo {
-                text-align: center;
-            }
-            .center-container img {
-                max-width: 100%;
-                height: auto;
-            }
-        </style>
-    </head>
-</html>
 {% if current_user.is_authenticated %}
 <!-- Intro message for logged in user -->
 <h1>Welcome, {{ current_user.name }}!</h1>
