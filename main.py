@@ -177,7 +177,8 @@ def save_flashcards():
     flashcards = data.get("flashcards")
     # TODO: Save the flashcards to the database
     flash('Flashcards saved successfully!', 'success')
-    return redirect("/home")
+    return render_template('home.html', title='Home')
+    # redirect(url_for("home"))
 
 # This route prompts the user for a subject and subtopic before actually
 # displaying the quiz.
