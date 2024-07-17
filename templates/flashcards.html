@@ -8,7 +8,6 @@
         information. Use the flashcards below to test your knowledge on the chosen
         topic. </p>
 
-
     <div class="d-flex justify-content-center my-3">
         <button type="button" class="btn btn-primary" id="loadFlashCards-btn">Load Flashcards</button>
     </div>
@@ -25,29 +24,32 @@
                 <span class="placeholder col-10"></span>
                 <span class="placeholder col-12"></span>
                 <span class="placeholder col-8"></span>
+            </div>
         </button>
     </div>
-</div>
 
-<div class="d-flex justify-content-center my-3">
-    <div class="btn-group btn-lg" role="group" aria-label="Basic example">
-        <button class="btn btn-primary" type="button" id="wrong-btn" disabled> Wrong :( </button>
-        <button class="btn btn-primary" type="button" id="correct-btn" disabled> Got It! :) </button>
+    <div class="d-flex justify-content-center my-3">
+        <div class="btn-group btn-lg" role="group" aria-label="Basic example">
+            <button class="btn btn-primary" type="button" id="wrong-btn" disabled> Wrong :( </button>
+            <button class="btn btn-primary" type="button" id="correct-btn" disabled> Got It! :) </button>
+        </div>
     </div>
-</div>
 
-<div class="d-flex justify-content-center my-3">
-    <div class="btn-group btn-lg" role="group" aria-label="Basic example">
-        <button class="btn btn-primary" type="button" id="restart-fresh-btn" disabled> Restart All Flashcards? </button>
-        <button class="btn btn-primary" type="button" id="restart-missed-btn" disabled> Restart Missed Flashcards?
-        </button>
+    <div class="d-flex justify-content-center my-3">
+        <div class="btn-group btn-lg" role="group" aria-label="Basic example">
+            <button class="btn btn-primary" type="button" id="restart-fresh-btn" disabled> Restart All Flashcards?
+            </button>
+            <button class="btn btn-primary" type="button" id="restart-missed-btn" disabled> Restart Missed Flashcards?
+            </button>
+        </div>
     </div>
-</div>
 
-<div class="d-flex justify-content-center my-3">
-    <div class="btn-group btn-lg" role="group" aria-label="Basic example">
-        <button class="btn btn-primary" type="button" id="save-btn" disabled> Save Flashcards </button>
-        <button class="btn btn-primary" type="button" id="generate-new-btn" disabled> Generate New Flashcards </button>
+    <div class="d-flex justify-content-center my-3">
+        <div class="btn-group btn-lg" role="group" aria-label="Basic example">
+            <button class="btn btn-primary" type="button" id="save-btn" disabled> Save Flashcards </button>
+            <button class="btn btn-primary" type="button" id="generate-new-btn" disabled> Generate New Flashcards
+            </button>
+        </div>
     </div>
 </div>
 
@@ -82,8 +84,8 @@
                     // $('#def-term').addClass('placeholder-glow');
                     // $('#loadFlashCards-btn').prop('disabled', true);
                     // $('#def-term').text('');
-                    $('#placeholders-div').show();
                     // $('#def-term').addClass('placeholder-glow');
+                    $('#placeholders-div').show();
                     $('#loadFlashCards-btn').prop('disabled', true);
                 },
                 // Upon sucess, update the flashcards variable with the
@@ -129,8 +131,6 @@
         }
 
         function updateButtons() {
-            $('#prev-btn').prop('disabled', currentIndex === 0 || flashcards.length === 0);
-            $('#next-btn').prop('disabled', currentIndex === flashcards.length - 1 || flashcards.length === 0);
             $('#correct-btn').prop('disabled', flashcards.length === 0);
             $('#wrong-btn').prop('disabled', flashcards.length === 0);
         }
@@ -209,9 +209,10 @@
                     flashcards: correctFlashcards
                 }),
                 contentType: "application/json; charset=utf-8",
-                // success: function (response) {
-                //     console.log(response);
-                // },
+                success: function (response) {
+                    console.log(response);
+                    window.location = response;
+                },
                 error: function () {
                     console.error('Failed to save flashcards.');
                 }
@@ -230,11 +231,19 @@
             $('#restart-missed-btn').prop('disabled', true);
             $('#save-btn').prop('disabled', true);
             $('#generate-new-btn').prop('disabled', true);
+
+            // $('#def-term').add(<div id="placeholders-div">
+            //     <span class="placeholder col-8"></span>
+            //     <span class="placeholder col-10"></span>
+            //     <span class="placeholder col-6"></span>
+            //     <span class="placeholder col-10"></span>
+            //     <span class="placeholder col-12"></span>
+            //     <span class="placeholder col-8"></span>
+            // </div>);
             getFlashcards();
             // updateButtons();
         });
     });
 
 </script>
-</div>
 {% endblock %}
