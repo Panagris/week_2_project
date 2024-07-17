@@ -59,8 +59,7 @@
         let flashcards = [];
         let missedFlashcards = [];
         let correctFlashcards = [];
-        $('#placeholders-div').hide();
-        // $('#def-term').removeClass('placeholder-glow');
+        getFlashcards();
 
         // Use the /get-cards url defined in main.py to get the flashcards from
         // the OpenAPI database.
@@ -80,11 +79,6 @@
                 beforeSend: function () {
                     // Disable the load button and enable the placeholder
                     // only after button press
-                    // $('#placeholders-div').show();
-                    // $('#def-term').addClass('placeholder-glow');
-                    // $('#loadFlashCards-btn').prop('disabled', true);
-                    // $('#def-term').text('');
-                    // $('#def-term').addClass('placeholder-glow');
                     $('#placeholders-div').show();
                     $('#loadFlashCards-btn').prop('disabled', true);
                 },
@@ -94,8 +88,6 @@
                 success: function (response) {
                     flashcards = response;
                     $('#def-term').text(flashcards[currentIndex]['Definition']);
-                    // $('#placeholders-div').hide();
-                    // $('#def-term').removeClass('placeholder-glow');
                     updateButtons();
                 },
                 complete: function () {
@@ -187,6 +179,9 @@
             $('#def-term').text(flashcards[currentIndex]['Definition']);
             updateButtons();
             $('#restart-fresh-btn').prop('disabled', true);
+            $('#restart-missed-btn').prop('disabled', true);
+            $('#generate-new-btn').prop('disabled', true);
+            $('#save-btn').prop('disabled', true);
         });
 
         $('#restart-missed-btn').click(function () {
@@ -197,6 +192,9 @@
             $('#def-term').text(flashcards[currentIndex]['Definition']);
             updateButtons();
             $('#restart-missed-btn').prop('disabled', true);
+            $('#restart-fresh-btn').prop('disabled', true);
+            $('#generate-new-btn').prop('disabled', true);
+            $('#save-btn').prop('disabled', true);
         });
 
         $('#save-btn').click(function () {
@@ -220,28 +218,10 @@
         });
 
         $('#generate-new-btn').click(function () {
-            // $('#def-term').text('');
-            // $('#placeholders-div').show();
-            // $('#def-term').addClass('placeholder-glow');
             correctFlashcards = [];
             missedFlashcards = [];
             currentIndex = 0;
-            updateButtons();
-            $('#restart-fresh-btn').prop('disabled', true);
-            $('#restart-missed-btn').prop('disabled', true);
-            $('#save-btn').prop('disabled', true);
-            $('#generate-new-btn').prop('disabled', true);
-
-            // $('#def-term').add(<div id="placeholders-div">
-            //     <span class="placeholder col-8"></span>
-            //     <span class="placeholder col-10"></span>
-            //     <span class="placeholder col-6"></span>
-            //     <span class="placeholder col-10"></span>
-            //     <span class="placeholder col-12"></span>
-            //     <span class="placeholder col-8"></span>
-            // </div>);
-            getFlashcards();
-            // updateButtons();
+            location.reload();
         });
     });
 
