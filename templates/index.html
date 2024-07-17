@@ -9,7 +9,7 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     .bg-image {
-      background-color: #FCD548;
+      background-color: #6C6ABC;
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
@@ -42,7 +42,14 @@
     }
 
     .navbar-brand {
-      background-color: #FAF5B0;
+      background-color: #6C6ABC;
+    }
+
+    .navbar{
+      background-color: #6C6ABC;
+      color: #111111;
+      font-size: 15px;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif, sans-serif;
     }
   </style>
   <title>LearnMateAI</title>
@@ -50,11 +57,18 @@
 
 <body>
   <div class="bg-image">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg">
       <div class="container-fluid">
         <a class="navbar-brand" href="/">
           <img src="{{ url_for('static', filename='images/logo.png') }}" style="display: inline-block;">
-          <span style="display: inline-block;">LearnMateAI</span>
+          <span style="display: inline-block; 
+          font-size: 20px;
+          font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif, sans-serif;
+          font-weight: bold;
+          display: inline-block;
+          width: 140px">
+      <span style="color: #111111;">LearnMate</span><span style="color: #f8f9fa;">AI</span>
+    </span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
