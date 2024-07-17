@@ -78,6 +78,30 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100))  # Stores only hashed passwords
     name = db.Column(db.String(1000))
 
+    # Each user will have multiple quiz results they will want to access
+    quiz_results = db.relationship('QuizResult', backref='user')
+
+    # String representation of a user for debugging purposes
+    def __repr__(self):
+        return f'<User: {self.name} :: {self.email}>'
+
+
+# Used for storing prior quiz results
+class QuizResult(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    time = db.Column(db.DateTime)  # The time the quiz was completed
+    subject = db.Column(db.String(100))
+    subtopic = db.Column(db.String(100))
+    num_correct = db.Column(db.Integer)
+
+    # Represents the user that took this quiz; links back to User table
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    # String representation of a quiz result for debugging purposes
+    def __repr__(self):
+        return f"<{self.user.name}'s Quiz Result:" \
+               f"{self.subtopic} ({self.subject}) : {self.num_correct} / 5>"
+
 
 # The OpenAI API key is stored in an environment variable and used to
 # authenticate the OpenAI API, stored in the CLIENT constant.
