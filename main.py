@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_behind_proxy import FlaskBehindProxy
 from flask_login import UserMixin, LoginManager, login_user, \
-    login_required, logout_user
+    login_required, logout_user, current_user
 import openai
 from openai import OpenAI
 import os
@@ -273,6 +273,34 @@ def signup_post():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+
+# Dummy way to add quiz results; change later
+@app.route('/add_result/<subject>/<subtopic>/<int:score>')
+@login_required
+def add_result(subject, subtopic, score):
+    result = QuizResult(
+        time=None,
+        subject=subject,
+        subtopic=subtopic,
+        num_correct=score,
+        user=current_user
+    )
+    db.session.add(result)
+    db.session.commit()
+
+    return redirect(url_for('quiz_results'))
+
+
+# This is just used for testing purposes to make sure quiz results are
+# stored correctly in the database for each user
+@app.route('/quiz_results')
+@login_required
+def quiz_results():
+    results = list(current_user.quiz_results)
+    results.reverse()
+    return render_template('quiz_results.html', title='Quiz Results',
+                           results=results)
 
 
 # This route is used by pythonanywhere to update the server automatically
