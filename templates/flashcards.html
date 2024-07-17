@@ -81,7 +81,7 @@
                     // $('#placeholders-div').show();
                     // $('#def-term').addClass('placeholder-glow');
                     // $('#loadFlashCards-btn').prop('disabled', true);
-                    $('#def-term').text('');
+                    // $('#def-term').text('');
                     $('#placeholders-div').show();
                     // $('#def-term').addClass('placeholder-glow');
                     $('#loadFlashCards-btn').prop('disabled', true);
@@ -91,8 +91,8 @@
                 // placeholder glow effect.
                 success: function (response) {
                     flashcards = response;
-                    $('#placeholders-div').hide();
                     $('#def-term').text(flashcards[currentIndex]['Definition']);
+                    // $('#placeholders-div').hide();
                     // $('#def-term').removeClass('placeholder-glow');
                     updateButtons();
                 },
@@ -219,14 +219,19 @@
         });
 
         $('#generate-new-btn').click(function () {
-            $('#def-term').text('');
-            $('#placeholders-div').show();
+            // $('#def-term').text('');
+            // $('#placeholders-div').show();
             // $('#def-term').addClass('placeholder-glow');
-            getFlashcards();
             correctFlashcards = [];
             missedFlashcards = [];
             currentIndex = 0;
             updateButtons();
+            $('#restart-fresh-btn').prop('disabled', true);
+            $('#restart-missed-btn').prop('disabled', true);
+            $('#save-btn').prop('disabled', true);
+            $('#generate-new-btn').prop('disabled', true);
+            getFlashcards();
+            // updateButtons();
         });
     });
 

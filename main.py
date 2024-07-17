@@ -169,7 +169,7 @@ def dummy_get_cards():
     return jsonify(flashcards)
 
 
-@app.route("/save-flashcards", methods=['POST'])
+@app.route("/save-cards", methods=['POST'])
 def save_flashcards():
     data = request.json
     subject = data.get("subject")
@@ -177,7 +177,7 @@ def save_flashcards():
     flashcards = data.get("flashcards")
     # TODO: Save the flashcards to the database
     flash('Flashcards saved successfully!', 'success')
-    return redirect(url_for('home'))
+    return redirect("/home")
 
 # This route prompts the user for a subject and subtopic before actually
 # displaying the quiz.
