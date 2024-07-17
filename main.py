@@ -9,6 +9,7 @@ import openai
 from openai import OpenAI
 import os
 import git
+from time import sleep
 from flashcards import run_flashcards
 from quiz import run_quiz
 
@@ -151,6 +152,32 @@ def get_cards():
     flashcards = run_flashcards(CLIENT, subject, subtopic)
     return jsonify(flashcards)
 
+
+# This route is used to generate dummy flashcards for testing purposes.
+@app.route("/dummy-get-cards", methods=['POST'])
+def dummy_get_cards():
+    # data = request.json
+    # subject = data.get("subject")
+    # subtopic = data.get("subtopic")
+    flashcards = [
+        {"Definition": "Definition 1", "Term": "Term 1"},
+        {"Definition": "Definition 2", "Term": "Term 2"},
+        {"Definition": "Definition 3", "Term": "Term 3"},
+        {"Definition": "Definition 4", "Term": "Term 4"},
+    ]
+    sleep(2)  # Simulate waiting for an API response.
+    return jsonify(flashcards)
+
+
+@app.route("/save-flashcards", methods=['POST'])
+def save_flashcards():
+    data = request.json
+    subject = data.get("subject")
+    subtopic = data.get("subtopic")
+    flashcards = data.get("flashcards")
+    # TODO: Save the flashcards to the database
+    flash('Flashcards saved successfully!', 'success')
+    return redirect(url_for('home'))
 
 # This route prompts the user for a subject and subtopic before actually
 # displaying the quiz.

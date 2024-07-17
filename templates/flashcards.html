@@ -30,16 +30,24 @@
 </div>
 
 <div class="d-flex justify-content-center my-3">
-    <div class="btn-group" role="group" aria-label="Basic example">
-        <button class="btn btn-primary" type="button" id="prev-btn" disabled> Wrong :( </button>
-        <button class="btn btn-primary" type="button" id="next-btn" disabled> Got It! :) </button>
+    <div class="btn-group btn-lg" role="group" aria-label="Basic example">
+        <button class="btn btn-primary" type="button" id="wrong-btn" disabled> Wrong :( </button>
+        <button class="btn btn-primary" type="button" id="correct-btn" disabled> Got It! :) </button>
     </div>
-    <br>
-    <br>
-    <br>
-    <div class="btn-group" role="group" aria-label="Basic example">
-        <button class="btn btn-primary" type="button" id="prev-btn" disabled> Previous </button>
-        <button class="btn btn-primary" type="button" id="next-btn" disabled> Next </button>
+</div>
+
+<div class="d-flex justify-content-center my-3">
+    <div class="btn-group btn-lg" role="group" aria-label="Basic example">
+        <button class="btn btn-primary" type="button" id="restart-fresh-btn" disabled> Restart All Flashcards? </button>
+        <button class="btn btn-primary" type="button" id="restart-missed-btn" disabled> Restart Missed Flashcards?
+        </button>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center my-3">
+    <div class="btn-group btn-lg" role="group" aria-label="Basic example">
+        <button class="btn btn-primary" type="button" id="save-btn" disabled> Save Flashcards </button>
+        <button class="btn btn-primary" type="button" id="generate-new-btn" disabled> Generate New Flashcards </button>
     </div>
 </div>
 
@@ -47,13 +55,17 @@
     $(document).ready(function () {
         let currentIndex = 0;
         let flashcards = [];
+        let missedFlashcards = [];
+        let correctFlashcards = [];
         $('#placeholders-div').hide();
+        // $('#def-term').removeClass('placeholder-glow');
 
         // Use the /get-cards url defined in main.py to get the flashcards from
         // the OpenAPI database.
         function getFlashcards() {
             $.ajax({
-                url: '/get-cards',
+                // url: '/get-cards',
+                url: '/dummy-get-cards',
                 type: 'POST',
                 // Send the subject and subtopic to the server as JSON. The
                 // variable values are set using Jinja templating from the
@@ -66,7 +78,12 @@
                 beforeSend: function () {
                     // Disable the load button and enable the placeholder
                     // only after button press
+                    // $('#placeholders-div').show();
+                    // $('#def-term').addClass('placeholder-glow');
+                    // $('#loadFlashCards-btn').prop('disabled', true);
+                    $('#def-term').text('');
                     $('#placeholders-div').show();
+                    // $('#def-term').addClass('placeholder-glow');
                     $('#loadFlashCards-btn').prop('disabled', true);
                 },
                 // Upon sucess, update the flashcards variable with the
@@ -74,8 +91,9 @@
                 // placeholder glow effect.
                 success: function (response) {
                     flashcards = response;
+                    $('#placeholders-div').hide();
                     $('#def-term').text(flashcards[currentIndex]['Definition']);
-                    $('#def-term').removeClass('placeholder-glow');
+                    // $('#def-term').removeClass('placeholder-glow');
                     updateButtons();
                 },
                 complete: function () {
@@ -88,30 +106,38 @@
             });
         }
 
+        function shuffle(array) {
+            let index = array.length;
+            // While there remain elements to shuffle...
+            while (index != 0) {
+                // Pick a remaining element...
+                let randomIndex = Math.floor(Math.random() * index);
+                index--;
+                // And swap it with the current element.
+                [array[index], array[randomIndex]] = [array[randomIndex], array[index]];
+            }
+        }
+
+        function endOfFlashcards() {
+            $('#def-term').text('No more flashcards to display.');
+            $('#correct-btn').prop('disabled', true);
+            $('#wrong-btn').prop('disabled', true);
+            $('#restart-fresh-btn').prop('disabled', false);
+            $('#restart-missed-btn').prop('disabled', missedFlashcards.length === 0);
+            $('#save-btn').prop('disabled', false);
+            $('#generate-new-btn').prop('disabled', false);
+        }
+
+        function updateButtons() {
+            $('#prev-btn').prop('disabled', currentIndex === 0 || flashcards.length === 0);
+            $('#next-btn').prop('disabled', currentIndex === flashcards.length - 1 || flashcards.length === 0);
+            $('#correct-btn').prop('disabled', flashcards.length === 0);
+            $('#wrong-btn').prop('disabled', flashcards.length === 0);
+        }
+
         // Event listener for the Load Flashcards button
         $('#loadFlashCards-btn').click(function () {
             getFlashcards();
-        });
-
-        function updateButtons() {
-            $('#prev-btn').prop('disabled', currentIndex === 0);
-            $('#next-btn').prop('disabled', currentIndex === flashcards.length - 1);
-        }
-
-        $('#next-btn').click(function () {
-            if (flashcards.length > 0 && currentIndex < flashcards.length - 1) {
-                currentIndex++;
-                $('#def-term').text(flashcards[currentIndex]['Definition']);
-                updateButtons();
-            }
-        });
-
-        $('#prev-btn').click(function () {
-            if (flashcards.length > 0 && currentIndex > 0) {
-                currentIndex--;
-                $('#def-term').text(flashcards[currentIndex]['Definition']);
-                updateButtons();
-            }
         });
 
         $('#def-term').click(function () {
@@ -122,6 +148,85 @@
             } else {
                 $(this).text(flashcards[currentIndex]['Definition']);
             }
+        });
+
+        $('#correct-btn').click(function () {
+            correctFlashcards.push(flashcards[currentIndex]);
+            flashcards.splice(currentIndex, 1);
+            if (currentIndex >= flashcards.length) {
+                currentIndex = flashcards.length - 1;
+            }
+            if (flashcards.length > 0) {
+                $('#def-term').text(flashcards[currentIndex]['Definition']);
+            } else {
+                endOfFlashcards();
+            }
+            updateButtons();
+        });
+
+        $('#wrong-btn').click(function () {
+            missedFlashcards.push(flashcards[currentIndex]);
+            flashcards.splice(currentIndex, 1);
+            if (currentIndex >= flashcards.length) {
+                currentIndex = flashcards.length - 1;
+            }
+            if (flashcards.length > 0) {
+                $('#def-term').text(flashcards[currentIndex]['Definition']);
+            } else {
+                endOfFlashcards();
+            }
+            updateButtons();
+        });
+
+        $('#restart-fresh-btn').click(function () {
+            flashcards = correctFlashcards.concat(missedFlashcards);
+            shuffle(flashcards);
+            correctFlashcards = [];
+            missedFlashcards = [];
+            currentIndex = 0;
+            $('#def-term').text(flashcards[currentIndex]['Definition']);
+            updateButtons();
+            $('#restart-fresh-btn').prop('disabled', true);
+        });
+
+        $('#restart-missed-btn').click(function () {
+            flashcards = missedFlashcards;
+            shuffle(flashcards);
+            missedFlashcards = [];
+            currentIndex = 0;
+            $('#def-term').text(flashcards[currentIndex]['Definition']);
+            updateButtons();
+            $('#restart-missed-btn').prop('disabled', true);
+        });
+
+        $('#save-btn').click(function () {
+            $.ajax({
+                url: '/save-cards',
+                type: 'POST',
+                data: JSON.stringify({
+                    subject: "{{ subject }}",
+                    subtopic: "{{ subtopic }}",
+                    flashcards: correctFlashcards
+                }),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function () {
+                    console.error('Failed to save flashcards.');
+                }
+            });
+        });
+
+        $('#generate-new-btn').click(function () {
+            $('#def-term').text('');
+            $('#placeholders-div').show();
+            // $('#def-term').addClass('placeholder-glow');
+            getFlashcards();
+            correctFlashcards = [];
+            missedFlashcards = [];
+            currentIndex = 0;
+            updateButtons();
         });
     });
 
