@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, flash, redirect, \
     request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.types import TypeDecorator, VARCHAR
 from flask_behind_proxy import FlaskBehindProxy
 from flask_login import UserMixin, LoginManager, login_user, \
     login_required, logout_user, current_user
@@ -9,6 +10,8 @@ import openai
 from openai import OpenAI
 import os
 import git
+import json
+from time import sleep
 from flashcards import run_flashcards
 from quiz import run_quiz
 
@@ -78,12 +81,58 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100))  # Stores only hashed passwords
     name = db.Column(db.String(1000))
 
+    # Each user will have multiple flashcards they will want to access
+    flashcards = db.relationship("Flashcards", backref="user")
+
     # Each user will have multiple quiz results they will want to access
     quiz_results = db.relationship('QuizResult', backref='user')
 
     # String representation of a user for debugging purposes
     def __repr__(self):
         return f'<User: {self.name} :: {self.email}>'
+
+
+# Used to store the flashcards in the database
+# Define a custom column type that inherits from TypeDecorator. TypeDecorator
+# is for user-defined types, helping to marshall data to/from the DB.
+# Marshlling transforms the memory representation of an object to a data
+# format suitable for passing into the relational DB.
+class JSONEncodedDict(TypeDecorator):
+    """Enables JSON storage by encoding and decoding on the fly."""
+    impl = VARCHAR
+    # Implement the process_bind_param method to serialize data to JSON format
+    # when saving to the database.
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return value
+        return json.dumps(value)
+
+    # Process_result_value method to deserialize JSON back into Python data
+    # when loading from the database.
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return value
+        return json.loads(value)
+
+
+# Update the Flashcards model
+class Flashcards(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    subject = db.Column(db.String(100))
+    subtopic = db.Column(db.String(100))
+    missed_flashcards = db.Column(JSONEncodedDict)
+    correct_flashcards = db.Column(JSONEncodedDict)
+
+    # Represents the user that generated these flashcards.
+    # Links back to User table.
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    # String representation of a user for debugging purposes
+    def __repr__(self):
+        return f'<Subject: {self.subject}, Subtopic: {self.subtopic}' \
+               f' :: Length Correct: {len(self.correct_flashcards)}' \
+               f' :: Length Missed: {len(self.missed_flashcards)}>'
 
 
 # Used for storing prior quiz results
@@ -174,6 +223,41 @@ def get_cards():
     subtopic = data.get("subtopic")
     flashcards = run_flashcards(CLIENT, subject, subtopic)
     return jsonify(flashcards)
+
+
+# This route is used to generate dummy flashcards for testing purposes.
+@app.route("/dummy-get-cards", methods=['POST'])
+def dummy_get_cards():
+    flashcards = [
+        {"Definition": "Definition 1", "Term": "Term 1"},
+        {"Definition": "Definition 2", "Term": "Term 2"},
+        {"Definition": "Definition 3", "Term": "Term 3"},
+        {"Definition": "Definition 4", "Term": "Term 4"},
+    ]
+    sleep(2)  # Simulate waiting for an API response.
+    return jsonify(flashcards)
+
+
+@app.route("/save-cards", methods=['POST'])
+def save_flashcards():
+    data = request.json
+    subject = data.get("subject")
+    subtopic = data.get("subtopic")
+    missed_flashcards = data.get("missedFlashcards")
+    correct_flashcards = data.get("correctFlashcards")
+    # TODO: Save the flashcards to the database
+    # Save flashcards to Database
+    flashcards = Flashcards(
+        subject=subject,
+        subtopic=subtopic,
+        missed_flashcards=missed_flashcards,
+        correct_flashcards=correct_flashcards,
+        user=current_user
+    )
+    db.session.add(flashcards)
+    db.session.commit()
+    flash('Flashcards saved successfully!', 'info')
+    return url_for("home")
 
 
 # This route prompts the user for a subject and subtopic before actually
