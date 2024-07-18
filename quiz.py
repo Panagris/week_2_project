@@ -68,12 +68,3 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
     dictionary_quiz = json.loads(content)
     return dictionary_quiz
 
-#Example usage:
-MY_API_KEY = os.environ.get('OPENAI_KEY')
-openai.api_key = MY_API_KEY
-CLIENT = OpenAI(api_key=MY_API_KEY)
-
-subject = "Geography"
-subtopic = "European Capitals"
-quiz_data = run_quiz(CLIENT, subject, subtopic)
-print(json.dumps(quiz_data, indent=2))
