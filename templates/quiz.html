@@ -9,9 +9,17 @@
         body {
             color: #343a40;
         }
+        .feedback-container {
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+    <div class="feedback-container">
+        <p class="feedback-text"></p>
+    </div>
     <div class="quiz-container">
         <div class="question-container">
             <h1 class="question-title">Loading...</h1>
@@ -26,9 +34,6 @@
                 </div>
             </div>
             <button class="next-question-btn" type="button">Next Question</button>
-        </div>
-        <div class="feedback-container" style="display: none;">
-            <p class="feedback-text"></p>
         </div>
     </div>
     <script>
@@ -48,6 +53,7 @@
             .then(data => {
                 let questions = data.Quiz;
                 let currentQuestionIndex = 0;
+                let correctAnswersCount = 0;
 
                 function displayQuestion(questionIndex) {
                     let questionData = questions[questionIndex];
@@ -61,8 +67,9 @@
                     document.querySelector('.btn-option-d').innerText = answerOptions[3].trim();
                 }
 
-                function showFeedback(correctAnswer) {
-                    document.querySelector('.feedback-text').innerText = 'Correct answer: ' + correctAnswer;
+                function showFeedback(isCorrect, correctAnswer) {
+                    document.querySelector('.feedback-text').innerText = 
+                        'Answer: ' + correctAnswer + ' - ' + (isCorrect ? 'Correct!' : 'Incorrect');
                     document.querySelector('.feedback-container').style.display = 'block';
                 }
 
@@ -75,8 +82,17 @@
                 document.querySelectorAll('.btn-container button').forEach(button => {
                     button.addEventListener('click', (e) => {
                         let userAnswer = e.target.innerText[0]; // 'A', 'B', 'C', or 'D'
+                        let userAnswerIndex = userAnswer.charCodeAt(0) - 64; // Convert 'A' -> 1, 'B' -> 2, etc.
+                        let correctAnswerIndex = parseInt(questions[currentQuestionIndex]["Answer Index"]);
+
                         let correctAnswer = questions[currentQuestionIndex].Answer.split(': ')[1].trim(); 
-                        showFeedback(correctAnswer);
+                        let isCorrect = userAnswerIndex === correctAnswerIndex;
+
+                        if (isCorrect) {
+                            correctAnswersCount++;
+                        }
+
+                        showFeedback(isCorrect, correctAnswer);
                     });
                 });
 
@@ -86,7 +102,8 @@
                     if (currentQuestionIndex < questions.length) {
                         displayQuestion(currentQuestionIndex);
                     } else {
-                        document.querySelector('.question-title').innerText = 'Quiz Completed!';
+                        document.querySelector('.question-title').innerText = 
+                            `Quiz Completed! You answered ${correctAnswersCount} out of ${questions.length} questions correctly.`;
                         document.querySelector('.btn-container').style.display = 'none';
                         document.querySelector('.feedback-container').style.display = 'none';
                         document.querySelector('.next-question-btn').textContent = 'Return to Home';
