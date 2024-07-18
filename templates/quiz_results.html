@@ -1,0 +1,9 @@
+{% extends "index.html" %}
+{% block content %}
+    <h1>{{ title }}</h1>
+
+    {% for quiz_result in results %}
+        <p>{{ quiz_result }}</p>
+    {% endfor %}
+
+{% endblock %}

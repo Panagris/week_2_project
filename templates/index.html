@@ -9,7 +9,7 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     .bg-image {
-      background-image: url("{{ url_for('static', filename='images/purple-background.jpg') }}");
+      background-color: #6C6ABC;
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
@@ -31,17 +31,68 @@
       color: #f8f9fa;
       font-size: 110%;
     }
+
+    .display-logo {
+      text-align: center;
+    }
+
+    .display-logo img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .navbar-brand {
+      background-color: #6C6ABC;
+    }
+
+    .navbar{
+      background-color: #6C6ABC;
+      color: #111111;
+      font-size: 15px;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif, sans-serif;
+    }
+
+    .custom-btn {
+      background-color: #299FB1;
+      color: white;
+    }
+
+    .custom-btn:hover {
+      background-color: #4B85B7;
+      color: white;
+    }
+
+    .nav-link.active {
+      background-color: #E0E0E0;
+      color: black;
+    }
+
+    .nav-link.active:hover {
+      background-color: #d9c7e3 !important;
+    }
+
+    .navbar-nav .nav-link:hover {
+      background-color: #4B85B7;
+      color: white !important;
+    } 
   </style>
   <title>LearnMateAI</title>
 </head>
 
 <body>
   <div class="bg-image">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg">
       <div class="container-fluid">
         <a class="navbar-brand" href="/">
           <img src="{{ url_for('static', filename='images/logo.png') }}" style="display: inline-block;">
-          <span style="display: inline-block;">LearnMateAI</span>
+          <span style="display: inline-block; 
+          font-size: 20px;
+          font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif, sans-serif;
+          font-weight: bold;
+          display: inline-block;
+          width: 140px">
+      <span style="color: #111111;">LearnMate</span><span style="color: #f8f9fa;">AI</span>
+    </span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -51,14 +102,14 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="/">Home</a>
+              <a class="nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="/">Home</a>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="/quiz">Quiz</a>
+              <a class="nav-link {% if request.path == '/quiz' %}active{% endif %}" href="/quiz">Quiz</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/flashcards">Flashcards</a>
+              <a class="nav-link {% if request.path == '/flashcards' %}active{% endif %}" href="/flashcards">Flashcards</a>
             </li>
           </ul>
           <ul class="navbar-nav ml-auto">
