@@ -156,9 +156,6 @@ def get_cards():
 # This route is used to generate dummy flashcards for testing purposes.
 @app.route("/dummy-get-cards", methods=['POST'])
 def dummy_get_cards():
-    # data = request.json
-    # subject = data.get("subject")
-    # subtopic = data.get("subtopic")
     flashcards = [
         {"Definition": "Definition 1", "Term": "Term 1"},
         {"Definition": "Definition 2", "Term": "Term 2"},
