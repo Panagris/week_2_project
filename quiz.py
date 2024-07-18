@@ -1,4 +1,9 @@
 import json
+import openai
+from openai import OpenAI
+import os
+
+
 
 
 def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
@@ -14,7 +19,8 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
                 B. Option...
                 C. Option...
                 D. Option...",
-                "Answer": "The Correct Answer is: "
+                "Answer": "The Correct Answer is: ",
+                "Answer Index": ""
             },
             {
                 "Question": "What is...
@@ -22,7 +28,8 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
                 B. Option...
                 C. Option...
                 D. Option...",
-                "Answer": "The Correct Answer is: "
+                "Answer": "The Correct Answer is: ",
+                "Answer Index": ""
             }
         ]
     }
@@ -44,7 +51,8 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
     system_string = (f"You are a helpful study assistant for students that"
                      f"provides quiz questions and answers for a given subject"
                      f" and topic, responding with a JSON file adhering to "
-                     f"this format {response_format_string}.")
+                     f"this format {response_format_string}. Also"
+                     f"The Answer index should be 1 for A and 2 for B and so on")
 
     response = CLIENT.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -59,3 +67,13 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
         else response.choices[0].message.content
     dictionary_quiz = json.loads(content)
     return dictionary_quiz
+
+#Example usage:
+MY_API_KEY = os.environ.get('OPENAI_KEY')
+openai.api_key = MY_API_KEY
+CLIENT = OpenAI(api_key=MY_API_KEY)
+
+subject = "Geography"
+subtopic = "European Capitals"
+quiz_data = run_quiz(CLIENT, subject, subtopic)
+print(json.dumps(quiz_data, indent=2))
