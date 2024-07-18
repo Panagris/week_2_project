@@ -294,17 +294,17 @@ def generate_quiz():
 
 # This route prompts the user for a subject and subtopic before actually
 # displaying the flashcards.
-@app.route("/recall")
-@login_required
-def recall():
-    return render_template('topics.html', subjects=SUBJECT_SUBTOPIC_DICT,
-                           subject_dictionary=SUBJECT_SUBTOPIC_DICT)
+# @app.route("/recall")
+# @login_required
+# def recall():
+#     return render_template('topics.html', subjects=SUBJECT_SUBTOPIC_DICT,
+#                            subject_dictionary=SUBJECT_SUBTOPIC_DICT)
 
 
 # This route is used to display the flashcards page with the subject and
 # subtopic selected by the user. The subject and subtopic are passed as
 # parameters in the URL from the previous form submission.
-@app.route("/recall", methods=['POST'])
+@app.route("/recall", methods=['GET', 'POST'])
 @login_required
 def recall_post():
     subject = request.form.get('subject_selection')

@@ -1,6 +1,10 @@
 {% extends "index.html" %}
 
 {% block content %}
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='recall.css') }}">
+</head>
 <div class="container">
 
     <h1>{{ title }}</h1>
@@ -12,7 +16,23 @@
     <div class="d-flex justify-content-center my-3">
         <button type="button" class="btn btn-primary" id="loadTerms-btn">Load Terms</button>
     </div>
+    <main class="main-container">
+        <div class="card-container">
+            <div class="card">
 
+                <h5>Definition</h5>
+                <form class="text-submit-form" action="/" method="POST">
+                    <div class="form-group">
+                        <label for="textInput" class="form-label">Type the Answer:</label>
+                        <textarea id="textInput" name="textInput" class="text-input"
+                            placeholder="Enter your text here"></textarea>
+                    </div>
+                    <button type="submit" class="submit-button">Submit</button>
+                </form>
+
+            </div>
+        </div>
+    </main>
     <div class="d-flex justify-content-center my-3">
         <div class="btn-group btn-lg" role="group" aria-label="Basic example">
             <button class="btn btn-primary" type="button" id="restart-fresh-btn" disabled> Restart All Terms?
