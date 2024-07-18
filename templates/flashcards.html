@@ -65,8 +65,8 @@
         // the OpenAPI database.
         function getFlashcards() {
             $.ajax({
-                url: '/get-cards',
-                // url: '/dummy-get-cards',
+                // url: '/get-cards',
+                url: '/dummy-get-cards',
                 type: 'POST',
                 // Send the subject and subtopic to the server as JSON. The
                 // variable values are set using Jinja templating from the
@@ -204,7 +204,8 @@
                 data: JSON.stringify({
                     subject: "{{ subject }}",
                     subtopic: "{{ subtopic }}",
-                    flashcards: correctFlashcards
+                    correctFlashcards: correctFlashcards,
+                    missedFlashcards: missedFlashcards,
                 }),
                 contentType: "application/json; charset=utf-8",
                 success: function (response) {

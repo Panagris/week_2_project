@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, flash, redirect, \
     request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.types import TypeDecorator, VARCHAR
 from flask_behind_proxy import FlaskBehindProxy
 from flask_login import UserMixin, LoginManager, login_user, \
     login_required, logout_user
@@ -9,6 +10,7 @@ import openai
 from openai import OpenAI
 import os
 import git
+import json
 from time import sleep
 from flashcards import run_flashcards
 from quiz import run_quiz
@@ -78,6 +80,41 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))  # Stores only hashed passwords
     name = db.Column(db.String(1000))
+
+
+# Used to store the flashcards in the database
+# TODO: ENSURE that this Copilot code works. Worked locally at 12:06 AM
+# when running scratch.py
+# The missed_flashcards and correct_flashcards should be stored as a list
+# of dictionaries in the database.
+
+# Define a custom column type that inherits from TypeDecorator.
+class JSONEncodedDict(TypeDecorator):
+    """Enables JSON storage by encoding and decoding on the fly."""
+    impl = VARCHAR
+
+    # Implement the process_bind_param method to serialize data to JSON format
+    #  when saving to the database.
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return value
+        return json.dumps(value)
+
+    # process_result_value method to deserialize JSON back into Python data
+    # when loading from the database.
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return value
+        return json.loads(value)
+
+
+# Update the Flashcards model
+class Flashcards(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    subject = db.Column(db.String(100))
+    subtopic = db.Column(db.String(100))
+    missed_flashcards = db.Column(JSONEncodedDict)
+    correct_flashcards = db.Column(JSONEncodedDict)
 
 
 # The OpenAI API key is stored in an environment variable and used to
@@ -171,10 +208,28 @@ def save_flashcards():
     data = request.json
     subject = data.get("subject")
     subtopic = data.get("subtopic")
-    flashcards = data.get("flashcards")
+    missed_flashcards = data.get("missedFlashcards")
+    correct_flashcards = data.get("correctFlashcards")
     # TODO: Save the flashcards to the database
+    # Save flashcards to Database
+    flashcards = Flashcards(
+        subject=subject,
+        subtopic=subtopic,
+        missed_flashcards=missed_flashcards,
+        correct_flashcards=correct_flashcards
+    )
+
+    # flashcards = Flashcards(
+    #     subject=subject,
+    #     subtopic=subtopic,
+    #     missed_flashcards=missed_flashcards,
+    #     correct_flashcards=correct_flashcards
+    # )
+    db.session.add(flashcards)
+    db.session.commit()
     flash('Flashcards saved successfully!', 'success')
     return url_for("home")
+
 
 # This route prompts the user for a subject and subtopic before actually
 # displaying the quiz.
