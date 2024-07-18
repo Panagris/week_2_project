@@ -1,0 +1,79 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h1>{{ title }}</h1>
+    <p class="fs-5">Active recall is a study method that involves actively stimulating memory during the learning
+        process. It is based on the principle that actively retrieving information helps improve and
+        strengthen memory. The method employed by LearnMateAI is based on supplying
+        the term associated with a prompted definition, without looking at any
+        material. </p>
+    <div class="d-flex justify-content-center my-3">
+        <button type="button" class="btn btn-primary" id="loadTerms-btn">Load Terms</button>
+    </div>
+
+    <div class="d-flex justify-content-center my-3">
+        <div class="btn-group btn-lg" role="group" aria-label="Basic example">
+            <button class="btn btn-primary" type="button" id="restart-fresh-btn" disabled> Restart All Terms?
+            </button>
+            <button class="btn btn-primary" type="button" id="restart-missed-btn" disabled> Restart Missed Terms?
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        let currentIndex = 0;
+        let recallTerms = [];
+        let missedTerms = [];
+        let correctTerms = [];
+        getTerms();
+
+        // Use the /get-cards url defined in main.py to get the flashcards from
+        // the OpenAPI database.
+        function getTerms() {
+            $.ajax({
+                // url: '/get-cards',
+                url: '/dummy-get-cards',
+                type: 'POST',
+                // Send the subject and subtopic to the server as JSON. The
+                // variable values are set using Jinja templating from the
+                // main.py file.
+                data: JSON.stringify({
+                    subject: "{{ subject }}",
+                    subtopic: "{{ subtopic }}"
+                }),
+                contentType: "application/json; charset=utf-8",
+                beforeSend: function () { },
+                // Upon sucess, update the flashcards variable with the
+                // response and display the first flashcard. Also, remove the
+                // placeholder glow effect.
+                success: function (response) {
+                    terms = response;
+                    shuffle(terms);
+                },
+                complete: function () { },
+                error: function () {
+                    // Handle error, e.g., display a message
+                    console.error('Failed to fetch terms.');
+                }
+            });
+        }
+
+        function shuffle(array) {
+            let index = array.length;
+            // While there remain elements to shuffle...
+            while (index != 0) {
+                // Pick a remaining element...
+                let randomIndex = Math.floor(Math.random() * index);
+                index--;
+                // And swap it with the current element.
+                [array[index], array[randomIndex]] = [array[randomIndex], array[index]];
+            }
+        }
+    });
+
+</script>
+{% endblock %}
