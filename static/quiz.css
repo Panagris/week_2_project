@@ -3,23 +3,23 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 90vh; 
+    height: 70vh; 
     background-color: #f8f9fa;
-    border-radius: 10px;
+    border-radius: 7px;
 }
 
 .question-container {
     background-color: #ffffff;
-    border-radius: 10px;
-    padding: 20px;
+    border-radius: 7px;
+    padding: 15px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 80%; 
+    width: 70%; 
     max-width: 800px;
     text-align: center;
 }
 
 .question-title {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 20px;
 }
@@ -28,7 +28,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px; 
-    height: 60vh; 
+    height: 40vh; 
 }
 
 .btn-row {
@@ -125,7 +125,7 @@
 }
 
 .feedback-text {
-    font-size: 18px;
+    font-size: 22px;
     color: black;
     margin-bottom: 10px;
 }
