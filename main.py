@@ -3,6 +3,8 @@ from flask import Flask, render_template, url_for, flash, redirect, \
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.types import TypeDecorator, VARCHAR
+from sqlalchemy.orm import Mapped
+from typing import List
 from flask_behind_proxy import FlaskBehindProxy
 from flask_login import UserMixin, LoginManager, login_user, \
     login_required, logout_user
@@ -80,27 +82,32 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))  # Stores only hashed passwords
     name = db.Column(db.String(1000))
+    flashcards: Mapped[List["Flashcards"]
+                       ] = db.relationship(back_populates="user")
 
 
 # Used to store the flashcards in the database
-# TODO: ENSURE that this Copilot code works. Worked locally at 12:06 AM
+# TODO: ENSURE that this Copilot code works. Worked locally last night.
 # when running scratch.py
 # The missed_flashcards and correct_flashcards should be stored as a list
 # of dictionaries in the database.
 
-# Define a custom column type that inherits from TypeDecorator.
+# Define a custom column type that inherits from TypeDecorator. TypeDecorator
+# is for user-defined types, helping to marshall data to/from the DB.
+# Marshlling transforms the memory representation of an object to a data
+# format suitable for passing into the relational DB.
 class JSONEncodedDict(TypeDecorator):
     """Enables JSON storage by encoding and decoding on the fly."""
     impl = VARCHAR
-
     # Implement the process_bind_param method to serialize data to JSON format
-    #  when saving to the database.
+    # when saving to the database.
+
     def process_bind_param(self, value, dialect):
         if value is None:
             return value
         return json.dumps(value)
 
-    # process_result_value method to deserialize JSON back into Python data
+    # Process_result_value method to deserialize JSON back into Python data
     # when loading from the database.
     def process_result_value(self, value, dialect):
         if value is None:
@@ -110,11 +117,15 @@ class JSONEncodedDict(TypeDecorator):
 
 # Update the Flashcards model
 class Flashcards(db.Model):
+    __tablename__ = "flashcards"
+
     id = db.Column(db.Integer, primary_key=True)
     subject = db.Column(db.String(100))
     subtopic = db.Column(db.String(100))
     missed_flashcards = db.Column(JSONEncodedDict)
     correct_flashcards = db.Column(JSONEncodedDict)
+    # Links the flashcards to the user who saved them.
+    user: Mapped["User"] = db.relationship(back_populates="flashcards")
 
 
 # The OpenAI API key is stored in an environment variable and used to
