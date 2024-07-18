@@ -21,7 +21,8 @@
                 <option selected disabled>Choose...</option>
                 {% for subject in subject_dictionary %}
                 {% for topic in subject_dictionary[subject] %}
-                <option style='display: none;' class="subtopics-dropdown option-{{ subject }}" value="{{ topic }}">{{ topic }}</option>
+                <option style='display: none;' class="subtopics-dropdown option-{{ subject }}" value="{{ topic }}">{{
+                    topic }}</option>
                 {% endfor %}
                 {% endfor %}
         </div>
@@ -37,11 +38,12 @@
         const subtopicDropdown = document.getElementById('subtopicDropdown');
 
         subjectDropdown.addEventListener('change', function () {
+
             let selectedSubject = subjectDropdown.value;
             const options = document.getElementsByClassName('subtopics-dropdown');
 
-            for(let i = 0; i < options.length; i++) {
-                
+            for (let i = 0; i < options.length; i++) {
+
                 console.log('option-' + selectedSubject);
                 if (options[i].classList.contains('option-' + selectedSubject)) {
                     options[i].style.display = 'block';
@@ -52,5 +54,4 @@
         });
     });
 </script>
-
 {% endblock content %}
