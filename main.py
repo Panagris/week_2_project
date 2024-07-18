@@ -131,8 +131,8 @@ class Flashcards(db.Model):
     # String representation of a user for debugging purposes
     def __repr__(self):
         return f'<Subject: {self.subject}, Subtopic: {self.subtopic}' \
-               f' :: Length Correct: {len(self.correct_flashcards)}' \
-               f' :: Length Missed: {len(self.missed_flashcards)}>'
+            f' :: Length Correct: {len(self.correct_flashcards)}' \
+            f' :: Length Missed: {len(self.missed_flashcards)}>'
 
 
 # Used for storing prior quiz results
@@ -149,7 +149,7 @@ class QuizResult(db.Model):
     # String representation of a quiz result for debugging purposes
     def __repr__(self):
         return f"<{self.user.name}'s Quiz Result :: " \
-               f"{self.subtopic} ({self.subject}) : {self.num_correct} / 5>"
+            f"{self.subtopic} ({self.subject}) : {self.num_correct} / 5>"
 
 
 # The OpenAI API key is stored in an environment variable and used to
@@ -290,6 +290,28 @@ def generate_quiz():
     subtopic = data.get("subtopic")
     quiz_data = run_quiz(CLIENT, subject, subtopic)
     return jsonify(quiz_data)
+
+
+# This route prompts the user for a subject and subtopic before actually
+# displaying the flashcards.
+@app.route("/recall")
+@login_required
+def recall():
+    return render_template('topics.html', subjects=SUBJECT_SUBTOPIC_DICT,
+                           subject_dictionary=SUBJECT_SUBTOPIC_DICT)
+
+
+# This route is used to display the flashcards page with the subject and
+# subtopic selected by the user. The subject and subtopic are passed as
+# parameters in the URL from the previous form submission.
+@app.route("/recall", methods=['POST'])
+@login_required
+def recall_post():
+    subject = request.form.get('subject_selection')
+    subtopic = request.form.get('subtopic_selection')
+
+    return render_template('recall.html', title='Active Recall',
+                           subject=subject, subtopic=subtopic)
 
 
 @app.route("/signin")
