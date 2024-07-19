@@ -20,14 +20,17 @@
         <div class="card-container">
             <div class="card">
 
-                <h5>Definition</h5>
-                <form class="text-submit-form" action="/" method="POST">
+                <h5 id="def-text">Definition</h5>
+                <form class="text-submit-form" action="/" method="GET">
                     <div class="form-group">
                         <label for="textInput" class="form-label">Type the Answer:</label>
                         <textarea id="textInput" name="textInput" class="text-input"
                             placeholder="Enter your text here"></textarea>
                     </div>
-                    <button type="submit" class="submit-button">Submit</button>
+                    <p id="answer-correctness" style="position: left;
+                        color: '';"></p>
+                    <button class="btn btn-primary" type="button" id="answer-btn">Check Answer</button>
+                    <button class="btn btn-primary" type="submit" id="complete-btn" disabled>Complete Session</button>
                 </form>
 
             </div>
@@ -46,10 +49,10 @@
 <script>
     $(document).ready(function () {
         let currentIndex = 0;
-        let recallTerms = [];
+        let terms = [];
         let missedTerms = [];
         let correctTerms = [];
-        getTerms();
+        // getTerms();
 
         // Use the /get-cards url defined in main.py to get the flashcards from
         // the OpenAPI database.
@@ -72,7 +75,7 @@
                 // placeholder glow effect.
                 success: function (response) {
                     terms = response;
-                    shuffle(terms);
+                    // shuffle(terms);
                 },
                 complete: function () { },
                 error: function () {
@@ -93,6 +96,47 @@
                 [array[index], array[randomIndex]] = [array[randomIndex], array[index]];
             }
         }
+
+        $('#loadTerms-btn').click(function () {
+            getTerms();
+            // $('#restart-fresh-btn').prop('disabled', false);
+            // $('#restart-missed-btn').prop('disabled', false);
+            $('#loadTerms-btn').prop('disabled', true);
+            $('#textInput').val('');
+            currentIndex = 0;
+            missedTerms = [];
+            correctTerms = [];
+            $('#def-text').text(terms[currentIndex]['Definition']);
+            // $('#def-text').text("Super long definition that I'm testing");
+        });
+
+        // setTimeout does not inhibit other functions from executing.
+        $('#answer-btn').click(function () {
+            let textInput = $('#textInput').val().trim().toLowerCase();
+            if (textInput === terms[currentIndex]['Term'].toLowerCase()) {
+                correctTerms.push(terms[currentIndex]);
+                $('#answer-correctness').prop('style', 'color: green');
+                $('#answer-correctness').text('Correct!');
+            } else {
+                $('#answer-correctness').prop('style', 'color: red');
+                $('#answer-correctness').text('Incorrect. The correct answer is: ' + terms[currentIndex]['Term']);
+                missedTerms.push(terms[currentIndex]);
+            }
+            currentIndex++;
+            setTimeout(function () {
+                if (currentIndex < terms.length) {
+                    $('#def-text').text(terms[currentIndex]['Definition']);
+                    $('#answer-correctness').text('');
+                } else {
+                    $('#answer-correctness').text('');
+                    $('#def-text').text('No more terms to display.');
+                    $('#answer-btn').prop('disabled', true);
+                    $('#complete-btn').prop('disabled', false);
+                }
+            }, 1000);
+
+        });
+
     });
 
 </script>
