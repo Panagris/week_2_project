@@ -8,10 +8,6 @@
         information. Use the flashcards below to test your knowledge on the chosen
         topic. </p>
 
-    <div class="d-flex justify-content-center my-3">
-        <button type="button" class="btn btn-primary" id="loadFlashCards-btn">Load Flashcards</button>
-    </div>
-
     <div class="d-grid gap-2 col-6 mx-auto" id="flashcard-container">
         <!-- Placeholders for loading effect -->
         <br>
@@ -138,11 +134,6 @@
             $('#correct-btn').prop('disabled', flashcards.length === 0);
             $('#wrong-btn').prop('disabled', flashcards.length === 0);
         }
-
-        // Event listener for the Load Flashcards button
-        $('#loadFlashCards-btn').click(function () {
-            getFlashcards();
-        });
 
         $('#def-term').click(function () {
             let currentText = $(this).text();
