@@ -320,6 +320,25 @@ def generate_quiz():
     return jsonify(quiz_data)
 
 
+# Saves the results of a quiz to the database from the JSON sent
+# from quiz.html
+@app.route("/save_quiz_result", methods=['POST'])
+@login_required
+def save_quiz_result():
+    data = request.json
+    result = QuizResult(
+        time=None,
+        subject=data.get("subject"),
+        subtopic=data.get("subtopic"),
+        num_correct=data.get("num_correct"),
+        user=current_user
+    )
+    db.session.add(result)
+    db.session.commit()
+
+    return redirect(url_for('quiz_results'))
+
+
 # This route prompts the user for a subject and subtopic before actually
 # displaying the flashcards.
 # @app.route("/recall")
@@ -407,23 +426,6 @@ def signup_post():
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
-
-# Dummy way to add quiz results; change later
-@app.route('/add_result/<subject>/<subtopic>/<int:score>')
-@login_required
-def add_result(subject, subtopic, score):
-    result = QuizResult(
-        time=None,
-        subject=subject,
-        subtopic=subtopic,
-        num_correct=score,
-        user=current_user
-    )
-    db.session.add(result)
-    db.session.commit()
-
-    return redirect(url_for('quiz_results'))
 
 
 # This is just used for testing purposes to make sure quiz results are
