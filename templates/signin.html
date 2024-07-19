@@ -39,9 +39,9 @@
         </fieldset>
     </form>
     {% if title == "Sign In" %}
-        <p>New User? <a href="{{ url_for('signup') }}">Sign Up</a>!</p>
+        <p>New User? <a class="custom-link-color" href="{{ url_for('signup') }}">Sign Up</a>!</p>
     {% else %}
-        <p>Returning User? <a href="{{ url_for('signin') }}">Sign In</a>!</p>
+        <p>Returning User? <a class="custom-link-color" href="{{ url_for('signin') }}">Sign In</a>!</p>
     {% endif %}
 </div>
 {% endblock %}

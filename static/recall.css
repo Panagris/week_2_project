@@ -64,7 +64,7 @@ body {
 
 .submit-button {
     display: inline-block;
-    background-color: #007bff;
+    background-color: #62b0bc;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -73,5 +73,5 @@ body {
 }
 
 .submit-button:hover {
-    background-color: #0056b3;
+    background-color: #53959f;
 }

@@ -2,6 +2,31 @@
 
 {% block content %}
 {% if current_user.is_authenticated %}
+<head>
+    <style>
+    .container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        background-color: #eaeaff;
+    }
+
+    /* Header styling */
+    h1 {
+        text-align: center;
+        color: #333;
+        font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        margin-bottom: 20px;
+    }
+
+    p {
+        color: black;
+    }
+    </style>
+    <title>Home Page</title>
+</head>
 <!-- Intro message for logged in user -->
 <h1>Welcome, {{ current_user.name }}!</h1>
 <p>LearnMateAI is a platform that helps students to learn and practice their
@@ -36,9 +61,9 @@
 <p>Quizzes are a great way to test your knowledge and improve your skills. You can take quizzes on various topics and
     see
     how well you perform.</p>
-
-<p class="center"><a class="link-primary link-offset-2 link-underline-opacity-25
-link-underline-opacity-100-hover fw-bold" href="/signin">Sign In / Up</a> to access
-    these features!</p>
+    <p class="center">
+        <a class="custom-link-color" href="/signin">Sign In / Up</a> to access
+        these features!
+    </p>
 {% endif %}
 {% endblock content %}
