@@ -1,9 +1,4 @@
 import json
-import openai
-from openai import OpenAI
-import os
-
-
 
 
 def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
@@ -48,11 +43,11 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
                    f"adhere to the Key names provided in the format "
                    f"for the returned JSON dictionary.")
 
-    system_string = (f"You are a helpful study assistant for students that"
+    system_string = (f"You are a helpful study assistant for students that "
                      f"provides quiz questions and answers for a given subject"
                      f" and topic, responding with a JSON file adhering to "
-                     f"this format {response_format_string}. Also"
-                     f"The Answer index should be 1 for A and 2 for B and so on")
+                     f"this format {response_format_string}. Also, the "
+                     f"Answer index should be 1 for A and 2 for B and so on")
 
     response = CLIENT.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -67,4 +62,3 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
         else response.choices[0].message.content
     dictionary_quiz = json.loads(content)
     return dictionary_quiz
-
