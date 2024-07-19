@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container">
 
-    <h1>{{ title }}</h1>
+    <h1>Flashcards</h1>
     <p class="fs-5">Flashcards are a great way to learn and memorize
         information. Use the flashcards below to test your knowledge on the chosen
         topic. </p>
@@ -56,13 +56,25 @@
 <script>
     $(document).ready(function () {
         let currentIndex = 0;
+        // If all_flashcards is not defined by Python, set it to an empty array. If it is
+        // defined, parse it as JSON, turning it into a simple JS array.
         let flashcards = [];
-        let missedFlashcards = [];
-        let correctFlashcards = [];
-        getFlashcards();
+        let missedFlashcards = "{{ missed_flashcards }}" ? JSON.parse("{{ missed_flashcards | tojson }}") : [];
+        let correctFlashcards = "{{ correct_flashcards }}" ? JSON.parse("{{ correct_flashcards | tojson }}") : [];
+        
+        // If the flashcards were loaded in from the DB, then do not get a new deck.
+        if(correctFlashcards.length > 0 || missedFlashcards.length > 0) {
+            flashcards = correctFlashcards.concat(missedFlashcards);
+            shuffle(flashcards);
+            $('#def-term').text(flashcards[currentIndex]['Definition']);
+            updateButtons();
+            $('#placeholders-div').hide();
+        } else {
+            getFlashcards();
+        }
 
         // Use the /get-cards url defined in main.py to get the flashcards from
-        // the OpenAPI database.
+        // the OpenAPI database. Use the /dummy-get-cards for testing purposes.
         function getFlashcards() {
             $.ajax({
                 // url: '/get-cards',
