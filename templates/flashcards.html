@@ -1,6 +1,48 @@
 {% extends "index.html" %}
 
 {% block content %}
+<head>
+<style>
+    .flashcard {
+        position: relative;
+        width: 100%;
+        height: 300px;
+        transform-style: preserve-3d;
+        transition: transform 0.6s;
+        cursor: pointer;
+    }
+
+    .flashcard.is-flipped {
+        transform: rotateY(180deg);
+    }
+
+    .flashcard .flashcard-front,
+    .flashcard .flashcard-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .flashcard .flashcard-front {
+        background-color: #C975AA;
+        color: #eaeaff;
+    }
+
+    .flashcard .flashcard-back {
+        background-color: #eaeaff;
+        color: #C975AA;
+        transform: rotateY(180deg);
+    }
+</style>
+<title>Flashcards</title>
+</head>
 <div class="container">
 
     <h1>Flashcards</h1>
@@ -11,39 +53,32 @@
     <div class="d-grid gap-2 col-6 mx-auto" id="flashcard-container">
         <!-- Placeholders for loading effect -->
         <br>
-        <button class="btn btn-primary btn-lg placeholder-glow" type="button" id="def-term" data-bs-toggle="button"
-            style="height: 300px">
-            <div id="placeholders-div">
-                <span class="placeholder col-8"></span>
-                <span class="placeholder col-10"></span>
-                <span class="placeholder col-6"></span>
-                <span class="placeholder col-10"></span>
-                <span class="placeholder col-12"></span>
-                <span class="placeholder col-8"></span>
-            </div>
-        </button>
-    </div>
-
-    <div class="d-flex justify-content-center my-3">
-        <div class="btn-group btn-lg" role="group" aria-label="Basic example">
-            <button class="btn btn-primary" type="button" id="wrong-btn" disabled> Wrong :( </button>
-            <button class="btn btn-primary" type="button" id="correct-btn" disabled> Got It! :) </button>
+        <div class="flashcard btn-lg placeholder-glow" id="def-term">
+            <div class="flashcard-front" id="flashcard-front"></div>
+            <div class="flashcard-back" id="flashcard-back"></div>
         </div>
     </div>
 
     <div class="d-flex justify-content-center my-3">
         <div class="btn-group btn-lg" role="group" aria-label="Basic example">
-            <button class="btn btn-primary" type="button" id="restart-fresh-btn" disabled> Restart All Flashcards?
+            <button class="btn custom-btn" type="button" id="wrong-btn" disabled> Wrong :( </button>
+            <button class="btn custom-btn" type="button" id="correct-btn" disabled> Got It! :) </button>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center my-3">
+        <div class="btn-group btn-lg" role="group" aria-label="Basic example">
+            <button class="btn custom-btn" type="button" id="restart-fresh-btn" disabled> Restart All Flashcards?
             </button>
-            <button class="btn btn-primary" type="button" id="restart-missed-btn" disabled> Restart Missed Flashcards?
+            <button class="btn custom-btn" type="button" id="restart-missed-btn" disabled> Restart Missed Flashcards?
             </button>
         </div>
     </div>
 
     <div class="d-flex justify-content-center my-3">
         <div class="btn-group btn-lg" role="group" aria-label="Basic example">
-            <button class="btn btn-primary" type="button" id="save-btn" disabled> Save Flashcards </button>
-            <button class="btn btn-primary" type="button" id="generate-new-btn" disabled> Generate New Flashcards
+            <button class="btn custom-btn" type="button" id="save-btn" disabled> Save Flashcards </button>
+            <button class="btn custom-btn" type="button" id="generate-new-btn" disabled> Generate New Flashcards
             </button>
         </div>
     </div>
@@ -57,12 +92,13 @@
         let flashcards = [];
         let missedFlashcards = "{{ missed_flashcards }}" ? JSON.parse("{{ missed_flashcards | tojson }}") : [];
         let correctFlashcards = "{{ correct_flashcards }}" ? JSON.parse("{{ correct_flashcards | tojson }}") : [];
-        
+
         // If the flashcards were loaded in from the DB, then do not get a new deck.
-        if(correctFlashcards.length > 0 || missedFlashcards.length > 0) {
+        if (correctFlashcards.length > 0 || missedFlashcards.length > 0) {
             flashcards = correctFlashcards.concat(missedFlashcards);
             shuffle(flashcards);
-            $('#def-term').text(flashcards[currentIndex]['Definition']);
+            $('#flashcard-front').text(flashcards[currentIndex]['Definition']);
+            $('#flashcard-back').text(flashcards[currentIndex]['Term']);
             updateButtons();
             $('#placeholders-div').hide();
         } else {
@@ -90,12 +126,13 @@
                     $('#placeholders-div').show();
                     $('#loadFlashCards-btn').prop('disabled', true);
                 },
-                // Upon sucess, update the flashcards variable with the
+                // Upon success, update the flashcards variable with the
                 // response and display the first flashcard. Also, remove the
                 // placeholder glow effect.
                 success: function (response) {
                     flashcards = response;
-                    $('#def-term').text(flashcards[currentIndex]['Definition']);
+                    $('#flashcard-front').text(flashcards[currentIndex]['Definition']);
+                    $('#flashcard-back').text(flashcards[currentIndex]['Term']);
                     updateButtons();
                 },
                 complete: function () {
@@ -121,7 +158,8 @@
         }
 
         function endOfFlashcards() {
-            $('#def-term').text('No more flashcards to display.');
+            $('#flashcard-front').text('No more flashcards to display.');
+            $('#flashcard-back').text('');
             $('#correct-btn').prop('disabled', true);
             $('#wrong-btn').prop('disabled', true);
             $('#restart-fresh-btn').prop('disabled', false);
@@ -136,13 +174,7 @@
         }
 
         $('#def-term').click(function () {
-            let currentText = $(this).text();
-
-            if (currentText === flashcards[currentIndex]['Definition']) {
-                $(this).text(flashcards[currentIndex]['Term']);
-            } else {
-                $(this).text(flashcards[currentIndex]['Definition']);
-            }
+            $(this).toggleClass('is-flipped');
         });
 
         $('#correct-btn').click(function () {
@@ -152,7 +184,8 @@
                 currentIndex = flashcards.length - 1;
             }
             if (flashcards.length > 0) {
-                $('#def-term').text(flashcards[currentIndex]['Definition']);
+                $('#flashcard-front').text(flashcards[currentIndex]['Definition']);
+                $('#flashcard-back').text(flashcards[currentIndex]['Term']);
             } else {
                 endOfFlashcards();
             }
@@ -166,7 +199,8 @@
                 currentIndex = flashcards.length - 1;
             }
             if (flashcards.length > 0) {
-                $('#def-term').text(flashcards[currentIndex]['Definition']);
+                $('#flashcard-front').text(flashcards[currentIndex]['Definition']);
+                $('#flashcard-back').text(flashcards[currentIndex]['Term']);
             } else {
                 endOfFlashcards();
             }
@@ -179,7 +213,8 @@
             correctFlashcards = [];
             missedFlashcards = [];
             currentIndex = 0;
-            $('#def-term').text(flashcards[currentIndex]['Definition']);
+            $('#flashcard-front').text(flashcards[currentIndex]['Definition']);
+            $('#flashcard-back').text(flashcards[currentIndex]['Term']);
             updateButtons();
             $('#restart-fresh-btn').prop('disabled', true);
             $('#restart-missed-btn').prop('disabled', true);
@@ -192,7 +227,8 @@
             shuffle(flashcards);
             missedFlashcards = [];
             currentIndex = 0;
-            $('#def-term').text(flashcards[currentIndex]['Definition']);
+            $('#flashcard-front').text(flashcards[currentIndex]['Definition']);
+            $('#flashcard-back').text(flashcards[currentIndex]['Term']);
             updateButtons();
             $('#restart-missed-btn').prop('disabled', true);
             $('#restart-fresh-btn').prop('disabled', true);

@@ -2,6 +2,73 @@
 {% extends "index.html" %}
 
 {% block content %}
+<head>
+    <style>
+    /* Style for the dropdown menus */
+    .form-select {
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        background-color: #f8f9fa;
+        padding: 10px 15px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:hover,
+    .form-select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    /* Container styling */
+    .container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        background-color: #eaeaff;
+    }
+
+    /* Label styling */
+    .form-label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Header styling */
+    h1 {
+        text-align: center;
+        color: #333;
+        font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        margin-bottom: 20px;
+    }
+
+    /* Add transition effects to dropdown options */
+    #subjectDropdownMenu option,
+    #subtopicDropdown option {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Hidden options for subtopics */
+    .subtopics-dropdown {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    /* Visible options for subtopics */
+    .subtopics-dropdown.show {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    p {
+        color: black;
+    }
+    </style>
+    <title>Home Page</title>
+</head>
+
 <h1>Choose your topic:</h1>
 
 <div class="container mt-5">
