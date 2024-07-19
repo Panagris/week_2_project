@@ -13,9 +13,7 @@
         strengthen memory. The method employed by LearnMateAI is based on supplying
         the term associated with a prompted definition, without looking at any
         material. </p>
-    <div class="d-flex justify-content-center my-3">
-        <button type="button" class="btn btn-primary" id="loadTerms-btn">Load Terms</button>
-    </div>
+    <div class="d-flex my-1"></div>
     <main class="main-container">
         <div class="card-container">
             <div class="card">
@@ -27,29 +25,28 @@
                     </h5>
                 </div>
 
-                <form class="text-submit-form" action="/" method="GET">
+                <form class="text-submit-form" action="/" method="GET" id="recall-form">
                     <div class="form-group">
                         <label for="textInput" class="form-label">Type the Answer:</label>
-                        <textarea id="textInput" name="textInput" class="text-input"
-                            placeholder="Enter your text here"></textarea>
+                        <textarea id="textInput" name="textInput" class="text-input" placeholder="Enter your text here"
+                            disabled></textarea>
                     </div>
-                    <p id="answer-correctness" style="position: left;
-                        color: '';"></p>
+                    <p id="answer-correctness" style="color: '';"></p>
                     <button class="btn btn-primary" type="button" id="answer-btn">Check Answer</button>
                     <button class="btn btn-primary" type="submit" id="complete-btn" disabled>Complete Session</button>
                 </form>
 
             </div>
+            <div class="d-flex justify-content-center my-3">
+                <div class="btn-group btn-lg" role="group" aria-label="Basic example">
+                    <button class="btn btn-primary" type="button" id="restart-fresh-btn" disabled> Restart All Terms?
+                    </button>
+                    <button class="btn btn-primary" type="button" id="restart-missed-btn" disabled> Restart Missed Terms?
+                    </button>
+                </div>
+            </div>
         </div>
     </main>
-    <div class="d-flex justify-content-center my-3">
-        <div class="btn-group btn-lg" role="group" aria-label="Basic example">
-            <button class="btn btn-primary" type="button" id="restart-fresh-btn" disabled> Restart All Terms?
-            </button>
-            <button class="btn btn-primary" type="button" id="restart-missed-btn" disabled> Restart Missed Terms?
-            </button>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -58,8 +55,9 @@
         let terms = [];
         let missedTerms = [];
         let correctTerms = [];
+        getTerms();
 
-        // Use the /get-cards url defined in main.py to get the flashcards from
+        // Use the /get-cards url defined in main.py to get the terms from
         // the OpenAPI database.
         function getTerms() {
             $.ajax({
@@ -75,7 +73,7 @@
                 }),
                 contentType: "application/json; charset=utf-8",
                 beforeSend: function () {
-                    $('#loadTerms-btn').prop('disabled', true);
+                    // $('#loadTerms-btn').prop('disabled', true);
                     $('#text-placeholder').prop('hidden', false);
                 },
                 // Upon sucess, update the terms variable with the
@@ -85,11 +83,12 @@
                     terms = response;
                     $('#text-placeholder').prop('hidden', true);
                     $('#def-text').prop('hidden', false);
+                    $('#textInput').prop('disabled', false);
+                    $('#def-text').text(terms[currentIndex]['Definition']);
                 },
                 // Upon completion, set the definition text to the
                 // current term's definition.
                 complete: function () {
-                    $('#def-text').text(terms[currentIndex]['Definition']);
                 },
                 error: function () {
                     // Handle error, e.g., display a message
@@ -112,12 +111,22 @@
             }
         }
 
-        $('#loadTerms-btn').click(function () {
-            getTerms();
+
+        // Existing click event for the answer button
+        $('#answer-btn').click(function () {
+            submitAnswer();
         });
 
-        // setTimeout does not inhibit other functions from executing.
-        $('#answer-btn').click(function () {
+        // Keypress event for the textarea
+        $('#textInput').keypress(function (event) {
+            // Check if the pressed key is 'Enter'
+            if (event.which == 13) {
+                event.preventDefault(); // Prevent the default action (form submission)
+                $('#answer-btn').click(); // Trigger the answer button click
+            }
+        });
+
+        function submitAnswer() {
             let textInput = $('#textInput').val().trim().toLowerCase();
             if (textInput === terms[currentIndex]['Term'].toLowerCase()) {
                 correctTerms.push(terms[currentIndex]);
@@ -129,18 +138,47 @@
                 missedTerms.push(terms[currentIndex]);
             }
             currentIndex++;
+            // setTimeout does not inhibit other functions from executing.
             setTimeout(function () {
+                $('#recall-form')[0].reset();
                 if (currentIndex < terms.length) {
                     $('#def-text').text(terms[currentIndex]['Definition']);
                     $('#answer-correctness').text('');
                 } else {
                     $('#answer-correctness').text('');
+                    $('#textInput').prop('disabled', true);
                     $('#def-text').text('No more terms to display.');
                     $('#answer-btn').prop('disabled', true);
                     $('#complete-btn').prop('disabled', false);
+                    $('#restart-fresh-btn').prop('disabled', false);
+                    $('#restart-missed-btn').prop('disabled', missedTerms.length === 0);
                 }
             }, 3000);
+        }
 
+        $('#restart-fresh-btn').click(function () {
+            currentIndex = 0;
+            terms = missedTerms.concat(correctTerms);
+            shuffle(terms);
+            missedTerms = [];
+            correctTerms = [];
+            $('#def-text').text(terms[currentIndex]['Definition']);
+            $('#textInput').prop('disabled', false);
+            $('#answer-btn').prop('disabled', false);
+            $('#complete-btn').prop('disabled', true);
+        });
+
+        $('#restart-missed-btn').click(function () {
+            currentIndex = 0;
+            terms = missedTerms;
+            shuffle(terms);
+            missedTerms = [];
+            $('#restart-missed-btn').prop('disabled', true);
+            $('#restart-fresh-btn').prop('disabled', true);
+            $('#def-text').text(terms[currentIndex]['Definition']);
+            $('#textInput').prop('disabled', false);
+            $('#answer-btn').prop('disabled', false);
+            $('#complete-btn').prop('disabled', true);
         });
 
     });

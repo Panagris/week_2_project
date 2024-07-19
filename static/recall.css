@@ -1,23 +1,32 @@
-.main-container {
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.main-container, .card-container {
+    margin-top: 10px;
+    flex-grow: 1;
+}
+
+ .main-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    display: flex;
-    height: 50vh;
     border-radius: 7px;
 }
 
 .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    text-align: center;
+    justify-content: center;
     border-radius: 7px;
+    margin-bottom: 40px;
     padding: 15px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 70%;
     max-width: 800px;
-    text-align: center;
-
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    
 }
 
 .card {
