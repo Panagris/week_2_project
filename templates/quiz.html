@@ -45,7 +45,7 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    subject: "{{ subject }}", // Replace later!
+                    subject: "{{ subject }}",
                     subtopic: "{{ subtopic }}"
                 }),
             })
@@ -105,9 +105,26 @@
                             `Quiz Completed! You answered ${correctAnswersCount} out of ${questions.length} questions correctly.`;
                         document.querySelector('.btn-container').style.display = 'none';
                         document.querySelector('.feedback-container').style.display = 'none';
-                        document.querySelector('.next-question-btn').textContent = 'Return to Home';
-                        document.querySelector('.next-question-btn').addEventListener('click', () => {
-                            window.location.href = '/';
+                        document.querySelector('.next-question-btn').textContent = 'Finish';
+                        document.querySelector('.next-question-btn').addEventListener('click', async () => {
+                            // Save the quiz results to the database
+                            const response = await fetch('/save_quiz_result', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    subject: "{{ subject }}",
+                                    subtopic: "{{ subtopic }}",
+                                    num_correct: correctAnswersCount,
+                                    // The time stamp of the quiz is handled on server
+                                }),
+                            });
+                            // GACK!!! This was a really ugly way to do this
+                            // I thought that the post request would automatically
+                            // redirect to quiz_results. This is a quick and
+                            // dirty way to force it to do what I want it to do
+                            window.location.href = '/quiz_results'
                         });
                     }
                 });
