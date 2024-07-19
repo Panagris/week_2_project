@@ -131,8 +131,8 @@ class Flashcards(db.Model):
     # String representation of a user for debugging purposes
     def __repr__(self):
         return f'<Subject: {self.subject}, Subtopic: {self.subtopic}' \
-               f' :: Length Correct: {len(self.correct_flashcards)}' \
-               f' :: Length Missed: {len(self.missed_flashcards)}>'
+            f' :: Length Correct: {len(self.correct_flashcards)}' \
+            f' :: Length Missed: {len(self.missed_flashcards)}>'
 
 
 # Used for storing prior quiz results
@@ -149,7 +149,7 @@ class QuizResult(db.Model):
     # String representation of a quiz result for debugging purposes
     def __repr__(self):
         return f"<{self.user.name}'s Quiz Result :: " \
-               f"{self.subtopic} ({self.subject}) : {self.num_correct} / 5>"
+            f"{self.subtopic} ({self.subject}) : {self.num_correct} / 5>"
 
 
 # The OpenAI API key is stored in an environment variable and used to
@@ -187,7 +187,7 @@ def load_user(user_id):
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template('home.html', title='Home')
+    return render_template('home.html')
 
 
 # This route prompts the user for a subject and subtopic before actually
@@ -208,8 +208,8 @@ def flashcards_post():
     subject = request.form.get('subject_selection')
     subtopic = request.form.get('subtopic_selection')
 
-    return render_template('flashcards.html', title='Flashcards',
-                           subject=subject, subtopic=subtopic)
+    return render_template('flashcards.html', subject=subject,
+                           subtopic=subtopic)
 
 
 # This route is used to generate the flashcards based on the subject and
@@ -258,6 +258,31 @@ def save_flashcards():
     db.session.commit()
     flash('Flashcards saved successfully!', 'info')
     return url_for("home")
+
+
+@app.route("/load-cards", methods=['POST'])
+@login_required
+def load_flashcards():
+    data = request.json
+    subject = data.get("subject")
+    subtopic = data.get("subtopic")
+    # Load flashcards from Database
+    # TODO: what if the user has multiple flashcard decks for the same
+    # subject and subtopic?
+    # NOTE: maybe add a Time object for when the deck was generated?
+    flashcards = Flashcards.query.filter_by(subject=subject,
+                                            subtopic=subtopic,
+                                            user=current_user).first()
+    if flashcards:
+        missed_flashcards = flashcards.missed_flashcards
+        correct_flashcards = flashcards.correct_flashcards
+        return render_template('flashcards.html', subject=subject,
+                               subtopic=subtopic,
+                               missed_flashcards=missed_flashcards,
+                               correct_flashcards=correct_flashcards)
+    else:
+        return render_template('flashcards.html', subject=subject,
+                               subtopic=subtopic)
 
 
 # This route prompts the user for a subject and subtopic before actually
