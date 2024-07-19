@@ -209,7 +209,8 @@ def flashcards_post():
     subtopic = request.form.get('subtopic_selection')
 
     return render_template('flashcards.html', subject=subject,
-                           subtopic=subtopic)
+                           subtopic=subtopic, missed_flashcards=[],
+                           correct_flashcards=[])
 
 
 # This route is used to generate the flashcards based on the subject and
@@ -235,6 +236,7 @@ def dummy_get_cards():
         {"Definition": "Definition 4", "Term": "Term 4"},
     ]
     sleep(2)  # Simulate waiting for an API response.
+    # return(jsonify({'error': 'Failed to fetch flashcards'}), 400)
     return jsonify(flashcards)
 
 
@@ -282,7 +284,8 @@ def load_flashcards():
                                correct_flashcards=correct_flashcards)
     else:
         return render_template('flashcards.html', subject=subject,
-                               subtopic=subtopic)
+                               subtopic=subtopic, missed_flashcards=[],
+                               correct_flashcards=[])
 
 
 # This route prompts the user for a subject and subtopic before actually

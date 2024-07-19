@@ -20,7 +20,13 @@
         <div class="card-container">
             <div class="card">
 
-                <h5 id="def-text">Definition</h5>
+                <div id="placeholders-div" class="placeholder-glow">
+                    <h5>
+                        <span id="def-text" hidden>Definition</span>
+                        <span id="text-placeholder" class="placeholder col-8" hidden>Definition</span>
+                    </h5>
+                </div>
+
                 <form class="text-submit-form" action="/" method="GET">
                     <div class="form-group">
                         <label for="textInput" class="form-label">Type the Answer:</label>
@@ -52,7 +58,6 @@
         let terms = [];
         let missedTerms = [];
         let correctTerms = [];
-        // getTerms();
 
         // Use the /get-cards url defined in main.py to get the flashcards from
         // the OpenAPI database.
@@ -69,17 +74,27 @@
                     subtopic: "{{ subtopic }}"
                 }),
                 contentType: "application/json; charset=utf-8",
-                beforeSend: function () { },
-                // Upon sucess, update the flashcards variable with the
-                // response and display the first flashcard. Also, remove the
-                // placeholder glow effect.
+                beforeSend: function () {
+                    $('#loadTerms-btn').prop('disabled', true);
+                    $('#text-placeholder').prop('hidden', false);
+                },
+                // Upon sucess, update the terms variable with the
+                // response, hide the glowing placeholder, and unhide
+                // the definition field.
                 success: function (response) {
                     terms = response;
-                    // shuffle(terms);
+                    $('#text-placeholder').prop('hidden', true);
+                    $('#def-text').prop('hidden', false);
                 },
-                complete: function () { },
+                // Upon completion, set the definition text to the
+                // current term's definition.
+                complete: function () {
+                    $('#def-text').text(terms[currentIndex]['Definition']);
+                },
                 error: function () {
                     // Handle error, e.g., display a message
+                    window.location.replace('/');
+                    alert('Failed to fetch Active Recall terms. You are being returned to the home page. Please try again later.')
                     console.error('Failed to fetch terms.');
                 }
             });
@@ -99,15 +114,6 @@
 
         $('#loadTerms-btn').click(function () {
             getTerms();
-            // $('#restart-fresh-btn').prop('disabled', false);
-            // $('#restart-missed-btn').prop('disabled', false);
-            $('#loadTerms-btn').prop('disabled', true);
-            $('#textInput').val('');
-            currentIndex = 0;
-            missedTerms = [];
-            correctTerms = [];
-            $('#def-text').text(terms[currentIndex]['Definition']);
-            // $('#def-text').text("Super long definition that I'm testing");
         });
 
         // setTimeout does not inhibit other functions from executing.
@@ -133,7 +139,7 @@
                     $('#answer-btn').prop('disabled', true);
                     $('#complete-btn').prop('disabled', false);
                 }
-            }, 1000);
+            }, 3000);
 
         });
 
