@@ -1,0 +1,20 @@
+{% extends "index.html" %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+</head>
+
+<h1>Hi, {{ current_user.name }}!</h1>
+<p>Current XP: TODO</p>
+<p>Current XP Level: TODO</p>
+
+<div class="row mt-4">
+    <p>Activity:</p>
+    <div class="d-grid gap-2">
+        <a class="btn custom-btn" role="button" href="{{ url_for('saved_flashcards') }}">Review Saved Flashcards</a>
+        <a class="btn custom-btn" role="button" href="{{ url_for('quiz_results') }}">View Past Quiz Results</a>
+        <a class="btn custom-btn" role="button" href="{{ url_for('logout') }}">Log Out</a>
+    </div>
+</div>
+{% endblock content %}
