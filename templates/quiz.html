@@ -57,10 +57,10 @@
 
                 function displayQuestion(questionIndex) {
                     let questionData = questions[questionIndex];
-                    let questionText = questionData.Question;
-                    let answerOptions = questionText.split('\n').slice(1, 5); 
+                    let questionText = questionData.Question.split('\n')[0];
+                    let answerOptions = questionData.Question.match(/[A-D]\. [^\n]+/g);
 
-                    document.querySelector('.question-title').innerText = questionText.split('\n')[0]; 
+                    document.querySelector('.question-title').innerText = questionText;
                     document.querySelector('.btn-option-a').innerText = answerOptions[0].trim();
                     document.querySelector('.btn-option-b').innerText = answerOptions[1].trim();
                     document.querySelector('.btn-option-c').innerText = answerOptions[2].trim();
@@ -83,9 +83,9 @@
                     button.addEventListener('click', (e) => {
                         let userAnswer = e.target.innerText[0]; // 'A', 'B', 'C', or 'D'
                         let userAnswerIndex = userAnswer.charCodeAt(0) - 64; // Convert 'A' -> 1, 'B' -> 2, etc.
-                        let correctAnswerIndex = parseInt(questions[currentQuestionIndex]["Answer Index"]);
+                        let correctAnswerIndex = questions[currentQuestionIndex]["Answer Index"];
 
-                        let correctAnswer = questions[currentQuestionIndex].Answer.split(': ')[1].trim(); 
+                        let correctAnswer = questions[currentQuestionIndex].Answer.split('. ')[1].trim(); 
                         let isCorrect = userAnswerIndex === correctAnswerIndex;
 
                         if (isCorrect) {
@@ -95,6 +95,7 @@
                         showFeedback(isCorrect, correctAnswer);
                     });
                 });
+
                 document.querySelector('.next-question-btn').addEventListener('click', () => {
                     hideFeedback();
                     currentQuestionIndex++;
@@ -107,7 +108,6 @@
                         document.querySelector('.feedback-container').style.display = 'none';
                         document.querySelector('.next-question-btn').textContent = 'Finish';
                         document.querySelector('.next-question-btn').addEventListener('click', async () => {
-                            // Save the quiz results to the database
                             const response = await fetch('/save_quiz_result', {
                                 method: 'POST',
                                 headers: {
@@ -117,14 +117,9 @@
                                     subject: "{{ subject }}",
                                     subtopic: "{{ subtopic }}",
                                     num_correct: correctAnswersCount,
-                                    // The time stamp of the quiz is handled on server
                                 }),
                             });
-                            // GACK!!! This was a really ugly way to do this
-                            // I thought that the post request would automatically
-                            // redirect to quiz_results. This is a quick and
-                            // dirty way to force it to do what I want it to do
-                            window.location.href = '/quiz_results'
+                            window.location.href = '/quiz_results';
                         });
                     }
                 });
