@@ -28,8 +28,8 @@
                 <form class="text-submit-form" action="/" method="GET" id="recall-form">
                     <div class="form-group">
                         <label for="textInput" class="form-label">Type the Answer:</label>
-                        <textarea id="textInput" name="textInput" class="text-input" placeholder="Enter your text here"
-                            disabled></textarea>
+                        <textarea id="textInput" name="textInput" class="text-input"
+                            placeholder="Enter your response here" disabled></textarea>
                     </div>
                     <p id="answer-correctness" style="color: '';"></p>
                     <button class="btn btn-primary" type="button" id="answer-btn">Check Answer</button>
@@ -41,7 +41,8 @@
                 <div class="btn-group btn-lg" role="group" aria-label="Basic example">
                     <button class="btn btn-primary" type="button" id="restart-fresh-btn" disabled> Restart All Terms?
                     </button>
-                    <button class="btn btn-primary" type="button" id="restart-missed-btn" disabled> Restart Missed Terms?
+                    <button class="btn btn-primary" type="button" id="restart-missed-btn" disabled> Restart Missed
+                        Terms?
                     </button>
                 </div>
             </div>
@@ -61,8 +62,8 @@
         // the OpenAPI database.
         function getTerms() {
             $.ajax({
-                url: '/get-cards',
-                // url: '/dummy-get-cards',
+                // url: '/get-cards',
+                url: '/dummy-get-cards',
                 type: 'POST',
                 // Send the subject and subtopic to the server as JSON. The
                 // variable values are set using Jinja templating from the
@@ -84,6 +85,7 @@
                     $('#text-placeholder').prop('hidden', true);
                     $('#def-text').prop('hidden', false);
                     $('#textInput').prop('disabled', false);
+                    $('#textInput').focus();
                     $('#def-text').text(terms[currentIndex]['Definition']);
                 },
                 // Upon completion, set the definition text to the
@@ -111,6 +113,50 @@
             }
         }
 
+        // Compute the Levenshtein distance between two strings to determine similarity.
+        function similarity(s1, s2) {
+            var longer = s1;
+            var shorter = s2;
+            if (s1.length < s2.length) {
+                longer = s2;
+                shorter = s1;
+            }
+            var longerLength = longer.length;
+            if (longerLength == 0) {
+                return 1.0;
+            }
+            return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
+        }
+
+        // Compute the edit distance between two strings. The edit distance is
+        // the number of characters that need to be substituted, inserted, or
+        // deleted to transform s1 into s2.
+        function editDistance(s1, s2) {
+            s1 = s1.toLowerCase();
+            s2 = s2.toLowerCase();
+
+            var costs = new Array();
+            for (var i = 0; i <= s1.length; i++) {
+                var lastValue = i;
+                for (var j = 0; j <= s2.length; j++) {
+                    if (i == 0)
+                        costs[j] = j;
+                    else {
+                        if (j > 0) {
+                            var newValue = costs[j - 1];
+                            if (s1.charAt(i - 1) != s2.charAt(j - 1))
+                                newValue = Math.min(Math.min(newValue, lastValue),
+                                    costs[j]) + 1;
+                            costs[j - 1] = lastValue;
+                            lastValue = newValue;
+                        }
+                    }
+                }
+                if (i > 0)
+                    costs[s2.length] = lastValue;
+            }
+            return costs[s2.length];
+        }
 
         // Existing click event for the answer button
         $('#answer-btn').click(function () {
@@ -127,27 +173,45 @@
         });
 
         function submitAnswer() {
-            let textInput = $('#textInput').val().trim().toLowerCase();
-            if (textInput === terms[currentIndex]['Term'].toLowerCase()) {
+            // let textInput = $('#textInput').val().trim().toLowerCase();
+            let textInput = $('#textInput').val().trim();
+            $('#textInput').prop('disabled', true);
+            let similarityScore = similarity(textInput, terms[currentIndex]['Term']);
+
+            // If the similarity score is greater than 0.9, consider the answer
+            // correct. If the similarity score is greater than 0.8, consider
+            // the answer close, but still incorrect. Otherwise, consider the answer incorrect.
+            if (similarityScore > 0.95) {
                 correctTerms.push(terms[currentIndex]);
                 $('#answer-correctness').prop('style', 'color: green');
                 $('#answer-correctness').text('Correct!');
+            } else if(similarityScore > 0.9) {
+                $('#answer-correctness').prop('style', 'color: green');
+                $('#answer-correctness').text('Correct! The correct answer is: ' + terms[currentIndex]['Term']);
+                correctTerms.push(terms[currentIndex]);
+            } else if(similarityScore > 0.8) {
+                $('#answer-correctness').prop('style', 'color: orange');
+                $('#answer-correctness').text('Close! The correct answer is: ' + terms[currentIndex]['Term']);
+                missedTerms.push(terms[currentIndex]);
             } else {
                 $('#answer-correctness').prop('style', 'color: red');
                 $('#answer-correctness').text('Incorrect. The correct answer is: ' + terms[currentIndex]['Term']);
                 missedTerms.push(terms[currentIndex]);
             }
+
             currentIndex++;
             // setTimeout does not inhibit other functions from executing.
             setTimeout(function () {
                 $('#recall-form')[0].reset();
                 if (currentIndex < terms.length) {
+                    $('#textInput').prop('disabled', false);
+                    $('#textInput').focus();
                     $('#def-text').text(terms[currentIndex]['Definition']);
                     $('#answer-correctness').text('');
                 } else {
                     $('#answer-correctness').text('');
-                    $('#textInput').prop('disabled', true);
                     $('#def-text').text('No more terms to display.');
+                    $('#textInput').prop('placeholder', '');
                     $('#answer-btn').prop('disabled', true);
                     $('#complete-btn').prop('disabled', false);
                     $('#restart-fresh-btn').prop('disabled', false);
