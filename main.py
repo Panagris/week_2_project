@@ -428,8 +428,7 @@ def logout():
     return redirect(url_for('home'))
 
 
-# This is just used for testing purposes to make sure quiz results are
-# stored correctly in the database for each user
+# Show the user's past quiz history
 @app.route('/quiz_results')
 @login_required
 def quiz_results():
