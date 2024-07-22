@@ -32,11 +32,15 @@
 
     .display-logo {
       text-align: center;
+      padding-top: 0;
+      margin-top: 0;
     }
 
     .display-logo img {
-      max-width: 100%;
+      max-width: 440px; /* Set a fixed maximum width for the logo */
       height: auto;
+      padding: 0; /* Remove any padding */
+      margin: 0 auto; /* Center the image */
     }
 
     .navbar-brand {
@@ -51,14 +55,22 @@
     }
 
     .custom-btn {
-      background-color: #62b0bc;
-      color: white;
-    }
+    background-color: #62b0bc;
+    color: white;
+    padding: 6px 12px;
+    font-size: 18px; 
+}
 
     .custom-btn:hover {
       background-color: #53959f;
       color: white;
     }
+
+    .custom-btn:disabled {
+    background-color: #d8d8d8; /* Gray background for disabled buttons */
+    color: #7e7e7e; /* Darker gray text for disabled buttons */
+    cursor: not-allowed; /* Not-allowed cursor for disabled buttons */
+  }
 
     .nav-link.active {
       color: white !important;
