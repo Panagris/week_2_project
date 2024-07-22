@@ -32,16 +32,16 @@
                             placeholder="Enter your response here" disabled></textarea>
                     </div>
                     <p id="answer-correctness" style="color: '';"></p>
-                    <button class="btn btn-primary" type="button" id="answer-btn">Check Answer</button>
-                    <button class="btn btn-primary" type="submit" id="complete-btn" disabled>Complete Session</button>
+                    <button class="btn custom-btn" type="button" id="answer-btn">Check Answer</button>
+                    <button class="btn custom-btn" type="submit" id="complete-btn" disabled>Complete Session</button>
                 </form>
 
             </div>
             <div class="d-flex justify-content-center my-3">
                 <div class="btn-group btn-lg" role="group" aria-label="Basic example">
-                    <button class="btn btn-primary" type="button" id="restart-fresh-btn" disabled> Restart All Terms?
+                    <button class="btn custom-btn" type="button" id="restart-fresh-btn" disabled> Restart All Terms?
                     </button>
-                    <button class="btn btn-primary" type="button" id="restart-missed-btn" disabled> Restart Missed
+                    <button class="btn custom-btn" type="button" id="restart-missed-btn" disabled> Restart Missed
                         Terms?
                     </button>
                 </div>
@@ -62,8 +62,8 @@
         // the OpenAPI database.
         function getTerms() {
             $.ajax({
-                url: '/get-cards',
-                // url: '/dummy-get-cards',
+                // url: '/get-cards',
+                url: '/dummy-get-cards',
                 type: 'POST',
                 // Send the subject and subtopic to the server as JSON. The
                 // variable values are set using Jinja templating from the
