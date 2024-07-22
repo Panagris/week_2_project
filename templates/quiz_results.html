@@ -1,9 +1,36 @@
 {% extends "index.html" %}
 {% block content %}
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+    </head>
+
     <h1>{{ title }}</h1>
 
+    <div class="container mt-5">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Subject</th>
+                    <th scope="col">Subtopic</th>
+                    <th scope="col">Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz_result in results %}
+                <tr data-quiz-id='{{ quiz_result.id }}'>
+                    <td>{{ quiz_result.subject }}</td>
+                    <td>{{ quiz_result.subtopic }}</td>
+                    <td>{{ quiz_result.num_correct }} / 5</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {# 
     {% for quiz_result in results %}
         <p>{{ quiz_result }}</p>
     {% endfor %}
+    #}
 
 {% endblock %}

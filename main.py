@@ -435,7 +435,7 @@ def logout():
 def quiz_results():
     results = list(current_user.quiz_results)
     results.reverse()
-    return render_template('quiz_results.html', title='Quiz Results',
+    return render_template('quiz_results.html', title='Past Quiz Results',
                            results=results)
 
 
