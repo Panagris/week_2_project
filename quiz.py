@@ -12,7 +12,7 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
                 C. Option...
                 D. Option...",
                 "Answer": "",
-                "Answer Index": ""
+                "Answer Index": X
             },
             {
                 "Question": "What is...
@@ -21,7 +21,7 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
                 C. Option...
                 D. Option...",
                 "Answer": "",
-                "Answer Index": ""
+                "Answer Index": X
             }
         ]
     }
@@ -116,7 +116,7 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
             {"role": "system", "content": system_string},
             {"role": "user", "content": seed_user_string},
             {"role": "assistant", "content": seed_response_JSON},
-            {"role": "user", "content": user_string},
+            {"role": "user", "content": user_input_string},
         ]
     )
 
