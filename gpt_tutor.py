@@ -13,7 +13,7 @@ def run_explanation(CLIENT, subject: str, subtopic: str):
                    f" to more in-depthly explore the subtopic {subtopic}.")
 
     response = CLIENT.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": system_string},
             {"role": "user", "content": user_string}

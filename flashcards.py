@@ -29,7 +29,7 @@ def run_flashcards(CLIENT, subject: str, subtopic: str) -> list:
                   f"vocabulary word.")
 
     response = CLIENT.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": "You are a helpful study assistant \
