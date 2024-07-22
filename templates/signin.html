@@ -2,46 +2,56 @@
 
 {% block content %}
 
-<h1 class="title">{{ title }}</h1>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+</head>
 
-<div class="content-section">
+<h1>{{ title }}</h1>
+
+<div class="container content-section mt-5">
     <form method="POST" action="">
         <fieldset class="form-group">
-            <div class="form-group">
-                <input class="form-control form-control-lg" type="email" name="email" placeholder="Your Email" autofocus="">
+            <div class="form-group mb-3">
+                <label class="form-label">Enter Email:</label>
+                <input class="form-control form-control-lg" type="email" name="email" placeholder="example@gmail.com" autofocus="">
             </div>
 
             {% if title == "Sign Up" %}
-                <div class="form-group">
-                    <input class="form-control form-control-lg" type="text" name="name" placeholder="Name" autofocus="">
+                <div class="form-group mb-3">
+                    <label class="form-label">Enter Name:</label>
+                    <input class="form-control form-control-lg" type="text" name="name" placeholder="Example" autofocus="">
                 </div>
             {% endif %}
 
-            <div class="form-group">
-                <input class="form-control form-control-lg" type="password" name="password" placeholder="Your Password">
+            <div class="form-group mb-3">
+                <label class="form-label">Enter Password:</label>
+                <input class="form-control form-control-lg" type="password" name="password" placeholder="Password">
             </div>
 
             {% if title == "Sign In" %}
-                <div class="form-check">
+                <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" name="remember">
                     <label class="form-check-label" for="flexCheckDefault">
                         Remember me
                     </label>
                 </div>
             {% else %}
-                <div class="form-group">
+                <div class="form-group mb-3">
+                    <label class="form-label">Confirm Password:</label>
                     <input class="form-control form-control-lg" type="password" name="confirm_password" placeholder="Confirm Password">
                 </div>
             {% endif %}
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <button class="btn custom-btn">{{ title }}</button>
             </div>
         </fieldset>
     </form>
-    {% if title == "Sign In" %}
-        <p>New User? <a class="custom-link-color" href="{{ url_for('signup') }}">Sign Up</a>!</p>
-    {% else %}
-        <p>Returning User? <a class="custom-link-color" href="{{ url_for('signin') }}">Sign In</a>!</p>
-    {% endif %}
+    <p class="mb-3">
+        {% if title == "Sign In" %}
+            New User? <a class="custom-link-color" href="{{ url_for('signup') }}">Sign Up</a>!
+        {% else %}
+            Returning User? <a class="custom-link-color" href="{{ url_for('signin') }}">Sign In</a>!
+        {% endif %}
+    </p>
 </div>
 {% endblock %}

@@ -3,28 +3,7 @@
 {% block content %}
 {% if current_user.is_authenticated %}
 <head>
-    <style>
-    .container {
-        max-width: 600px;
-        margin: auto;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        background-color: #eaeaff;
-    }
-
-    /* Header styling */
-    h1 {
-        text-align: center;
-        color: #333;
-        font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-        margin-bottom: 20px;
-    }
-
-    p {
-        color: black;
-    }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
     <title>Home Page</title>
 </head>
 <!-- Intro message for logged in user -->
