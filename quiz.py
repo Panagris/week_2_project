@@ -26,7 +26,14 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
         ]
     }
     """
+    # Seed user query to give the AI assistant an example of an expected
+    # input.
+    seed_user_string = (f"Generate a five-question multiple-choice Physics "
+                        f"quiz with four options (A,B,C,D) focused on "
+                        f"mechanics. Return the quiz in a JSON format.")
 
+    # Seed response for the user query to give the AI assistant an example
+    # of the expected output format.
     seed_response_format_dict = {
         "Quiz": [
             {
@@ -84,15 +91,12 @@ def run_quiz(CLIENT, subject: str, subtopic: str) -> dict:
             }
         ]
     }
+
     seed_response_JSON = json.dumps(seed_response_format_dict)
 
-    user_string = (f"Generate a five-question multiple-choice {subject} quiz "
-                   f"with four options (A,B,C,D) focused on {subtopic}."
-                   f"Return the quiz in a JSON format.")
-
-    seed_user_string = (f"Generate a five-question multiple-choice Physics "
-                        f"quiz with four options (A,B,C,D) focused on "
-                        f"mechanics. Return the quiz in a JSON format.")
+    user_input_string = (f"Generate a five-question multiple-choice {subject}"
+                         f" quiz with four options (A,B,C,D) focused on "
+                         f"{subtopic}. Return the quiz in a JSON format.")
 
     system_string = (f"You are a helpful study assistant for students that "
                      f"provides quiz questions, answers, and answer indices "
