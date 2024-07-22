@@ -351,7 +351,7 @@ def recall():
 # This route is used to display the flashcards page with the subject and
 # subtopic selected by the user. The subject and subtopic are passed as
 # parameters in the URL from the previous form submission.
-@app.route("/recall", methods=['GET', 'POST'])
+@app.route("/recall", methods=['POST'])
 @login_required
 def recall_post():
     subject = request.form.get('subject_selection')
