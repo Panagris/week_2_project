@@ -1,38 +1,64 @@
 {% extends "index.html" %}
 {% block content %}
-    <head>
-        <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
-    </head>
 
-    <h1>{{ title }}</h1>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+</head>
 
-    <p>Click on any of your previous flashcard decks to review them.</p>
+<h1>{{ title }}</h1>
 
-    <div class="container mt-5">
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">Subject</th>
-                    <th scope="col">Subtopic</th>
-                    <th scope="col">Missed</th>
-                    <th scope="col">Correct</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for flashcard_set in current_user.flashcards %}
-                <tr data-flashcard-id='{{ flashcard_set.id }}'>
-                    <td>{{ flashcard_set.subject }}</td>
-                    <td>{{ flashcard_set.subtopic }}</td>
-                    <td>{{ flashcard_set.missed_flashcards|length }}</td>
-                    <td>{{ flashcard_set.correct_flashcards|length }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="d-grid gap-2">
-            <a class="btn custom-btn" href="{{ url_for('profile')}}">Back to Profile</a>
-            <a class="btn custom-btn" href="/">Back to Home</a>
-        </div>
+<p>Click on any of your previous flashcard decks to review them.</p>
+
+<div class="container mt-5">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Subject</th>
+                <th scope="col">Subtopic</th>
+                <th scope="col">Missed</th>
+                <th scope="col">Correct</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for flashcard_set in current_user.flashcards %}
+            <tr data-flashcard-id='{{ flashcard_set.id }}'>
+                <td>{{ flashcard_set.subject }}</td>
+                <td>{{ flashcard_set.subtopic }}</td>
+                <td>{{ flashcard_set.missed_flashcards|length }}</td>
+                <td>{{ flashcard_set.correct_flashcards|length }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="d-grid gap-2">
+        <a class="btn custom-btn" href="{{ url_for('profile')}}">Back to Profile</a>
+        <a class="btn custom-btn" href="/">Back to Home</a>
     </div>
-{% endblock %}
+</div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        var myForm = document.createElement("form");
+        myForm.method = "POST";
+        myForm.action = "{{ url_for('load_flashcards') }}";
+        myForm.style.display = "none";
+        
+        var idInput = document.createElement("input");
+        idInput.setAttribute("type", "text");
+        idInput.setAttribute("name", "deckId");
+
+        myForm.appendChild(idInput);
+        document.body.appendChild(myForm);
+        
+        const rows = document.querySelectorAll('tr');
+        rows.forEach(row => {
+            row.addEventListener('click', () => {
+                const flashcardId = row.getAttribute('data-flashcard-id');
+                idInput.setAttribute("value", flashcardId);
+                myForm.submit();
+            });
+        });
+
+    });
+</script>
+{% endblock %}

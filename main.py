@@ -207,7 +207,7 @@ def flashcards():
 def flashcards_post():
     subject = request.form.get('subject_selection')
     subtopic = request.form.get('subtopic_selection')
-
+    # TODO Change render_temp() to include ID of the flashcard deck
     return render_template('flashcards.html', subject=subject,
                            subtopic=subtopic, missed_flashcards=[],
                            correct_flashcards=[])
@@ -223,6 +223,20 @@ def get_cards():
     subject = data.get("subject")
     subtopic = data.get("subtopic")
     flashcards = run_flashcards(CLIENT, subject, subtopic)
+
+    flashcards_db = Flashcards(
+        subject=subject,
+        subtopic=subtopic,
+        missed_flashcards=flashcards,
+        correct_flashcards=[],
+        user=current_user
+    )
+    db.session.add(flashcards_db)
+    db.session.commit()
+
+    deck_id = flashcards_db.id
+    flashcards.append(deck_id)
+
     return jsonify(flashcards)
 
 
@@ -235,57 +249,59 @@ def dummy_get_cards():
         {"Definition": "Definition 3", "Term": "Term 3"},
         {"Definition": "Definition 4", "Term": "Term 4"},
     ]
+
+    flashcards_db = Flashcards(
+        subject="Test",
+        subtopic="Test",
+        missed_flashcards=flashcards,
+        correct_flashcards=[],
+        user=current_user
+    )
+    db.session.add(flashcards_db)
+    db.session.commit()
+
+    deck_id = flashcards_db.id
+    flashcards.append(deck_id)
     sleep(2)  # Simulate waiting for an API response.
-    # return(jsonify({'error': 'Failed to fetch flashcards'}), 400)
     return jsonify(flashcards)
 
 
 @app.route("/save-cards", methods=['POST'])
 def save_flashcards():
     data = request.json
-    subject = data.get("subject")
-    subtopic = data.get("subtopic")
+    deck_id = data.get("deckId")
     missed_flashcards = data.get("missedFlashcards")
     correct_flashcards = data.get("correctFlashcards")
-    # TODO: Save the flashcards to the database
-    # Save flashcards to Database
-    flashcards = Flashcards(
-        subject=subject,
-        subtopic=subtopic,
-        missed_flashcards=missed_flashcards,
-        correct_flashcards=correct_flashcards,
-        user=current_user
-    )
-    db.session.add(flashcards)
+
+    flashcard_deck = Flashcards.query.filter_by(id=deck_id).first()
+    flashcard_deck.missed_flashcards = missed_flashcards
+    flashcard_deck.correct_flashcards = correct_flashcards
+
     db.session.commit()
     flash('Flashcards saved successfully!', 'info')
-    return url_for("home")
+    return url_for("saved_flashcards")
 
 
 @app.route("/load-cards", methods=['POST'])
 @login_required
 def load_flashcards():
-    data = request.json
-    subject = data.get("subject")
-    subtopic = data.get("subtopic")
     # Load flashcards from Database
-    # TODO: what if the user has multiple flashcard decks for the same
-    # subject and subtopic?
-    # NOTE: maybe add a Time object for when the deck was generated?
-    flashcards = Flashcards.query.filter_by(subject=subject,
-                                            subtopic=subtopic,
-                                            user=current_user).first()
-    if flashcards:
-        missed_flashcards = flashcards.missed_flashcards
-        correct_flashcards = flashcards.correct_flashcards
-        return render_template('flashcards.html', subject=subject,
-                               subtopic=subtopic,
-                               missed_flashcards=missed_flashcards,
-                               correct_flashcards=correct_flashcards)
-    else:
-        return render_template('flashcards.html', subject=subject,
-                               subtopic=subtopic, missed_flashcards=[],
-                               correct_flashcards=[])
+    deck_id = int(request.form.get("deckId"))
+
+    flashcard_deck = Flashcards.query.filter_by(id=deck_id).first()
+    subject = flashcard_deck.subject
+    subtopic = flashcard_deck.subtopic
+    missed_flashcards = flashcard_deck.missed_flashcards
+    # HACK Add the deck ID to the missed flashcards list
+    # so that the JS script can use it to save the flashcards
+    # back to the database after loading them.
+    missed_flashcards.append(deck_id)
+    correct_flashcards = flashcard_deck.correct_flashcards
+
+    return render_template('flashcards.html', subject=subject,
+                           subtopic=subtopic,
+                           missed_flashcards=missed_flashcards,
+                           correct_flashcards=correct_flashcards)
 
 
 # This route prompts the user for a subject and subtopic before actually
