@@ -428,6 +428,12 @@ def logout():
     return redirect(url_for('home'))
 
 
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html', title='LearnMateAI Profile')
+
+
 # Show the user's past quiz history
 @app.route('/quiz_results')
 @login_required
@@ -436,6 +442,13 @@ def quiz_results():
     results.reverse()
     return render_template('quiz_results.html', title='Past Quiz Results',
                            results=results)
+
+
+# Allow a user to review previous flashcard decks
+@app.route('/saved_flashcards')
+@login_required
+def saved_flashcards():
+    return render_template('saved_flashcards.html', title='Saved Flashcards')
 
 
 # This route is used by pythonanywhere to update the server automatically
