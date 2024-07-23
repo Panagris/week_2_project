@@ -425,6 +425,11 @@ def signup_post():
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
 
+    # Make sure username is valid
+    if len(username) < 2 or len(username) > 20:
+        flash('Invalid Username! Please try again')
+        return redirect(url_for('signup'))
+
     # Make sure passwords match
     if password != request.form.get('confirm_password'):
         flash('Passwords do not match! Please try again')
