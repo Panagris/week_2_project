@@ -224,19 +224,22 @@ def get_cards():
     data = request.json
     subject = data.get("subject")
     subtopic = data.get("subtopic")
+    save = data.get("save")
     flashcards = run_flashcards(CLIENT, subject, subtopic)
+    deck_id = 0  # Default value for deck ID if not to be saved.
 
-    flashcards_db = Flashcards(
-        subject=subject,
-        subtopic=subtopic,
-        missed_flashcards=flashcards,
-        correct_flashcards=[],
-        user=current_user
-    )
-    db.session.add(flashcards_db)
-    db.session.commit()
+    if save:
+        flashcards_db = Flashcards(
+            subject=subject,
+            subtopic=subtopic,
+            missed_flashcards=flashcards,
+            correct_flashcards=[],
+            user=current_user
+        )
+        db.session.add(flashcards_db)
+        db.session.commit()
+        deck_id = flashcards_db.id
 
-    deck_id = flashcards_db.id
     flashcards.append(deck_id)
 
     return jsonify(flashcards)
@@ -245,6 +248,12 @@ def get_cards():
 # This route is used to generate dummy flashcards for testing purposes.
 @app.route("/dummy-get-cards", methods=['POST'])
 def dummy_get_cards():
+    data = request.json
+    subject = data.get("subject")
+    subtopic = data.get("subtopic")
+    save = data.get("save")
+    deck_id = 0  # Default value for deck ID if not to be saved.
+
     flashcards = [
         {"Definition": "Definition 1", "Term": "Term 1"},
         {"Definition": "Definition 2", "Term": "Term 2"},
@@ -252,19 +261,20 @@ def dummy_get_cards():
         {"Definition": "Definition 4", "Term": "Term 4"},
     ]
 
-    flashcards_db = Flashcards(
-        subject="Test",
-        subtopic="Test",
-        missed_flashcards=flashcards,
-        correct_flashcards=[],
-        user=current_user
-    )
-    db.session.add(flashcards_db)
-    db.session.commit()
+    if save:
+        flashcards_db = Flashcards(
+            subject=f"Test-{subject}",
+            subtopic=f"Test-{subtopic}",
+            missed_flashcards=flashcards,
+            correct_flashcards=[],
+            user=current_user
+        )
+        db.session.add(flashcards_db)
+        db.session.commit()
+        deck_id = flashcards_db.id
 
-    deck_id = flashcards_db.id
     flashcards.append(deck_id)
-    sleep(2)  # Simulate waiting for an API response.
+    sleep(1)  # Simulate waiting for an API response.
     return jsonify(flashcards)
 
 
@@ -276,6 +286,9 @@ def save_flashcards():
     correct_flashcards = data.get("correctFlashcards")
 
     flashcard_deck = Flashcards.query.filter_by(id=deck_id).first()
+    if flashcard_deck is None:
+        flash('There was an issue saving the flashcards. Sorry :(', 'error')
+        return url_for("home")
     flashcard_deck.missed_flashcards = missed_flashcards
     flashcard_deck.correct_flashcards = correct_flashcards
 
