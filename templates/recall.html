@@ -32,6 +32,7 @@
                             placeholder="Enter your response here" disabled></textarea>
                     </div>
                     <p id="answer-correctness" style="color: '';"></p>
+                    <p id="prompt-press-key" style="color: black;"></p>
                     <button class="btn custom-btn" type="button" id="answer-btn">Check Answer</button>
                     <button class="btn custom-btn" type="submit" id="complete-btn" disabled>Complete Session</button>
                 </form>
@@ -56,21 +57,23 @@
         let terms = [];
         let missedTerms = [];
         let correctTerms = [];
+        let inContinueState = false;
         getTerms();
 
         // Use the /get-cards url defined in main.py to get the terms from
         // the OpenAPI database.
         function getTerms() {
             $.ajax({
-                url: '/get-cards',
-                // url: '/dummy-get-cards',
+                // url: '/get-cards',
+                url: '/dummy-get-cards',
                 type: 'POST',
                 // Send the subject and subtopic to the server as JSON. The
                 // variable values are set using Jinja templating from the
                 // main.py file.
                 data: JSON.stringify({
                     subject: "{{ subject }}",
-                    subtopic: "{{ subtopic }}"
+                    subtopic: "{{ subtopic }}",
+                    save: false
                 }),
                 contentType: "application/json; charset=utf-8",
                 beforeSend: function () {
@@ -81,6 +84,11 @@
                 // response, hide the glowing placeholder, and unhide
                 // the definition field.
                 success: function (response) {
+                    // HACK: Remove the last element from the response array.
+                    // The call to /get-cards returns an array of terms and
+                    // an integer value representing the would-be ID of the 
+                    // deck of flashcards if they were to be saved to the DB.
+                    response.pop();
                     terms = response;
                     $('#text-placeholder').prop('hidden', true);
                     $('#def-text').prop('hidden', false);
@@ -163,17 +171,19 @@
             submitAnswer();
         });
 
-        // Keypress event for the textarea
-        $('#textInput').keypress(function (event) {
+        function textInputKeypress(event) {
             // Check if the pressed key is 'Enter'
             if (event.which == 13) {
                 event.preventDefault(); // Prevent the default action (form submission)
                 $('#answer-btn').click(); // Trigger the answer button click
             }
-        });
+        }
+
+        // Keypress event for the text input area.
+        $('#textInput').keypress(textInputKeypress);
 
         function submitAnswer() {
-            // let textInput = $('#textInput').val().trim().toLowerCase();
+            inContinueState = true;
             let textInput = $('#textInput').val().trim();
             $('#textInput').prop('disabled', true);
             let similarityScore = similarity(textInput, terms[currentIndex]['Term']);
@@ -185,11 +195,11 @@
                 correctTerms.push(terms[currentIndex]);
                 $('#answer-correctness').prop('style', 'color: green');
                 $('#answer-correctness').text('Correct!');
-            } else if(similarityScore > 0.9) {
+            } else if (similarityScore > 0.9) {
                 $('#answer-correctness').prop('style', 'color: green');
                 $('#answer-correctness').text('Correct! The correct answer is: ' + terms[currentIndex]['Term']);
                 correctTerms.push(terms[currentIndex]);
-            } else if(similarityScore > 0.8) {
+            } else if (similarityScore > 0.8) {
                 $('#answer-correctness').prop('style', 'color: orange');
                 $('#answer-correctness').text('Close! The correct answer is: ' + terms[currentIndex]['Term']);
                 missedTerms.push(terms[currentIndex]);
@@ -200,24 +210,34 @@
             }
 
             currentIndex++;
-            // setTimeout does not inhibit other functions from executing.
-            setTimeout(function () {
-                $('#recall-form')[0].reset();
-                if (currentIndex < terms.length) {
-                    $('#textInput').prop('disabled', false);
-                    $('#textInput').focus();
-                    $('#def-text').text(terms[currentIndex]['Definition']);
+            $('#prompt-press-key').text('Press the Spacebar to continue.');
+
+            $(window).keypress(function (event) {
+                if (event.which == 32 && inContinueState) {
+                    event.preventDefault();
+                    inContinueState = false;
+
+                    $('#recall-form')[0].reset();
                     $('#answer-correctness').text('');
-                } else {
-                    $('#answer-correctness').text('');
-                    $('#def-text').text('No more terms to display.');
-                    $('#textInput').prop('placeholder', '');
-                    $('#answer-btn').prop('disabled', true);
-                    $('#complete-btn').prop('disabled', false);
-                    $('#restart-fresh-btn').prop('disabled', false);
-                    $('#restart-missed-btn').prop('disabled', missedTerms.length === 0);
+                    if (currentIndex < terms.length) {
+                        $('#textInput').prop('disabled', false);
+                        $('#textInput').focus();
+                        $('#def-text').text(terms[currentIndex]['Definition']);
+
+                        // Re-enable the keypress event listener for the text input
+                        $('#textInput').keypress(textInputKeypress);
+                    } else {
+                        $('#def-text').text('No more terms to display.');
+                        $('#textInput').prop('placeholder', '');
+                        $('#answer-btn').prop('disabled', true);
+                        $('#complete-btn').prop('disabled', false);
+                        $('#restart-fresh-btn').prop('disabled', false);
+                        $('#restart-missed-btn').prop('disabled', missedTerms.length === 0);
+                    }
+                    $('#prompt-press-key').text('');
+                    $(window).off('keydown');
                 }
-            }, 3000);
+            });
         }
 
         $('#restart-fresh-btn').click(function () {
