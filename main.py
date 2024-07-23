@@ -287,13 +287,13 @@ def save_flashcards():
 
     flashcard_deck = Flashcards.query.filter_by(id=deck_id).first()
     if flashcard_deck is None:
-        flash('There was an issue saving the flashcards. Sorry :(', 'error')
+        # flash('There was an issue saving the flashcards. Sorry :(', 'error')
         return url_for("home")
     flashcard_deck.missed_flashcards = missed_flashcards
     flashcard_deck.correct_flashcards = correct_flashcards
 
     db.session.commit()
-    flash('Flashcards saved successfully!', 'info')
+    # flash('Flashcards saved successfully!', 'info')
     return url_for("saved_flashcards")
 
 

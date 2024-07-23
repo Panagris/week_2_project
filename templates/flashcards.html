@@ -56,8 +56,8 @@
         <!-- Placeholders for loading effect -->
         <br>
         <div class="flashcard btn-lg placeholder-glow" id="def-term">
-            <div class="flashcard-front" id="flashcard-front"></div>
-            <div class="flashcard-back" id="flashcard-back"></div>
+            <div class="flashcard-front" id="flashcard-front">Loading...</div>
+            <div class="flashcard-back" id="flashcard-back">Loading...</div>
         </div>
     </div>
 
@@ -269,12 +269,12 @@
         
         $('#save-btn').click(function () {
             saveCards();
-            window.location = "{{ url_for('saved_flashcards') }}";
+            window.location.href = "{{ url_for('profile') }}";
         });
 
         $('#generate-new-btn').click(function () {
             saveCards();
-            window.location = "{{ url_for('flashcards') }}";
+            window.location.href = "{{ url_for('flashcards') }}";
         });
     });
 

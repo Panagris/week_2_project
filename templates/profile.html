@@ -1,13 +1,119 @@
 {% extends "index.html" %}
 
 {% block content %}
+
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+    <style>
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
+    </style>
 </head>
 
 <h1>Hi, {{ current_user.username }}!</h1>
 <p>Current XP: {{ current_user.xp }}</p>
 <p>Current XP Level: {{ current_user.xp_level }}</p>
+<p>XP is earned by doing well on Quizzes.</p>
+
+<div class="d-grid gap-2">
+    <button type="button" class="collapsible btn custom-btn">View Quiz Score to XP</button>
+    <div class="content">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Score</th>
+                    <th scope="col">XP Earned</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0 / 5</td>
+                    <td>+0</td>
+                </tr>
+                <tr>
+                    <td>1 / 5</td>
+                    <td>+0</td>
+                </tr>
+                <tr>
+                    <td>2 / 5</td>
+                    <td>+0</td>
+                </tr>
+                <tr>
+                    <td>3 / 5</td>
+                    <td>+100</td>
+                </tr>
+                <tr>
+                    <td>4 / 5</td>
+                    <td>+200</td>
+                </tr>
+                <tr>
+                    <td>5 / 5</td>
+                    <td>+300</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <button type="button" class="collapsible btn custom-btn">View XP Levels</button>
+    <div class="content">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">XP Level</th>
+                    <th scope="col">XP Min</th>
+                    <th scope="col">XP Max</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Newbie</td>
+                    <td>0</td>
+                    <td>99</td>
+                </tr>
+                <tr>
+                    <td>Novice</td>
+                    <td>100</td>
+                    <td>199</td>
+                </tr>
+                <tr>
+                    <td>Apprentice</td>
+                    <td>200</td>
+                    <td>299</td>
+                </tr>
+                <tr>
+                    <td>Seasoned</td>
+                    <td>300</td>
+                    <td>399</td>
+                </tr>
+                <tr>
+                    <td>Expert</td>
+                    <td>400</td>
+                    <td>499</td>
+                </tr>
+                <tr>
+                    <td>Master</td>
+                    <td>500</td>
+                    <td>599</td>
+                </tr>
+                <tr>
+                    <td>Sensei</td>
+                    <td>600</td>
+                    <td>699</td>
+                </tr>
+                <tr>
+                    <td>Grandmaster</td>
+                    <td>700</td>
+                    <td>700+</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 
 <div class="row mt-4">
     <p>Activity:</p>
@@ -17,4 +123,21 @@
         <a class="btn custom-btn" role="button" href="{{ url_for('logout') }}">Log Out</a>
     </div>
 </div>
+
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+</script>
 {% endblock content %}

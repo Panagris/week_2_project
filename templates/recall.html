@@ -103,7 +103,7 @@
                 },
                 error: function () {
                     // Handle error, e.g., display a message
-                    window.location.replace('/');
+                    window.location.href = "{{ url_for('home') }}";
                     alert('Failed to fetch Active Recall terms. You are being returned to the home page. Please try again later.')
                     console.error('Failed to fetch terms.');
                 }
