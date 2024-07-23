@@ -9,7 +9,7 @@ subjects. It offers personalized and dynamic AI-powered study methods including
 Quizzes and Flashcards.
 
 To get started with [LearnMateAI](https://learnmateai.pythonanywhere.com 'LearnMateAI'),
-sign up with your email address and name on the site. After logging in, you
+sign up with a username and password on the site. After logging in, you
 will have access to LearnMateAI's exclusive
 [Quizzes](https://learnmateai.pythonanywhere.com/quiz 'Quizzes') and
 [Flashcards](https://learnmateai.pythonanywhere.com/flashcards 'Flashcards')!

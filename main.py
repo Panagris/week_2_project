@@ -78,9 +78,8 @@ SUBJECT_SUBTOPIC_DICT = {
 class User(UserMixin, db.Model):
     # primary keys are required by SQLAlchemy
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), unique=True)
+    username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))  # Stores only hashed passwords
-    name = db.Column(db.String(1000))
     xp = db.Column(db.Integer)
     xp_level = db.Column(db.String(100))
 
@@ -92,7 +91,7 @@ class User(UserMixin, db.Model):
 
     # String representation of a user for debugging purposes
     def __repr__(self):
-        return f'<User: {self.name} :: {self.email}>'
+        return f'<User: {self.username} :: {self.xp} XP ({self.xp_level})>'
 
 
 # Used to store the flashcards in the database
@@ -151,7 +150,7 @@ class QuizResult(db.Model):
 
     # String representation of a quiz result for debugging purposes
     def __repr__(self):
-        return f"<{self.user.name}'s Quiz Result :: " \
+        return f"<{self.user.username}'s Quiz Result :: " \
             f"{self.subtopic} ({self.subject}) : {self.num_correct} / 5>"
 
 
@@ -396,11 +395,11 @@ def signin():
 
 @app.route('/signin', methods=['POST'])
 def signin_post():
-    email = request.form.get('email')
+    username = request.form.get('username')
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
 
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(username=username).first()
 
     # check if the user actually exists
     # take the user-supplied password, hash it, and compare it to the
@@ -422,23 +421,27 @@ def signup():
 
 @app.route('/signup', methods=['POST'])
 def signup_post():
-    email = request.form.get('email')
-    name = request.form.get('name')
+    username = request.form.get('username')
     password = request.form.get('password')
+    remember = True if request.form.get('remember') else False
 
-    # if this returns a user, then the email already exists in database
-    user = User.query.filter_by(email=email).first()
+    # Make sure passwords match
+    if password != request.form.get('confirm_password'):
+        flash('Passwords do not match! Please try again')
+        return redirect(url_for('signup'))
+
+    # if this returns a user, then the username already exists in database
+    user = User.query.filter_by(username=username).first()
 
     # if a user is found, redirect back to signup page so user can try again
     if user:
-        flash('Email address already exists')
+        flash('Username already exists! Please try a different one')
         return redirect(url_for('signup'))
 
     # create a new user with the form data.
     # Hash the password so the plaintext version isn't saved.
     new_user = User(
-        email=email,
-        name=name,
+        username=username,
         password=generate_password_hash(password, method='pbkdf2:sha256'),
         xp=0,
         xp_level=xp_level(0)
@@ -448,7 +451,8 @@ def signup_post():
     db.session.add(new_user)
     db.session.commit()
 
-    return redirect(url_for('signin'))
+    login_user(new_user, remember=remember)
+    return redirect(url_for('home'))
 
 
 @app.route('/logout')
@@ -479,6 +483,13 @@ def quiz_results():
 @login_required
 def saved_flashcards():
     return render_template('saved_flashcards.html', title='Saved Flashcards')
+
+
+@app.route('/leaderboard')
+def leaderboard():
+    leaders = User.query.order_by(User.xp.desc()).limit(10)
+    return render_template('leaderboard.html', title='Global Leaderboard',
+                           leaders=leaders)
 
 
 # This route is used by pythonanywhere to update the server automatically
