@@ -14,12 +14,12 @@ body {
 
 /* Container styling */
 .container {
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    background-color: #eaeaff;
+    max-width: 600px !important;
+    margin: auto !important;
+    padding: 20px !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 10px !important;
+    background-color: #eaeaff !important;
 }
 
 /* Label styling */

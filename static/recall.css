@@ -4,7 +4,7 @@ body {
 }
 
 .main-container, .card-container {
-    margin-top: 10px;
+    margin-top: 0px;
     flex-grow: 1;
     background-color: #6C6ABC;
 }
@@ -78,4 +78,8 @@ body {
 
 .submit-button:hover {
     background-color: #53959f;
+}
+
+.main-color p {
+    color: black;
 }

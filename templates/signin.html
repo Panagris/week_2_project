@@ -39,11 +39,11 @@
             </div>
         </fieldset>
     </form>
-    <p class="mb-3">
+    <p class="mb-3 d-flex justify-content-center">
         {% if title == "Sign In" %}
-            New User? <a class="custom-link-color" href="{{ url_for('signup') }}">Sign Up</a>!
+            New User?&nbsp;<a class="custom-link-color" href="{{ url_for('signup') }}"> Sign Up</a>!
         {% else %}
-            Returning User? <a class="custom-link-color" href="{{ url_for('signin') }}">Sign In</a>!
+            Returning User?&nbsp;<a class="custom-link-color" href="{{ url_for('signin') }}"> Sign In</a>!
         {% endif %}
     </p>
 </div>

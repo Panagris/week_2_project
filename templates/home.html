@@ -1,5 +1,4 @@
 {% extends "index.html" %}
-
 {% block content %}
 {% if current_user.is_authenticated %}
 <head>
@@ -30,25 +29,36 @@
     </div>
 </div>
 {% else %}
-<!-- Intro message for not signed in users -->
-<div class="display-logo">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='recall.css') }}">
+    <title>Home Page</title>
+</head>
+<div class="display-logo fs-5">
     <img src="{{ url_for('static', filename='images/learnmateai-full-logo.png') }}" alt="LearnMateAI Logo">
 </div>
-<p>LearnMateAI is a platform that helps students to learn and practice their
-    skills in a fun and interactive way. LearnMateAI grants students the ability to
-    study about various academic subjects in an interactive way. </p>
-<p>Flashcards are a great way to learn and memorize information. 15 flashcards are
-    generated based on a selected subject and topic. Cement that information and
-    try them now!</p>
-<p>Quizzes are a great way to test your knowledge and improve your skills. You can take quizzes on various topics and
-    see
-    how well you perform.</p>
-    <p>Active recall is a study method that involves actively stimulating memory during the learning
-        process. Supply the term associated with a prompted definition, without looking at any
-        material!</p>
-    <p class="center">
-        <a class="custom-link-color" href="/signin">Sign In / Up</a> to access
-        these features!
-    </p>
+{% block main_content %}
+<div class="container mt-5">
+<main class="main-container">
+    <div class="card-container">
+        <div class="main-color">
+        <p>LearnMateAI is a platform that helps students to learn and practice their
+        skills in a fun and interactive way. LearnMateAI grants students the ability to
+        study about various academic subjects in an interactive way. </p>
+        <p>Flashcards are a great way to learn and memorize information. 15 flashcards are
+        generated based on a selected subject and topic. Cement that information and
+        try them now!</p>
+        <p>Quizzes are a great way to test your knowledge and improve your skills. You can take quizzes on various topics and
+        see how well you perform.</p>
+        <p>Active recall is a study method that involves actively stimulating memory during the learning
+            process. Supply the term associated with a prompted definition, without looking at any
+            material!</p>
+        <div class="d-grid gap-2">
+            <a class="btn custom-btn" role="button" href="/signin">Sign In / Up</a>
+        </div>
+        </div>
+    </div>
+    </main>
+</div>
+{% endblock %}
 {% endif %}
 {% endblock content %}
