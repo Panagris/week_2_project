@@ -25,7 +25,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for flashcard_set in current_user.flashcards %}
+            {% for flashcard_set in current_user.flashcards|reverse %}
             <tr class="flashcard-row" data-flashcard-id='{{ flashcard_set.id }}'>
                 <td>{{ flashcard_set.subject }}</td>
                 <td>{{ flashcard_set.subtopic }}</td>
