@@ -63,39 +63,39 @@
 }
 
 .btn-option-a:hover {
-    background-color: #7399c2;
+    background-color: #2d79cb;
     transform: scale(1.05);
 }
 
 .btn-option-a:active {
-    background-color: #577595;
+    background-color: #245c98;
 }
 
 .btn-option-b:hover {
-    background-color: #8ecf8d;
+    background-color: #4cd14a;
     transform: scale(1.05);
 }
 
 .btn-option-b:active {
-    background-color: #72a771;
+    background-color: #35af32;
 }
 
 .btn-option-c:hover {
-    background-color: #f8f9aa;
+    background-color: #f7fa5e;
     transform: scale(1.05);
 }
 
 .btn-option-c:active {
-    background-color: #ddde97;
+    background-color: #dbdd4b;
 }
 
 .btn-option-d:hover {
-    background-color: #d47c7c;
+    background-color: #d64e4e;
     transform: scale(1.05);
 }
 
 .btn-option-d:active {
-    background-color: #b16a6a;
+    background-color: #b34545;
 }
 
 .feedback-container {
