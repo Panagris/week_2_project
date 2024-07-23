@@ -14,6 +14,7 @@ import json
 from time import sleep
 from flashcards import run_flashcards
 from quiz import run_quiz
+from scoring import SCORE_TO_XP, xp_level
 
 
 # The SQLAlchemy object is created and used to interact with the database.
@@ -77,9 +78,10 @@ SUBJECT_SUBTOPIC_DICT = {
 class User(UserMixin, db.Model):
     # primary keys are required by SQLAlchemy
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), unique=True)
+    username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))  # Stores only hashed passwords
-    name = db.Column(db.String(1000))
+    xp = db.Column(db.Integer)
+    xp_level = db.Column(db.String(100))
 
     # Each user will have multiple flashcards they will want to access
     flashcards = db.relationship("Flashcards", backref="user")
@@ -89,7 +91,7 @@ class User(UserMixin, db.Model):
 
     # String representation of a user for debugging purposes
     def __repr__(self):
-        return f'<User: {self.name} :: {self.email}>'
+        return f'<User: {self.username} :: {self.xp} XP ({self.xp_level})>'
 
 
 # Used to store the flashcards in the database
@@ -148,7 +150,7 @@ class QuizResult(db.Model):
 
     # String representation of a quiz result for debugging purposes
     def __repr__(self):
-        return f"<{self.user.name}'s Quiz Result :: " \
+        return f"<{self.user.username}'s Quiz Result :: " \
             f"{self.subtopic} ({self.subject}) : {self.num_correct} / 5>"
 
 
@@ -222,19 +224,22 @@ def get_cards():
     data = request.json
     subject = data.get("subject")
     subtopic = data.get("subtopic")
+    save = data.get("save")
     flashcards = run_flashcards(CLIENT, subject, subtopic)
+    deck_id = 0  # Default value for deck ID if not to be saved.
 
-    flashcards_db = Flashcards(
-        subject=subject,
-        subtopic=subtopic,
-        missed_flashcards=flashcards,
-        correct_flashcards=[],
-        user=current_user
-    )
-    db.session.add(flashcards_db)
-    db.session.commit()
+    if save:
+        flashcards_db = Flashcards(
+            subject=subject,
+            subtopic=subtopic,
+            missed_flashcards=flashcards,
+            correct_flashcards=[],
+            user=current_user
+        )
+        db.session.add(flashcards_db)
+        db.session.commit()
+        deck_id = flashcards_db.id
 
-    deck_id = flashcards_db.id
     flashcards.append(deck_id)
 
     return jsonify(flashcards)
@@ -243,6 +248,12 @@ def get_cards():
 # This route is used to generate dummy flashcards for testing purposes.
 @app.route("/dummy-get-cards", methods=['POST'])
 def dummy_get_cards():
+    data = request.json
+    subject = data.get("subject")
+    subtopic = data.get("subtopic")
+    save = data.get("save")
+    deck_id = 0  # Default value for deck ID if not to be saved.
+
     flashcards = [
         {"Definition": "Definition 1", "Term": "Term 1"},
         {"Definition": "Definition 2", "Term": "Term 2"},
@@ -250,19 +261,20 @@ def dummy_get_cards():
         {"Definition": "Definition 4", "Term": "Term 4"},
     ]
 
-    flashcards_db = Flashcards(
-        subject="Test",
-        subtopic="Test",
-        missed_flashcards=flashcards,
-        correct_flashcards=[],
-        user=current_user
-    )
-    db.session.add(flashcards_db)
-    db.session.commit()
+    if save:
+        flashcards_db = Flashcards(
+            subject=f"Test-{subject}",
+            subtopic=f"Test-{subtopic}",
+            missed_flashcards=flashcards,
+            correct_flashcards=[],
+            user=current_user
+        )
+        db.session.add(flashcards_db)
+        db.session.commit()
+        deck_id = flashcards_db.id
 
-    deck_id = flashcards_db.id
     flashcards.append(deck_id)
-    sleep(2)  # Simulate waiting for an API response.
+    sleep(1)  # Simulate waiting for an API response.
     return jsonify(flashcards)
 
 
@@ -274,6 +286,9 @@ def save_flashcards():
     correct_flashcards = data.get("correctFlashcards")
 
     flashcard_deck = Flashcards.query.filter_by(id=deck_id).first()
+    if flashcard_deck is None:
+        flash('There was an issue saving the flashcards. Sorry :(', 'error')
+        return url_for("home")
     flashcard_deck.missed_flashcards = missed_flashcards
     flashcard_deck.correct_flashcards = correct_flashcards
 
@@ -342,14 +357,23 @@ def generate_quiz():
 @login_required
 def save_quiz_result():
     data = request.json
+
+    num_correct = data.get("num_correct")
+
     result = QuizResult(
         time=None,
         subject=data.get("subject"),
         subtopic=data.get("subtopic"),
-        num_correct=data.get("num_correct"),
+        num_correct=num_correct,
         user=current_user
     )
     db.session.add(result)
+    db.session.commit()
+
+    # Update the User's XP and XP Level
+    # Possible RACE CONDITION here (non-trivial to resolve)
+    current_user.xp = current_user.xp + SCORE_TO_XP[num_correct]
+    current_user.xp_level = xp_level(current_user.xp)
     db.session.commit()
 
     return redirect(url_for('quiz_results'))
@@ -384,11 +408,11 @@ def signin():
 
 @app.route('/signin', methods=['POST'])
 def signin_post():
-    email = request.form.get('email')
+    username = request.form.get('username')
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
 
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(username=username).first()
 
     # check if the user actually exists
     # take the user-supplied password, hash it, and compare it to the
@@ -410,31 +434,43 @@ def signup():
 
 @app.route('/signup', methods=['POST'])
 def signup_post():
-    email = request.form.get('email')
-    name = request.form.get('name')
+    username = request.form.get('username')
     password = request.form.get('password')
+    remember = True if request.form.get('remember') else False
 
-    # if this returns a user, then the email already exists in database
-    user = User.query.filter_by(email=email).first()
+    # Make sure username is valid
+    if len(username) < 2 or len(username) > 20:
+        flash('Invalid Username! Please try again')
+        return redirect(url_for('signup'))
+
+    # Make sure passwords match
+    if password != request.form.get('confirm_password'):
+        flash('Passwords do not match! Please try again')
+        return redirect(url_for('signup'))
+
+    # if this returns a user, then the username already exists in database
+    user = User.query.filter_by(username=username).first()
 
     # if a user is found, redirect back to signup page so user can try again
     if user:
-        flash('Email address already exists')
+        flash('Username already exists! Please try a different one')
         return redirect(url_for('signup'))
 
     # create a new user with the form data.
     # Hash the password so the plaintext version isn't saved.
     new_user = User(
-        email=email,
-        name=name,
-        password=generate_password_hash(password, method='pbkdf2:sha256')
+        username=username,
+        password=generate_password_hash(password, method='pbkdf2:sha256'),
+        xp=0,
+        xp_level=xp_level(0)
     )
 
     # add the new user to the database
     db.session.add(new_user)
     db.session.commit()
 
-    return redirect(url_for('signin'))
+    login_user(new_user, remember=remember)
+    return redirect(url_for('home'))
 
 
 @app.route('/logout')
@@ -465,6 +501,13 @@ def quiz_results():
 @login_required
 def saved_flashcards():
     return render_template('saved_flashcards.html', title='Saved Flashcards')
+
+
+@app.route('/leaderboard')
+def leaderboard():
+    leaders = User.query.order_by(User.xp.desc()).limit(10)
+    return render_template('leaderboard.html', title='Global Leaderboard',
+                           leaders=leaders)
 
 
 # This route is used by pythonanywhere to update the server automatically
