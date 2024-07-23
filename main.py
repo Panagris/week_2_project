@@ -14,6 +14,7 @@ import json
 from time import sleep
 from flashcards import run_flashcards
 from quiz import run_quiz
+from scoring import SCORE_TO_XP, xp_level
 
 
 # The SQLAlchemy object is created and used to interact with the database.
@@ -80,6 +81,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))  # Stores only hashed passwords
     name = db.Column(db.String(1000))
+    xp = db.Column(db.Integer)
+    xp_level = db.Column(db.String(100))
 
     # Each user will have multiple flashcards they will want to access
     flashcards = db.relationship("Flashcards", backref="user")
@@ -342,14 +345,23 @@ def generate_quiz():
 @login_required
 def save_quiz_result():
     data = request.json
+
+    num_correct = data.get("num_correct")
+
     result = QuizResult(
         time=None,
         subject=data.get("subject"),
         subtopic=data.get("subtopic"),
-        num_correct=data.get("num_correct"),
+        num_correct=num_correct,
         user=current_user
     )
     db.session.add(result)
+    db.session.commit()
+
+    # Update the User's XP and XP Level
+    # Possible RACE CONDITION here (non-trivial to resolve)
+    current_user.xp = current_user.xp + SCORE_TO_XP[num_correct]
+    current_user.xp_level = xp_level(current_user.xp)
     db.session.commit()
 
     return redirect(url_for('quiz_results'))
@@ -427,7 +439,9 @@ def signup_post():
     new_user = User(
         email=email,
         name=name,
-        password=generate_password_hash(password, method='pbkdf2:sha256')
+        password=generate_password_hash(password, method='pbkdf2:sha256'),
+        xp=0,
+        xp_level=xp_level(0)
     )
 
     # add the new user to the database
