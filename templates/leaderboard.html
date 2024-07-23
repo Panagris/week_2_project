@@ -1,0 +1,35 @@
+{% extends "index.html" %}
+{% block content %}
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+    </head>
+
+    <h1>{{ title }}</h1>
+
+    <div class="container mt-5">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">XP Level</th>
+                    <th scope="col">XP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for leader in leaders %}
+                <tr data-leader-id='{{ leader.id }}'>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ leader.username }}</td>
+                    <td>{{ leader.xp_level }}</td>
+                    <td>{{ leader.xp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="d-grid gap-2">
+            <a class="btn custom-btn" href="{{ url_for('profile')}}">Back to Profile</a>
+            <a class="btn custom-btn" href="/">Back to Home</a>
+        </div>
+    </div>
+{% endblock %}
