@@ -57,19 +57,20 @@
         let terms = [];
         let missedTerms = [];
         let correctTerms = [];
-        let inContinueState = false;
+        let inContinueState = false;  // Flag to prevent multiple keypress events
         getTerms();
 
         // Use the /get-cards url defined in main.py to get the terms from
         // the OpenAPI database.
         function getTerms() {
             $.ajax({
-                // url: '/get-cards',
-                url: '/dummy-get-cards',
+                url: '/get-cards',
+                // url: '/dummy-get-cards',
                 type: 'POST',
                 // Send the subject and subtopic to the server as JSON. The
                 // variable values are set using Jinja templating from the
                 // main.py file.
+                // HACK: indicate that the terms should not be saved to the DB.
                 data: JSON.stringify({
                     subject: "{{ subject }}",
                     subtopic: "{{ subtopic }}",
@@ -223,9 +224,6 @@
                         $('#textInput').prop('disabled', false);
                         $('#textInput').focus();
                         $('#def-text').text(terms[currentIndex]['Definition']);
-
-                        // Re-enable the keypress event listener for the text input
-                        $('#textInput').keypress(textInputKeypress);
                     } else {
                         $('#def-text').text('No more terms to display.');
                         $('#textInput').prop('placeholder', '');
@@ -235,7 +233,6 @@
                         $('#restart-missed-btn').prop('disabled', missedTerms.length === 0);
                     }
                     $('#prompt-press-key').text('');
-                    $(window).off('keydown');
                 }
             });
         }
@@ -248,6 +245,10 @@
             correctTerms = [];
             $('#def-text').text(terms[currentIndex]['Definition']);
             $('#textInput').prop('disabled', false);
+            $('#textInput').prop('placeholder', 'Enter your response here');
+            $('#textInput').focus();
+            $('#restart-fresh-btn').prop('disabled', true);
+            $('#restart-missed-btn').prop('disabled', true);
             $('#answer-btn').prop('disabled', false);
             $('#complete-btn').prop('disabled', true);
         });
@@ -257,10 +258,12 @@
             terms = missedTerms;
             shuffle(terms);
             missedTerms = [];
-            $('#restart-missed-btn').prop('disabled', true);
-            $('#restart-fresh-btn').prop('disabled', true);
             $('#def-text').text(terms[currentIndex]['Definition']);
             $('#textInput').prop('disabled', false);
+            $('#textInput').prop('placeholder', 'Enter your response here');
+            $('#textInput').focus();
+            $('#restart-missed-btn').prop('disabled', true);
+            $('#restart-fresh-btn').prop('disabled', true);
             $('#answer-btn').prop('disabled', false);
             $('#complete-btn').prop('disabled', true);
         });
