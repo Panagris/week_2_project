@@ -3,6 +3,11 @@
 
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+    <style>
+        .flashcard-row {
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <h1>{{ title }}</h1>
@@ -21,7 +26,7 @@
         </thead>
         <tbody>
             {% for flashcard_set in current_user.flashcards %}
-            <tr data-flashcard-id='{{ flashcard_set.id }}'>
+            <tr class="flashcard-row" data-flashcard-id='{{ flashcard_set.id }}'>
                 <td>{{ flashcard_set.subject }}</td>
                 <td>{{ flashcard_set.subtopic }}</td>
                 <td>{{ flashcard_set.missed_flashcards|length }}</td>
@@ -46,11 +51,12 @@
         var idInput = document.createElement("input");
         idInput.setAttribute("type", "text");
         idInput.setAttribute("name", "deckId");
+        idInput.style.display = "none";
 
         myForm.appendChild(idInput);
         document.body.appendChild(myForm);
         
-        const rows = document.querySelectorAll('tr');
+        const rows = document.querySelectorAll('.flashcard-row');
         rows.forEach(row => {
             row.addEventListener('click', () => {
                 const flashcardId = row.getAttribute('data-flashcard-id');
